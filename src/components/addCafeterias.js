@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { db } from '../firebase/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import ReviewForm from './reviewForm';
 
 const AddCafeterias = () => {
   const [name, setName] = useState('');
@@ -8,7 +9,7 @@ const AddCafeterias = () => {
   const [neigh, setNeigh] = useState('');
   const [description, setDescription] = useState('');
   const [instagram, setInstagram] = useState('');
-  const [picsLinks, setPicsLinks] = useState(['', '', '', '']);
+  const [picsLinks, setPicsLinks] = useState(['', '', '', '', '']);
   const [score, setScore] = useState(0);
   const [schedules, setSchedules] = useState('');
   const [vegan, setVegan] = useState(false);
@@ -53,8 +54,8 @@ const AddCafeterias = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-8 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">Agregar Cafetería</h2>
+    <form onSubmit={handleSubmit} className="max-w-lg p-8 mx-auto bg-white rounded-lg shadow-md">
+      <h2 className="mb-6 text-2xl font-bold text-center">Agregar Cafetería</h2>
       
       <div className="mb-4">
         <label className="block text-gray-700">Nombre</label>
@@ -110,23 +111,29 @@ const AddCafeterias = () => {
         />
       </div>
       
+      <ReviewForm/>
       <div className="mb-4">
         <label className="block text-gray-700">Fotos</label>
-        {picsLinks.map((link, index) => (
-          <input
-            key={index}
-            type="text"
-            value={link}
-            onChange={(e) => {
-              const newPicsLinks = [...picsLinks];
-              newPicsLinks[index] = e.target.value;
-              setPicsLinks(newPicsLinks);
-            }}
-            className="w-full px-3 py-2 mb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder={`Foto ${index + 1}`}
-          />
-        ))}
+        <div className="flex flex-wrap">
+          {picsLinks.map((link, index) => (
+            <input
+              key={index}
+              type="text"
+              value={link}
+              onChange={(e) => {
+                const newPicsLinks = [...picsLinks];
+                newPicsLinks[index] = e.target.value;
+                setPicsLinks(newPicsLinks);
+              }}
+              className={`px-3 py-2 mb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                index === 0 ? 'w-full' : 'w-1/2'
+              }`}
+              placeholder={`Foto ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
+
       
       <div className="mb-4">
         <label className="block text-gray-700">Puntaje</label>
@@ -221,7 +228,7 @@ const AddCafeterias = () => {
       
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+        className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
       >
         Agregar Cafetería
       </button>
