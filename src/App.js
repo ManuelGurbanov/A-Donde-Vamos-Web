@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import CafeteriasList from './components/CafeteriasList';
+import CafeteriasList from './components/CoffeeList';
 import CafeDetails from './components/CafeDetails';
 import Screen4 from './components/Screen4';
 import screen1 from './img/screen1.png';
