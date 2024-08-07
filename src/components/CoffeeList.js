@@ -26,7 +26,7 @@ const CafeteriasList = () => {
     fetchCafeterias();
   }, []);
 
-  if (loading) return <div className="text-center text-gray-600">Cargando...</div>;
+  if (loading) return <div className="mt-24 text-3xl text-center text-white">Cargando Cafeterías...</div>;
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
   const sliderSettings = {
@@ -39,10 +39,10 @@ const CafeteriasList = () => {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl font-semibold text-center text-white">Cafeterías</h1>
+      <h1 className="mb-4 text-2xl text-center text-gray-200">¿A Dónde Vamos?</h1>
       
       <div className="mb-8">
-        <h2 className="mb-4 text-xl font-semibold text-center text-white">Las más populares</h2>
+        <h2 className="mb-4 text-xl text-left text-white">Las más populares</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
             <div key={index} className="p-2">

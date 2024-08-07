@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import { auth, provider } from '../firebase/firebase';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
@@ -8,6 +9,8 @@ const Login = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loginMessage, setLoginMessage] = useState('');
 
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -15,18 +18,20 @@ const Login = () => {
       const user = userCredential.user;
       console.log('Usuario logueado exitosamente:', user);
       setLoginMessage('Logueado correctamente');
+      navigate('/screen1');
     } catch (error) {
       console.error('Error al iniciar sesión', error);
       setLoginMessage('Error al iniciar sesión. Verifica tus credenciales.');
     }
   };
-  
+
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log('Usuario logueado con Google:', user);
       alert('Usuario logueado exitosamente con Google');
+      navigate('/screen1');
     } catch (error) {
       console.error('Error al loguear con Google', error);
     }
