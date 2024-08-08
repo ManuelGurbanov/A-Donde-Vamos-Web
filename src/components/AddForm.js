@@ -9,14 +9,12 @@ const AddForm = () => {
   const [description, setDescription] = useState('');
   const [instagram, setInstagram] = useState('');
   const [picsLinks, setPicsLinks] = useState(['', '', '', '']);
-  const [score, setScore] = useState(0);
   const [schedules, setSchedules] = useState('');
   const [vegan, setVegan] = useState(false);
   const [tac, setTac] = useState(false);
   const [pet, setPet] = useState(false);
   const [outside, setOutside] = useState(false);
   const [menuLink, setMenuLink] = useState('');
-  const [reviews, setReviews] = useState(['', '', '']);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,15 +24,13 @@ const AddForm = () => {
       neigh,
       description,
       instagram,
-      picsLinks: picsLinks.filter(link => link !== ''),
-      score,
+      picsLinks: picsLinks.filter(link => link !== ''), // Ensure no empty links are added
       schedules,
       vegan,
       tac,
       pet,
       outside,
-      menuLink,
-      reviews
+      menuLink
     });
     // Reset form
     setName('');
@@ -43,14 +39,12 @@ const AddForm = () => {
     setDescription('');
     setInstagram('');
     setPicsLinks(['', '', '', '']);
-    setScore(0);
     setSchedules('');
     setVegan(false);
     setTac(false);
     setPet(false);
     setOutside(false);
     setMenuLink('');
-    setReviews(['', '', '']);
   };
 
   return (
@@ -135,19 +129,6 @@ const AddForm = () => {
         </div>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-white">Puntaje</label>
-        <input
-          type="number"
-          value={score}
-          onChange={(e) => setScore(Number(e.target.value))}
-          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          placeholder="Puntaje"
-          min="0"
-          max="10"
-        />
-      </div>
-      
       <div className="mb-4">
         <label className="block text-white">Horarios</label>
         <input

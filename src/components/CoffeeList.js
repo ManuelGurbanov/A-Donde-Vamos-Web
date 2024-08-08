@@ -51,6 +51,7 @@ const CafeteriasList = () => {
                   <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
                   <div className="absolute inset-0 flex flex-col justify-end p-4 bg-black bg-opacity-50">
                     <h2 className="text-lg font-semibold text-white">{cafe.name || 'Nombre no disponible'}</h2>
+                    <p className="text-sm font-semibold text-gray-300">{cafe.neigh || 'Barrio no disponible'}</p>
                     <p className="text-sm text-gray-300">{cafe.adress || 'Dirección no disponible'}</p>
                   </div>
                 </div>

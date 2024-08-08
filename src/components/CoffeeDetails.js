@@ -65,8 +65,9 @@ const CoffeeDetails = () => {
       {coffee ? (
         <>
           <h1 className="mb-4 text-3xl font-bold">{coffee.name}</h1>
-          <p className="mb-2"><strong>Dirección:</strong> {coffee.address}</p>
-          <p className="mb-4"><strong>Descripción:</strong> {coffee.description}</p>
+          <p className="mb-4 text-xl">{coffee.neigh}</p>
+          <p className="mb-2">{coffee.adress}</p>
+          <p className="mb-4">{coffee.description}</p>
           <img src={coffee.picsLinks?.[0] || 'default-image.jpg'} alt={coffee.name} className="object-cover w-full h-64 rounded-lg shadow-md" />
           {/* flex con las otras picsLinks */}
           <div className="flex flex-row mt-4 space-x-2">
