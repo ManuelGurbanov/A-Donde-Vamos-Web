@@ -9,6 +9,7 @@ import screen4 from './img/screen4.png';
 import Login from './components/Login';
 import { AuthProvider } from './contexts/AuthContext';
 import AddForm from './components/AddForm';
+import Register from './components/Register';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/" element={<CoffeeList />} />
             <Route path="/cafe/:id" element={<CoffeeDetails />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/add" element={< AddForm/>} />
           </Routes>
         </div>

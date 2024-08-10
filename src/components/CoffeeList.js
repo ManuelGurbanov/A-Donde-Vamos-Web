@@ -6,10 +6,14 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Link } from 'react-router-dom';
 
+import { useAuth } from '../contexts/AuthContext';
+
 const CafeteriasList = () => {
   const [cafeterias, setCafeterias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchCafeterias = async () => {
@@ -30,6 +34,7 @@ const CafeteriasList = () => {
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
   const sliderSettings = {
+    arrows: false,
     dots: true,
     infinite: true,
     speed: 500,
@@ -40,7 +45,9 @@ const CafeteriasList = () => {
   return (
     <div className="p-4">
       <h1 className="mb-4 text-2xl text-center text-gray-200">¿A Dónde Vamos?</h1>
-      
+      {currentUser && (
+        <p className="mb-4 text-xl text-center text-white">Bienvenido, {currentUser.displayName}</p>
+      )}
       <div className="mb-8">
         <h2 className="mb-4 text-xl text-left text-white">Las más populares</h2>
         <Slider {...sliderSettings}>

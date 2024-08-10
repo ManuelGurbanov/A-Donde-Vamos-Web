@@ -38,7 +38,14 @@ const CoffeeDetails = () => {
     e.preventDefault();
     if (review.trim() === '' || rating === 0) return;
 
-    const newReview = `${currentUser.displayName || 'Anonymous'}|${rating}|${review}`;
+    const newReview = {
+      user: currentUser.displayName || 'Anonymous',
+      rating,
+      text: review,
+      likes: 0,
+      dislikes: 0,
+      votes: {} // Initialize votes object
+    };
     const updatedReviews = [...reviews, newReview];
     
     try {
@@ -49,6 +56,45 @@ const CoffeeDetails = () => {
       setRating(0);
     } catch (err) {
       console.error('Error updating reviews:', err);
+    }
+  };
+
+  const handleVote = async (index, type) => {
+    if (!currentUser) return;
+    
+    const updatedReviews = [...reviews];
+    const userId = currentUser.uid;
+
+    if (type === 'like') {
+      if (updatedReviews[index].votes[userId] === 'like') {
+        updatedReviews[index].likes -= 1;
+        delete updatedReviews[index].votes[userId];
+      } else {
+        if (updatedReviews[index].votes[userId] === 'dislike') {
+          updatedReviews[index].dislikes -= 1;
+        }
+        updatedReviews[index].likes += 1;
+        updatedReviews[index].votes[userId] = 'like';
+      }
+    } else if (type === 'dislike') {
+      if (updatedReviews[index].votes[userId] === 'dislike') {
+        updatedReviews[index].dislikes -= 1;
+        delete updatedReviews[index].votes[userId];
+      } else {
+        if (updatedReviews[index].votes[userId] === 'like') {
+          updatedReviews[index].likes -= 1;
+        }
+        updatedReviews[index].dislikes += 1;
+        updatedReviews[index].votes[userId] = 'dislike';
+      }
+    }
+
+    try {
+      const docRef = doc(db, 'cafeterias', id);
+      await updateDoc(docRef, { reviews: updatedReviews });
+      setReviews(updatedReviews);
+    } catch (err) {
+      console.error('Error updating votes:', err);
     }
   };
 
@@ -104,20 +150,33 @@ const CoffeeDetails = () => {
             <h2 className="mb-2 text-xl font-semibold">Reseñas:</h2>
             <div className="space-y-4">
               {reviews.map((rev, index) => {
-                const [user, rating, text] = rev.split('|');
-                const numericRating = Number(rating);
+                const userVote = rev.votes[currentUser?.uid];
                 return (
-                  <div key={index} className="p-4 bg-gray-800 rounded-lg shadow-md">
+                  <div key={index} className="p-4 mt-4 bg-gray-800 rounded-lg shadow-md">
                     <div className="flex justify-between mb-2">
-                      <p className="font-semibold">{user}</p>
-                      <p className="text-yellow-400">{starRating(numericRating)}</p>
+                      <p className="font-semibold">{rev.user}</p>
+                      <p className="text-yellow-400">{starRating(rev.rating)}</p>
                     </div>
-                    <p>{text}</p>
+                    <p>{rev.text}</p>
+                    <div className="flex items-center space-x-4">
+                      <button 
+                        onClick={() => handleVote(index, 'like')} 
+                        className={`p-2 rounded ${userVote === 'like' ? 'bg-green-700' : 'bg-green-500'} hover:bg-green-600 text-white`}
+                      >
+                        Like
+                      </button>
+                      <p>{rev.likes}</p>
+                      <button 
+                        onClick={() => handleVote(index, 'dislike')} 
+                        className={`p-2 rounded ${userVote === 'dislike' ? 'bg-red-700' : 'bg-red-500'} hover:bg-red-600 text-white`}
+                      >
+                        Dislike
+                      </button>
+                    </div>
                   </div>
                 );
               })}
             </div>
-        
           </div>
         </>
       ) : (
