@@ -20,7 +20,7 @@ function App() {
       <div className="flex flex-col w-screen h-screen bg-zinc-900 sm:max-w-lg">
         <div className="flex-grow overflow-y-auto">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/cafe/:id" element={<CoffeeDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -31,7 +31,7 @@ function App() {
         {/* Esto de abajo es la Nav */}
         <div className="fixed bottom-0 flex items-center justify-around w-full h-16 text-white bg-gray-800 sm:max-w-lg">
 
-          <a href="/" className="w-12">
+          <a href="/home" className="w-12">
             <img src={screen1} alt="Pantalla 1" />
           </a>
 

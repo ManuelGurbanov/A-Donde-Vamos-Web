@@ -3,6 +3,10 @@ import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import outsideIcon from '../img/outside.png';
+import petIcon from '../img/pet.png';
+import tacIcon from '../img/tac.png';
+import veganIcon from '../img/vegan.png';
 
 const CoffeeDetails = () => {
   const { id } = useParams();
@@ -33,6 +37,14 @@ const CoffeeDetails = () => {
 
     fetchCoffee();
   }, [id]);
+
+  const handleImageError = (index) => {
+    setCoffee(prevState => ({
+      ...prevState,
+      picsLinks: prevState.picsLinks.filter((_, i) => i !== index)
+    }));
+  };
+  
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
@@ -114,38 +126,56 @@ const CoffeeDetails = () => {
           <p className="mb-4 text-xl">{coffee.neigh}</p>
           <p className="mb-2">{coffee.adress}</p>
           <p className="mb-4">{coffee.description}</p>
-          <img src={coffee.picsLinks?.[0] || 'default-image.jpg'} alt={coffee.name} className="object-cover w-full h-64 rounded-lg shadow-md" />
-          {/* flex con las otras picsLinks */}
+          <div className="flex flex-wrap items-center mb-4">
+            {coffee.outside && <img src={outsideIcon} alt="Outside" className="w-8 h-8 mr-2" />}
+            {coffee.pet && <img src={petIcon} alt="Pet Friendly" className="w-8 h-8 mr-2" />}
+            {coffee.tac && <img src={tacIcon} alt="Take Away Cup" className="w-8 h-8 mr-2" />}
+            {coffee.vegan && <img src={veganIcon} alt="Vegan Options" className="w-8 h-8 mr-2" />}
+          </div>
+
+          <img 
+                src={coffee.picsLinks?.[0] || 'default-image.jpg'} 
+                alt={coffee.name} 
+                className="object-cover w-full h-64 rounded-lg shadow-md" 
+                onError={() => handleImageError(0)}
+          />
+
           <div className="flex flex-row mt-4 space-x-2">
             {coffee.picsLinks?.slice(1).map((pic, index) => (
-              <img key={index} src={pic} alt={coffee.name} className="object-cover w-1/3 h-40 rounded-lg shadow-md" />
+              <img 
+                key={index + 1} 
+                src={pic} 
+                alt={coffee.name} 
+                className="object-cover w-1/3 h-40 rounded-lg shadow-md" 
+                onError={() => handleImageError(index + 1)} 
+              />
             ))}
           </div>
+
           {currentUser && (
             <form onSubmit={handleReviewSubmit} className="mt-4">
-                  <h2 className="mt-4 mb-4 text-xl font-semibold text-white">{currentUser.displayName}</h2>
-                  <textarea
-                    value={review}
-                    onChange={(e) => setReview(e.target.value)}
-                    placeholder="Escribe tu reseña aquí"
-                    className="w-full p-2 mb-2 text-white bg-gray-800 border rounded"
-                  />
-                  <div className="flex flex-col items-center mb-2">
-                    <input
-                      type="range"
-                      min="0"
-                      max="5"
-                      step="0.1"
-                      value={rating}
-                      onChange={(e) => setRating(parseFloat(e.target.value))}
-                      className="w-full"
-                    />
-                    <span className="ml-2 text-xl text-yellow-400">{'★'.repeat(Math.round(rating))} {'☆'.repeat(5 - Math.round(rating))}</span>
-                  </div>
-                  <button type="submit" className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600">Enviar Reseña</button>
-                </form>
-            )}
-          
+              <h2 className="mt-4 mb-4 text-xl font-semibold text-white">{currentUser.displayName}</h2>
+              <textarea
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+                placeholder="Escribe tu reseña aquí"
+                className="w-full p-2 mb-2 text-white bg-gray-800 border rounded"
+              />
+              <div className="flex flex-col items-center mb-2">
+                <input
+                  type="range"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value={rating}
+                  onChange={(e) => setRating(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+                <span className="ml-2 text-xl text-yellow-400">{'★'.repeat(Math.round(rating))} {'☆'.repeat(5 - Math.round(rating))}</span>
+              </div>
+              <button type="submit" className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600">Enviar Reseña</button>
+            </form>
+          )}
           <div className="mt-4 mb-16">
             <h2 className="mb-2 text-xl font-semibold">Reseñas:</h2>
             <div className="space-y-4">
@@ -172,6 +202,7 @@ const CoffeeDetails = () => {
                       >
                         👎
                       </button>
+                      <p>{rev.dislikes}</p>
                     </div>
                   </div>
                 );
