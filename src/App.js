@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
-import CoffeeList from './components/CoffeeList';
+
 import CoffeeDetails from './components/CoffeeDetails';
 import screen1 from './img/screen1.png';
 import screen3 from './img/screen3.png';
@@ -12,13 +12,15 @@ import AddForm from './components/AddForm';
 import Register from './components/Register';
 import AllCoffeeList from './components/AllCoffeeList';
 
+import Home from './components/Home';
+
 function App() {
   return (
     <AuthProvider>
-      <div className="flex flex-col w-screen h-screen bg-zinc-900">
+      <div className="flex flex-col w-screen h-screen bg-zinc-900 sm:max-w-lg">
         <div className="flex-grow overflow-y-auto">
           <Routes>
-            <Route path="/" element={<CoffeeList />} />
+            <Route path="/" element={<Home />} />
             <Route path="/cafe/:id" element={<CoffeeDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -27,7 +29,7 @@ function App() {
           </Routes>
         </div>
         {/* Esto de abajo es la Nav */}
-        <div className="fixed bottom-0 flex items-center justify-around w-full h-16 text-white bg-gray-800">
+        <div className="fixed bottom-0 flex items-center justify-around w-full h-16 text-white bg-gray-800 sm:max-w-lg">
 
           <a href="/" className="w-12">
             <img src={screen1} alt="Pantalla 1" />

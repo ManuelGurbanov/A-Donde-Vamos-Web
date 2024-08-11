@@ -7,7 +7,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const CafeteriasList = () => {
+import CoffeeCard from './CoffeeCard';
+const Home = () => {
   const [cafeterias, setCafeterias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,18 +53,7 @@ const CafeteriasList = () => {
         <h2 className="mb-4 text-xl text-left text-white">Las más populares</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
-            <div key={index} className="p-2">
-              <Link to={`/cafe/${cafe.id}`}>
-                <div className="relative h-40 overflow-hidden bg-white rounded-lg shadow-md">
-                  <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-4 bg-black bg-opacity-50">
-                    <h2 className="text-lg font-semibold text-white">{cafe.name || 'Nombre no disponible'}</h2>
-                    <p className="text-sm font-semibold text-gray-300">{cafe.neigh || 'Barrio no disponible'}</p>
-                    <p className="text-sm text-gray-300">{cafe.adress || 'Dirección no disponible'}</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
+            <CoffeeCard key={index} cafe={cafe} />
           ))}
         </Slider>
       </div>
@@ -71,17 +61,7 @@ const CafeteriasList = () => {
         <h2 className="mb-4 text-xl font-semibold text-left text-white">Nuevas Apariciones</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
-            <div key={index} className="p-2">
-              <Link to={`/cafe/${cafe.id}`}>
-                <div className="relative h-40 overflow-hidden bg-white rounded-lg shadow-md">
-                  <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-4 bg-black bg-opacity-50">
-                    <h2 className="text-lg font-semibold text-white">{cafe.name || 'Nombre no disponible'}</h2>
-                    <p className="text-sm text-gray-300">{cafe.adress || 'Dirección no disponible'}</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
+            <CoffeeCard key={index} cafe={cafe} />
           ))}
         </Slider>
       </div>
@@ -89,4 +69,4 @@ const CafeteriasList = () => {
   );
 };
 
-export default CafeteriasList;
+export default Home;
