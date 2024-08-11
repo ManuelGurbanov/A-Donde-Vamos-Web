@@ -5,16 +5,14 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { Link } from 'react-router-dom';
-
 import { useAuth } from '../contexts/AuthContext';
 
 const CafeteriasList = () => {
   const [cafeterias, setCafeterias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const { currentUser } = useAuth();
-
+  
   useEffect(() => {
     const fetchCafeterias = async () => {
       try {
@@ -35,7 +33,7 @@ const CafeteriasList = () => {
 
   const sliderSettings = {
     arrows: false,
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -44,10 +42,12 @@ const CafeteriasList = () => {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl text-center text-gray-200">¿A Dónde Vamos?</h1>
+      <h1 className="mt-2 mb-4 text-2xl text-center text-gray-200">¿A Dónde Vamos?</h1>
+
       {currentUser && (
-        <p className="mb-4 text-xl text-center text-white">Bienvenido, {currentUser.displayName}</p>
+        <p className="mb-4 text-xl text-center text-white">Bienvenido, <strong>{currentUser.displayName}</strong> </p>
       )}
+
       <div className="mb-8">
         <h2 className="mb-4 text-xl text-left text-white">Las más populares</h2>
         <Slider {...sliderSettings}>
@@ -67,9 +67,8 @@ const CafeteriasList = () => {
           ))}
         </Slider>
       </div>
-      
       <div>
-        <h2 className="mb-4 text-xl font-semibold text-center text-white">Nuevas Apariciones</h2>
+        <h2 className="mb-4 text-xl font-semibold text-left text-white">Nuevas Apariciones</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
             <div key={index} className="p-2">

@@ -50,7 +50,7 @@ const AddForm = () => {
   return (
     <form onSubmit={handleSubmit} className="max-w-lg p-8 mx-auto mb-20 text-white bg-gray-800 rounded-lg shadow-md">
       <h2 className="mb-6 text-2xl font-bold text-center text-white">Agregar Cafetería</h2>
-      
+      <h2 className="mb-6 text-2xl font-bold text-center text-white">(SOLO PARA DESARROLLO)</h2>
       <div className="mb-4">
         <label className="block text-white">Nombre</label>
         <input

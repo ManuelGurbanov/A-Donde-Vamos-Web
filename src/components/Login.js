@@ -44,7 +44,6 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log('Usuario logueado con Google:', user);
-      alert('Usuario logueado exitosamente con Google');
       navigate('/');
     } catch (error) {
       console.error('Error al loguear con Google', error);
@@ -79,7 +78,8 @@ const Login = () => {
       ) : (
         <form onSubmit={handleLogin} className="w-4/5 p-4 rounded shadow-md sm:w-1/4 bg-zinc-100 mt-28">
           <h2 className="mb-4 text-2xl font-bold text-black">Iniciar Sesión</h2>
-          <input
+          <p className='m-3 text-lg font-medium text-black'>Para poder dar reseñas, por favor inicia sesión con Google</p>
+          {/* <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -97,13 +97,13 @@ const Login = () => {
           />
           <button type="submit" className="w-full p-2 mb-2 text-white transition-all duration-100 bg-blue-500 rounded hover:bg-blue-600">
             Iniciar Sesión
-          </button>
+          </button> */}
           <button onClick={handleGoogleLogin} className="w-full p-2 mb-2 text-white transition-all duration-100 bg-red-500 rounded hover:bg-red-600">
             Ingresar con Google
           </button>
-          <button onClick={handleGoRegister} className="w-full p-2 mb-4 text-black transition-all duration-100 rounded bg-zinc-200 hover:bg-zinc-400">
+          {/* <button onClick={handleGoRegister} className="w-full p-2 mb-4 text-black transition-all duration-100 rounded bg-zinc-200 hover:bg-zinc-400">
             Registrarme
-          </button>
+          </button> */}
           <h2 className={loggedIn ? 'text-green-500' : 'text-red-500'}>{loginMessage}</h2>
         </form>
       )}

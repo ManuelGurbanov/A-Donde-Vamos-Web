@@ -44,7 +44,7 @@ const CoffeeDetails = () => {
       text: review,
       likes: 0,
       dislikes: 0,
-      votes: {} // Initialize votes object
+      votes: {}
     };
     const updatedReviews = [...reviews, newReview];
     
@@ -158,19 +158,19 @@ const CoffeeDetails = () => {
                       <p className="text-yellow-400">{starRating(rev.rating)}</p>
                     </div>
                     <p>{rev.text}</p>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center mt-4 space-x-4">
                       <button 
                         onClick={() => handleVote(index, 'like')} 
-                        className={`p-2 rounded ${userVote === 'like' ? 'bg-green-700' : 'bg-green-500'} hover:bg-green-600 text-white`}
+                        className={`p-1 rounded ${userVote === 'like' ? 'bg-blue-600' : 'bg-transparent'} hover:bg-blue-200`}
                       >
-                        Like
+                        👍
                       </button>
                       <p>{rev.likes}</p>
                       <button 
                         onClick={() => handleVote(index, 'dislike')} 
-                        className={`p-2 rounded ${userVote === 'dislike' ? 'bg-red-700' : 'bg-red-500'} hover:bg-red-600 text-white`}
+                        className={`p-1 rounded ${userVote === 'dislike' ? 'bg-blue-600' : 'bg-transparent'} hover:bg-blue-200`}
                       >
-                        Dislike
+                        👎
                       </button>
                     </div>
                   </div>
