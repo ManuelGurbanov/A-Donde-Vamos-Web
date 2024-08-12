@@ -11,11 +11,14 @@ import AddForm from './components/AddForm';
 import AllCoffeeList from './components/AllCoffeeList';
 import Layout from './components/Layout';
 
+import { Navigate } from 'react-router-dom';
+
 function App() {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/home" element={<Home />} />
           <Route path="/cafe/:id" element={<CoffeeDetails />} />
           <Route path="/login" element={<Login />} />

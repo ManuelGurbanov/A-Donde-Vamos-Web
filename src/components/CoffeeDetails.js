@@ -173,7 +173,16 @@ const CoffeeDetails = () => {
                 />
                 <span className="ml-2 text-xl text-yellow-400">{'★'.repeat(Math.round(rating))} {'☆'.repeat(5 - Math.round(rating))}</span>
               </div>
-              <button type="submit" className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600">Enviar Reseña</button>
+
+              {currentUser ? (
+                    <button type="submit" className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600">
+                      Enviar Reseña
+                    </button>
+                  ) : (
+                    <p className="p-2 text-4xl text-white">
+                      Iniciá Sesión para dar reseñas.
+                    </p>
+                  )}
             </form>
           )}
           <div className="mt-4 mb-16">

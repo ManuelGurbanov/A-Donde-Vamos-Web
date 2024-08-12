@@ -32,7 +32,7 @@ const Login = () => {
       const user = userCredential.user;
       console.log('Usuario logueado exitosamente:', user);
       setLoginMessage('Logueado correctamente');
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error('Error al iniciar sesión', error);
       setLoginMessage('Error al iniciar sesión. Verifica tus credenciales.');
@@ -44,7 +44,7 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log('Usuario logueado con Google:', user);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error('Error al loguear con Google', error);
     }
@@ -55,7 +55,7 @@ const Login = () => {
       await signOut(auth);
       console.log('Usuario deslogueado exitosamente');
       setLoginMessage('Deslogueado correctamente');
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       console.error('Error al cerrar sesión', error);
     }
