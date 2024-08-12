@@ -42,15 +42,15 @@ const Home = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="mt-2 mb-4 text-2xl text-center text-gray-200">¿A Dónde Vamos?</h1>
+    <div className="p-4 bg-c">
+      <h1 className="mt-2 mb-4 text-2xl font-bold text-center text-c2">¿A Dónde Vamos?</h1>
 
       {currentUser && (
-        <p className="mb-4 text-xl text-center text-white">Bienvenido, <strong>{currentUser.displayName}</strong> </p>
+        <p className="mb-4 text-xl italic text-center text-c1">Bienvenido, <strong>{currentUser.displayName}</strong> </p>
       )}
 
-      <div className="mb-8">
-        <h2 className="mb-4 text-xl text-left text-white">Las más populares</h2>
+      <div className="mb-4">
+        <h2 className="mb-2 text-2xl font-semibold text-left text-c2">Las más populares</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
             <CoffeeCard key={index} cafe={cafe} />
@@ -58,7 +58,7 @@ const Home = () => {
         </Slider>
       </div>
       <div>
-        <h2 className="mb-4 text-xl font-semibold text-left text-white">Nuevas Apariciones</h2>
+        <h2 className="mb-2 text-2xl font-semibold text-left text-c2">Nuevas Apariciones</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
             <CoffeeCard key={index} cafe={cafe} />

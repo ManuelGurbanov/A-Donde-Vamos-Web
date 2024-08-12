@@ -44,12 +44,12 @@ const AllCoffeeList = () => {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl text-center text-gray-200">¿A Dónde Vamos?</h1>
+      <h1 className="mt-2 mb-2 text-2xl font-black text-center text-c2">¿A Dónde Vamos?</h1>
 
       <div className="mb-4 text-center">
         <button
           onClick={() => setIsFilterPanelOpen(true)}
-          className="p-2 m-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          className="p-2 m-1 text-white rounded bg-c1 hover:bg-c2"
         >
           Filtrar por Barrio
         </button>
@@ -69,7 +69,7 @@ const AllCoffeeList = () => {
             <div className="text-center">
               <button
                 onClick={() => handleFilterChange('')}
-                className={`p-2 m-2 rounded ${selectedNeigh === '' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                className={`p-2 m-2 rounded ${selectedNeigh === '' ? 'bg-c1 text-white' : 'bg-gray-200 text-black'}`}
               >
                 Todos
               </button>
@@ -77,7 +77,7 @@ const AllCoffeeList = () => {
                 <button
                   key={index}
                   onClick={() => handleFilterChange(neigh)}
-                  className={`p-2 m-2 rounded ${selectedNeigh === neigh ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                  className={`p-2 m-2 rounded ${selectedNeigh === neigh ? 'bg-c2 text-white' : 'bg-gray-200 text-black'}`}
                 >
                   {neigh}
                 </button>
@@ -87,7 +87,7 @@ const AllCoffeeList = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 mb-16 md:grid-cols-2 lg:grid-cols-3">
         {filteredCafeterias.map((cafe, index) => (
           <CoffeeCard key={index} cafe={cafe} />
         ))}

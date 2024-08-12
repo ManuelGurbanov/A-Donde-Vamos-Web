@@ -8,6 +8,9 @@ import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
 
+
+import screen4 from '../img/screen4.png';
+
 const CoffeeDetails = () => {
   const { id } = useParams();
   const [coffee, setCoffee] = useState(null);
@@ -119,13 +122,12 @@ const CoffeeDetails = () => {
   }
 
   return (
-    <div className="p-4 text-white">
+    <div className="p-4 text-c2">
       {coffee ? (
         <>
-          <h1 className="mb-4 text-3xl font-bold">{coffee.name}</h1>
-          <p className="mb-4 text-xl">{coffee.neigh}</p>
-          <p className="mb-2">{coffee.adress}</p>
-          <p className="mb-4">{coffee.description}</p>
+          <h1 className="mb-4 text-3xl font-bold text-center">{coffee.name}</h1>
+          <p className="mb-4 italic text-center">{coffee.description}</p>
+          <p className="mb-4 text-xl"> - {coffee.adress}, <strong className='font-black'> {coffee.neigh} </strong></p>
           <div className="flex flex-wrap items-center mb-4">
             {coffee.outside && <img src={outsideIcon} alt="Outside" className="w-8 h-8 mr-2" />}
             {coffee.pet && <img src={petIcon} alt="Pet Friendly" className="w-8 h-8 mr-2" />}
@@ -154,14 +156,17 @@ const CoffeeDetails = () => {
 
           {currentUser && (
             <form onSubmit={handleReviewSubmit} className="mt-4">
-              <h2 className="mt-4 mb-4 text-xl font-semibold text-white">{currentUser.displayName}</h2>
+              <div className='flex items-center gap-2 text-left max-h-16'>
+                <img src={screen4} className='w-4 h-4'></img>
+                <h2 className="mt-4 mb-4 text-xl font-semibold text-white">{currentUser.displayName}</h2>
+              </div>
               <textarea
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
                 placeholder="Escribe tu reseña aquí"
-                className="w-full p-2 mb-2 text-white bg-gray-800 border rounded"
+                className="w-full p-2 mb-2 text-white border rounded bg-c2"
               />
-              <div className="flex flex-col items-center mb-2">
+              <div className="flex flex-col items-center mb-2 text-c2">
                 <input
                   type="range"
                   min="0"
@@ -175,7 +180,7 @@ const CoffeeDetails = () => {
               </div>
 
               {currentUser ? (
-                    <button type="submit" className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600">
+                    <button type="submit" className="p-2 text-white rounded bg-c1 hover:bg-c2">
                       Enviar Reseña
                     </button>
                   ) : (
@@ -191,23 +196,23 @@ const CoffeeDetails = () => {
               {reviews.map((rev, index) => {
                 const userVote = rev.votes[currentUser?.uid];
                 return (
-                  <div key={index} className="p-4 mt-4 bg-gray-800 rounded-lg shadow-md">
+                  <div key={index} className="p-4 mt-4 rounded-lg shadow-md bg-c2">
                     <div className="flex justify-between mb-2">
-                      <p className="font-semibold">{rev.user}</p>
+                      <p className="font-semibold text-white">{rev.user}</p>
                       <p className="text-yellow-400">{starRating(rev.rating)}</p>
                     </div>
-                    <p>{rev.text}</p>
-                    <div className="flex items-center mt-4 space-x-4">
+                    <p className='text-white'>{rev.text}</p>
+                    <div className="flex items-center mt-4 space-x-4 text-white">
                       <button 
                         onClick={() => handleVote(index, 'like')} 
-                        className={`p-1 rounded ${userVote === 'like' ? 'bg-blue-600' : 'bg-transparent'} hover:bg-blue-200`}
+                        className={`p-1 rounded ${userVote === 'like' ? 'bg-c2' : 'bg-transparent'} hover:bg-c1`}
                       >
                         👍
                       </button>
                       <p>{rev.likes}</p>
                       <button 
                         onClick={() => handleVote(index, 'dislike')} 
-                        className={`p-1 rounded ${userVote === 'dislike' ? 'bg-blue-600' : 'bg-transparent'} hover:bg-blue-200`}
+                        className={`p-1 rounded ${userVote === 'dislike' ? 'bg-c2' : 'bg-transparent'} hover:bg-c1`}
                       >
                         👎
                       </button>

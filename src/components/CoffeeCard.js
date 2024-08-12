@@ -13,13 +13,11 @@ const CoffeeCard = ({ cafe }) => {
           
           <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
 
-          <div className="absolute inset-0 flex flex-col justify-end p-4 bg-black bg-opacity-75">
+          <div className="absolute inset-0 flex flex-col justify-end p-4 bg-white bg-opacity-60">
 
-            <h2 className="text-lg font-semibold text-white">{cafe.name || 'Nombre no disponible'}</h2>
-            <p className="text-sm font-semibold text-gray-300">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
-            {/* <p className="text-sm text-gray-300">{cafe.adress || 'Dirección no disponible'}</p> */}
-
-
+            <h2 className="text-2xl font-black text-c2">{cafe.name || 'Nombre no disponible'}</h2>
+            <p className="text-sm font-semibold text-c2">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
+            <p className='font-black text-black'>Abierto</p>
             <div className="flex mt-2 space-x-2">
               {cafe.vegan && <img src={veganIcon} alt="Vegan Options" className="w-6 h-6" />}
               {cafe.tac && <img src={tacIcon} alt="Take Away Cup" className="w-6 h-6" />}
