@@ -35,7 +35,7 @@ const Login = () => {
       navigate('/home');
     } catch (error) {
       console.error('Error al iniciar sesión', error);
-      setLoginMessage('Error al iniciar sesión. Verifica tus credenciales.');
+      //setLoginMessage('Error al iniciar sesión. Verifica tus credenciales.');
     }
   };
 
