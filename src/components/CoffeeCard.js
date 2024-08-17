@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import outsideIcon from '../img/outside.png';
 import petIcon from '../img/pet.png';
@@ -10,9 +10,63 @@ import halfStarWhite from '../img/halfStarWhite.png';
 import emptyStarWhite from '../img/emptyStarWhite.png';
 
 const CoffeeCard = ({ cafe }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [status, setStatus] = useState('');
+  const [textColor, setTextColor] = useState('text-red-500');
+
+  useEffect(() => {
+    checkIfOpen(cafe);
+  }, [cafe]);
+
   const calculateAverageRating = () => {
     if (cafe.numRatings === 0) return 0;
     return (cafe.totalRatings / cafe.numRatings).toFixed(1);
+  };
+
+  const checkIfOpen = (data) => {
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const currentTime = hours * 100 + minutes;
+
+    let schedule;
+    if (day >= 1 && day <= 5) {
+      schedule = data.schedules['lunes-viernes'];
+    } else if (day === 6) {
+      schedule = data.schedules.sabado;
+    } else {
+      schedule = data.schedules.domingo;
+    }
+
+    if (schedule) {
+      const closingTime = schedule.cierre;
+      const closingHours = Math.floor(closingTime / 100);
+      const closingMinutes = closingTime % 100;
+      const closingDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), closingHours, closingMinutes);
+
+      const oneHourInMillis = 60 * 60 * 1000;
+      const timeUntilClose = closingDate - now;
+
+      if (schedule.apertura <= currentTime && currentTime <= schedule.cierre) {
+        if (timeUntilClose <= oneHourInMillis) {
+          setStatus('Próximo a cerrar');
+          setTextColor('text-yellow-500'); // Color para "Próximo a cerrar"
+        } else {
+          setStatus('Abierto');
+          setTextColor('text-green-500');
+        }
+        setIsOpen(true);
+      } else {
+        setStatus('Cerrado');
+        setTextColor('text-red-500');
+        setIsOpen(false);
+      }
+    } else {
+      setStatus('Cerrado');
+      setTextColor('text-red-500');
+      setIsOpen(false);
+    }
   };
 
   const starRating = (rating) => {
@@ -53,7 +107,10 @@ const CoffeeCard = ({ cafe }) => {
                 {starRating(calculateAverageRating())}
                 <span className="text-sm font-medium text-c">{cafe.numRatings} valoraciones</span>
               </div>
-              <p className="text-xs font-medium text-white">Abierto</p>
+
+              <p className={`text-sm ${textColor}`}>
+                {status}
+              </p>
             </div>
 
             <div className="flex flex-col max-h-full space-y-2">

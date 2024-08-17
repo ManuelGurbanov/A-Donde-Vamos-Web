@@ -8,9 +8,14 @@ import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
 import screen4 from '../img/screen4.png';
-import fullStar from '../img/fullStar.png';
-import halfStar from '../img/halfStar.png';
-import emptyStar from '../img/emptyStar.png';
+import fullStar from '../img/fullStarWhite.png';
+import halfStar from '../img/halfStarWhite.png';
+import emptyStar from '../img/emptyStarWhite.png';
+
+import fullStarDark from '../img/fullStar.png';
+import halfStarDark from '../img/halfStar.png';
+import emptyStarDark from '../img/emptyStar.png';
+import StarRating from './StarRating';
 
 const CoffeeDetails = () => {
   const { id } = useParams();
@@ -23,6 +28,9 @@ const CoffeeDetails = () => {
   const [numRatings, setNumRatings] = useState(0);
   const [hasRated, setHasRated] = useState(false);
   const { currentUser } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const [status, setStatus] = useState('');
+  const [textColor, setTextColor] = useState('text-red-500');
 
   useEffect(() => {
     const fetchCoffee = async () => {
@@ -35,11 +43,14 @@ const CoffeeDetails = () => {
           setReviews(data.reviews || []);
           setTotalRatings(data.totalRatings || 0);
           setNumRatings(data.numRatings || 0);
-          
+
           if (currentUser) {
             const userHasRated = data.reviews?.some(review => review.userId === currentUser.uid);
             setHasRated(userHasRated);
           }
+
+          // Verificar si la cafetería está abierta
+          checkIfOpen(data);
         } else {
           console.log('No such document!');
         }
@@ -53,12 +64,59 @@ const CoffeeDetails = () => {
     fetchCoffee();
   }, [id, currentUser]);
 
+  const checkIfOpen = (data) => {
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const currentTime = hours * 100 + minutes;
+
+    let schedule;
+    if (day >= 1 && day <= 5) {
+      schedule = data.schedules['lunes-viernes'];
+    } else if (day === 6) {
+      schedule = data.schedules.sabado;
+    } else {
+      schedule = data.schedules.domingo;
+    }
+
+    if (schedule) {
+      const closingTime = schedule.cierre;
+      const closingHours = Math.floor(closingTime / 100);
+      const closingMinutes = closingTime % 100;
+      const closingDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), closingHours, closingMinutes);
+
+      const oneHourInMillis = 60 * 60 * 1000;
+      const timeUntilClose = closingDate - now;
+
+      if (schedule.apertura <= currentTime && currentTime <= schedule.cierre) {
+        if (timeUntilClose <= oneHourInMillis) {
+          setStatus('Próximo a cerrar');
+          setTextColor('text-yellow-500'); // Color para "Próximo a cerrar"
+        } else {
+          setStatus('Abierto');
+          setTextColor('text-green-500');
+        }
+        setIsOpen(true);
+      } else {
+        setStatus('Cerrado');
+        setTextColor('text-red-500');
+        setIsOpen(false);
+      }
+    } else {
+      setStatus('Cerrado');
+      setTextColor('text-red-500');
+      setIsOpen(false);
+    }
+  };
+
   const handleImageError = (index) => {
     setCoffee(prevState => ({
       ...prevState,
       picsLinks: prevState.picsLinks.filter((_, i) => i !== index)
     }));
   };
+
   const handleDeleteReview = async (index) => {
     const updatedReviews = [...reviews];
     const deletedReview = updatedReviews.splice(index, 1)[0];
@@ -165,15 +223,15 @@ const CoffeeDetails = () => {
     const emptyStarsCount = totalStars - fullStarsCount - (hasHalfStar ? 1 : 0);
     
     for (let i = 0; i < fullStarsCount; i++) {
-      stars.push(<img key={`full-${i}`} src={fullStar} alt="Full Star" className="inline-block w-6 h-6" />);
+      stars.push(<img key={`full-${i}`} src={fullStarDark} alt="Full Star" className="inline-block w-6 h-6" />);
     }
     
     if (hasHalfStar) {
-      stars.push(<img key="half" src={halfStar} alt="Half Star" className="inline-block w-6 h-6" />);
+      stars.push(<img key="half" src={halfStarDark} alt="Half Star" className="inline-block w-6 h-6" />);
     }
     
     for (let i = 0; i < emptyStarsCount; i++) {
-      stars.push(<img key={`empty-${i}`} src={emptyStar} alt="Empty Star" className="inline-block w-6 h-6" />);
+      stars.push(<img key={`empty-${i}`} src={emptyStarDark} alt="Empty Star" className="inline-block w-6 h-6" />);
     }
     
     return stars;
@@ -184,6 +242,16 @@ const CoffeeDetails = () => {
     return (totalRatings / numRatings).toFixed(1);
   };
 
+  const handleShareWhatsApp = () => {
+    const whatsappUrl = `https://wa.me/?text=¿Conoces está cafetería?: ${window.location.href}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert('¡Enlace copiado al portapapeles!');
+  };
+
   if (loading) {
     return <div className="p-4 text-white">Cargando...</div>;
   }
@@ -192,121 +260,120 @@ const CoffeeDetails = () => {
     <div className="text-c2">
       {coffee ? (
         <>
-        <div className='p-4 bg-white'>
+        <div className='p-4 bg-c'>
           <h1 className="mb-2 text-3xl font-bold text-left">{coffee.name}</h1>
           <p className="max-w-screen-md mb-2 text-xl"> - {coffee.adress}, <strong className='font-black'> {coffee.neigh} </strong></p>
           <p className="mb-2 text-xl">
             {starRating(calculateAverageRating())}
+            <span className="ml-2">{numRatings} valoraciones</span>
           </p>
+          <p className={`text-xl mb-4 ${textColor}`}>
+            {status}
+          </p>
+          <button onClick={handleShareWhatsApp} className="px-4 py-2 mb-2 text-white bg-green-600 rounded">
+            Compartir en WhatsApp
+          </button>
+          <button onClick={handleCopyLink} className="px-4 py-2 mb-2 text-white bg-blue-600 rounded">
+            Copiar Enlace
+          </button>
         </div>
-          <p className="m-4 text-2xl italic font-bold text-center">{coffee.description}</p>
-          <div className="flex flex-wrap justify-center p-4 mb-2 items-cente">
-            {coffee.outside && <img src={outsideIcon} alt="Outside" className="w-8 h-8 mr-2" />}
-            {coffee.pet && <img src={petIcon} alt="Pet Friendly" className="w-8 h-8 mr-2" />}
-            {coffee.tac && <img src={tacIcon} alt="Take Away Cup" className="w-8 h-8 mr-2" />}
-            {coffee.vegan && <img src={veganIcon} alt="Vegan Options" className="w-8 h-8 mr-2" />}
-          </div>
-          <img 
-                src={coffee.picsLinks?.[0] || 'default-image.jpg'} 
-                alt={coffee.name} 
-                className="object-cover w-full h-64 p-4 rounded-lg" 
-                onError={() => handleImageError(0)}
-          />
-          <div className="flex flex-row p-4 mt-4 space-x-2">
-            {coffee.picsLinks?.slice(1).map((pic, index) => (
-              <img 
-                key={index + 1} 
-                src={pic} 
-                alt={coffee.name} 
-                className="object-cover w-1/3 h-40 rounded-lg shadow-md" 
-                onError={() => handleImageError(index + 1)} 
-              />
-            ))}
-          </div>
-          {currentUser && !hasRated && (
-            <form onSubmit={handleReviewSubmit} className="p-4 mt-4">
-              <div className='flex items-center gap-2 text-left max-h-16'>
-                <img src={screen4} className='w-4 h-4' alt="Icon" />
-                <h2 className="mt-4 mb-4 text-xl font-semibold text-white">{currentUser.displayName}</h2>
-              </div>
-              <textarea
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                placeholder="Escribe tu reseña aquí (opcional)"
-                className="w-full p-2 mb-2 text-white border rounded bg-c2"
-              />
-              <div className="flex flex-col items-center mb-2 text-c2">
-                <input
-                  type="range"
-                  min="0"
-                  max="5"
-                  step="0.1"
-                  value={rating}
-                  onChange={(e) => setRating(parseFloat(e.target.value))}
-                  className="w-full"
+
+        <div className="p-4 rounded shadow-md bg-c2 text-c">
+          <div className="w-full p-4 overflow-x-auto">
+            <div className="flex flex-row justify-center w-full">
+              {coffee.picsLinks?.map((picLink, index) => (
+                <img
+                  key={index}
+                  src={picLink}
+                  alt={`Imagen ${index + 1}`}
+                  className="object-contain w-64 h-64 mr-2 rounded-lg shadow-md"
+                  onError={() => handleImageError(index)}
                 />
-                <div className='flex gap-3 mt-4'>
-                  <button type="submit" className="p-2 bg-gray-200 rounded text-c1 hover:bg-b2 hover:text-white">
-                    Enviar Reseña
-                    </button>
-                  <span className="ml-2 text-xl">
-                    {starRating(rating)}
-                  </span>
-                </div>
-              </div>
-            </form>
-          )}
-          {hasRated && (
-            <p className="p-4 text-xl font-bold text-center text-c2">¡Gracias por tu comentario!</p>
-          )}
-          <div className="p-4 mt-4 mb-16">
-            <h2 className="mb-2 text-xl font-semibold">Reseñas:</h2>
-            <div className="space-y-4">
-              {reviews.map((rev, index) => {
-                const userVote = rev.votes[currentUser?.uid];
-                return (
-                  <div key={index} className="p-4 mt-4 rounded-lg shadow-md bg-c1">
-                  <div key={index} className="p-4 mt-4 rounded-lg shadow-md bg-c1">
-                    {currentUser && currentUser.uid === rev.userId && (
-                      <button
-                        onClick={() => handleDeleteReview(index)}
-                        className="ml-4 text-red-500"
-                      >
-                        Eliminar
-                      </button>
-                    )}
-                  </div>
-
-
-                    <div className="flex justify-between mb-2">
-                      <p className="font-semibold text-white">{rev.user}</p>
-                      <div className="text-yellow-400">{starRating(rev.rating)}</div>
-                    </div>
-                    <p className='text-white'>{rev.text}</p>
-                    <div className="flex items-center mt-4 space-x-4 text-white">
-                      <button 
-                        onClick={() => handleVote(index, 'like')} 
-                        className={`p-1 rounded ${userVote === 'like' ? 'bg-c2' : 'bg-transparent'} hover:bg-c1`}
-                      >
-                        👍
-                      </button>
-                      <p>{rev.likes}</p>
-                      <button 
-                        onClick={() => handleVote(index, 'dislike')} 
-                        className={`p-1 rounded ${userVote === 'dislike' ? 'bg-c2' : 'bg-transparent'} hover:bg-c1`}
-                      >
-                        👎
-                      </button>
-                      <p>{rev.dislikes}</p>
-                    </div>
-                  </div>
-                );
-              })}
+              ))}
             </div>
           </div>
+
+          <p className="max-w-screen-md mb-2 text-lg">{coffee.desc}</p>
+
+          <div className="flex items-center mt-4">
+            {coffee.pets && (
+              <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
+            )}
+            {coffee.vegan && (
+              <img src={veganIcon} alt="Vegan Options" className="w-12 h-12 mr-2" />
+            )}
+            {coffee.tac && (
+              <img src={tacIcon} alt="TAC Accepted" className="w-12 h-12 mr-2" />
+            )}
+            {coffee.outside && (
+              <img src={outsideIcon} alt="Outdoor Seating" className="w-12 h-12 mr-2" />
+            )}
+          </div>
+        </div>
+
+        <form onSubmit={handleReviewSubmit} className="p-4 mt-4 rounded shadow-md bg-c2 text-c">
+          <h2 className="mb-4 text-2xl font-bold">Escribe una reseña</h2>
+
+          {/* Aquí usamos el componente StarRating */}
+          <StarRating initialRating={rating} onRatingChange={setRating} />
+
+          <textarea
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+            className="w-full p-2 mb-4 text-black border rounded"
+            placeholder="Escribe tu reseña aquí..."
+            rows="4"
+          />
+          <button
+            type="submit"
+            disabled={rating === 0 || hasRated}
+            className="px-4 py-2 text-white bg-blue-600 rounded disabled:bg-gray-400"
+          >
+            Enviar Reseña
+          </button>
+      </form>
+
+        <div className="p-4 mt-4 mb-24 rounded shadow-md bg-c2 text-c">
+          <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
+          {reviews.length > 0 ? (
+            reviews.map((review, index) => (
+              <div key={index} className="p-4 mb-4 rounded shadow-md bg-c2 text-c">
+                <div className="flex items-center mb-2">
+                  <span className="mr-2 font-bold">{review.user}</span>
+                  <span>{starRating(review.rating)}</span>
+                </div>
+                <p className="mb-2">{review.text}</p>
+                <div className="flex items-center">
+                  <button
+                    onClick={() => handleVote(index, 'like')}
+                    className={`mr-2 ${review.votes[currentUser?.uid] === 'like' ? 'text-blue-600' : 'text-gray-600'}`}
+                  >
+                    👍 {review.likes}
+                  </button>
+                  <button
+                    onClick={() => handleVote(index, 'dislike')}
+                    className={`mr-2 ${review.votes[currentUser?.uid] === 'dislike' ? 'text-red-600' : 'text-gray-600'}`}
+                  >
+                    👎 {review.dislikes}
+                  </button>
+                  {currentUser?.uid === review.userId && (
+                    <button
+                      onClick={() => handleDeleteReview(index)}
+                      className="text-red-600"
+                    >
+                      Eliminar
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="mb-4 text-xl text-center text-c">No hay reseñas aún.</p>
+          )}
+        </div>
         </>
       ) : (
-        <p>Error!</p>
+        <p className="p-4 text-c">No se encontraron detalles de la cafetería.</p>
       )}
     </div>
   );
