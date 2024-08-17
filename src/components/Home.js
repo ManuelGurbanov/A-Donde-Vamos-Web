@@ -8,6 +8,9 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 import CoffeeCard from './CoffeeCard';
+import AdBanner from './AdBanner';
+
+
 const Home = () => {
   const [cafeterias, setCafeterias] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +60,9 @@ const Home = () => {
           ))}
         </Slider>
       </div>
+          
+      <AdBanner />
+
       <div>
         <h2 className="text-2xl font-semibold text-left text-c">Nuevas Apariciones</h2>
         <Slider {...sliderSettings}>
