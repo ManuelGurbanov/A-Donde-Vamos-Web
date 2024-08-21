@@ -45,15 +45,18 @@ const Home = () => {
   };
 
   return (
-    <div className="p-4 bg-red-900">
+    <>
+    <div className='flex items-center justify-center w-screen h-24 p-0 border-b-2 bg-b2 rounded-b-3xl border-red-950'>
       <h1 className="mt-2 mb-1 text-2xl font-bold text-center text-c">¿A Dónde Vamos?</h1>
+    </div>
 
-      {currentUser && (
-        <p className="mb-1 text-xl italic text-center text-c">Bienvenido, <strong>{currentUser.displayName}</strong> </p>
-      )}
+    <div className="p-4 bg-c">
+      {/* {currentUser && (
+        <p className="mb-1 text-xl italic text-center text-b2">Bienvenido, <strong>{currentUser.displayName}</strong> </p>
+      )} */}
 
       <div className="mb-4">
-        <h2 className="text-2xl font-semibold text-left text-c">Las más populares</h2>
+        <h2 className="text-2xl font-semibold text-left text-c2">Las más populares</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
             <CoffeeCard key={index} cafe={cafe} />
@@ -64,7 +67,25 @@ const Home = () => {
       <AdBanner />
 
       <div>
-        <h2 className="text-2xl font-semibold text-left text-c">Nuevas Apariciones</h2>
+        <h2 className="text-2xl font-semibold text-left text-c2">Tus Favoritas</h2>
+        <Slider {...sliderSettings}>
+          {cafeterias.map((cafe, index) => (
+            <CoffeeCard key={index} cafe={cafe} />
+          ))}
+        </Slider>
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-semibold text-left text-c2">Cerca Tuyo</h2>
+        <Slider {...sliderSettings}>
+          {cafeterias.map((cafe, index) => (
+            <CoffeeCard key={index} cafe={cafe} />
+          ))}
+        </Slider>
+      </div>
+
+      <div className='mb-24'>
+        <h2 className="text-2xl font-semibold text-left text-c2">Nuevas Apariciones</h2>
         <Slider {...sliderSettings}>
           {cafeterias.map((cafe, index) => (
             <CoffeeCard key={index} cafe={cafe} />
@@ -72,6 +93,7 @@ const Home = () => {
         </Slider>
       </div>
     </div>
+    </>
   );
 };
 
