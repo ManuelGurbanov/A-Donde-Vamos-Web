@@ -10,13 +10,13 @@ const Layout = () => {
   const location = useLocation();
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-c sm:max-w-lg">
+    <div className="flex flex-col w-screen h-screen bg-c">
       <div className="flex-grow overflow-y-auto">
         <Outlet />
       </div>
 
       {/* Menú de navegación inferior */}
-      <div className="fixed bottom-0 flex items-center w-full h-20 text-white bg-b2 sm:max-w-lg" style={{ borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem' }}>
+      <div className="fixed bottom-0 flex items-center w-full h-20 text-white bg-b2" style={{ borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem' }}>
 
         {/* Botones de la izquierda */}
         <div className="flex justify-end gap-8" style={{ flexBasis: '35%', flexGrow: 1 }}>
