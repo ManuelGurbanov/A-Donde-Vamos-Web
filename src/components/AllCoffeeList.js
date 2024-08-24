@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import CoffeeCard from './CoffeeCard';
+import Top from './Top';
 
 const AllCoffeeList = () => {
   const [cafeterias, setCafeterias] = useState([]);
@@ -49,8 +50,10 @@ const AllCoffeeList = () => {
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
   return (
+    <>
+    <Top/>
     <div className="p-4">
-      <h1 className="mt-2 mb-2 text-2xl font-black text-center text-c2">¿A Dónde Vamos?</h1>
+
 
       <div className="mb-4 text-center">
         <button
@@ -104,6 +107,7 @@ const AllCoffeeList = () => {
         ))}
       </div>
     </div>
+    </>
   );
 };
 

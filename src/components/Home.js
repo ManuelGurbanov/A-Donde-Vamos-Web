@@ -9,7 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 import CoffeeCard from './CoffeeCard';
 import AdBanner from './AdBanner';
-
+import Top from './Top';
 
 const Home = () => {
   const [cafeterias, setCafeterias] = useState([]);
@@ -41,56 +41,68 @@ const Home = () => {
     infinite: true,
     speed: 500,
     slidesToShow: 1,
-    slidesToScroll: 1
+    slidesToScroll: 1,
   };
 
   return (
     <>
-    <div className='flex items-center justify-center w-screen h-24 p-0 border-b-2 bg-b2 rounded-b-3xl border-red-950'>
-      <h1 className="mt-2 mb-1 text-2xl font-bold text-center text-c">¿A Dónde Vamos?</h1>
-    </div>
+    <Top/>
 
-    <div className="p-4 bg-c">
-      {/* {currentUser && (
-        <p className="mb-1 text-xl italic text-center text-b2">Bienvenido, <strong>{currentUser.displayName}</strong> </p>
-      )} */}
+    <div className='m-auto sm:w-1/2'>
+      {/* Encabezado */}
 
-      <div className="mb-4">
-        <h2 className="text-2xl font-semibold text-left text-c2">Las más populares</h2>
-        <Slider {...sliderSettings}>
-          {cafeterias.map((cafe, index) => (
-            <CoffeeCard key={index} cafe={cafe} />
-          ))}
-        </Slider>
-      </div>
-          
-      <AdBanner />
 
-      <div>
-        <h2 className="text-2xl font-semibold text-left text-c2">Tus Favoritas</h2>
-        <Slider {...sliderSettings}>
-          {cafeterias.map((cafe, index) => (
-            <CoffeeCard key={index} cafe={cafe} />
-          ))}
-        </Slider>
-      </div>
+      {/* Contenido principal */}
+      <div className="p-4 bg-c md:px-20 lg:px-32 xl:px-48">
+        {/* Mensaje de bienvenida para usuarios autenticados */}
+        {currentUser && (
+          <p className="mb-1 text-xl italic text-center text-b2 md:text-2xl">
+            Bienvenido, <strong>{currentUser.displayName}</strong>
+          </p>
+        )}
 
-      <div>
-        <h2 className="text-2xl font-semibold text-left text-c2">Cerca Tuyo</h2>
-        <Slider {...sliderSettings}>
-          {cafeterias.map((cafe, index) => (
-            <CoffeeCard key={index} cafe={cafe} />
-          ))}
-        </Slider>
-      </div>
+        {/* Sección: Las más populares */}
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>
+          <Slider {...sliderSettings}>
+            {cafeterias.map((cafe, index) => (
+              <CoffeeCard key={index} cafe={cafe} />
+            ))}
+          </Slider>
+        </div>
 
-      <div className='mb-24'>
-        <h2 className="text-2xl font-semibold text-left text-c2">Nuevas Apariciones</h2>
-        <Slider {...sliderSettings}>
-          {cafeterias.map((cafe, index) => (
-            <CoffeeCard key={index} cafe={cafe} />
-          ))}
-        </Slider>
+        {/* Banner publicitario */}
+        <AdBanner />
+
+        {/* Sección: Tus Favoritas */}
+        <div>
+          <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Tus Favoritas</h2>
+          <Slider {...sliderSettings}>
+            {cafeterias.map((cafe, index) => (
+              <CoffeeCard key={index} cafe={cafe} />
+            ))}
+          </Slider>
+        </div>
+
+        {/* Sección: Cerca Tuyo */}
+        <div>
+          <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
+          <Slider {...sliderSettings}>
+            {cafeterias.map((cafe, index) => (
+              <CoffeeCard key={index} cafe={cafe} />
+            ))}
+          </Slider>
+        </div>
+
+        {/* Sección: Nuevas Apariciones */}
+        <div className='mb-24'>
+          <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Apariciones</h2>
+          <Slider {...sliderSettings}>
+            {cafeterias.map((cafe, index) => (
+              <CoffeeCard key={index} cafe={cafe} />
+            ))}
+          </Slider>
+        </div>
       </div>
     </div>
     </>

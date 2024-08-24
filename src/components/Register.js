@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase/firebase';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -9,7 +9,6 @@ const Register = () => {
   const [displayName, setDisplayName] = useState('');
   const [errorText, setErrorText] = useState('');
 
-  
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -29,8 +28,11 @@ const Register = () => {
 
       await updateProfile(user, { displayName: displayName });
 
+      // Enviar correo de verificación
+      await sendEmailVerification(user);
+
       console.log('Usuario registrado exitosamente:', user);
-      alert('Usuario registrado exitosamente');
+      alert('Usuario registrado exitosamente. Revisa tu correo para verificar tu cuenta.');
     } catch (error) {
       console.error('Error al registrar usuario', error);
 
@@ -41,7 +43,6 @@ const Register = () => {
       }
     }
   };
-
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen">
@@ -80,7 +81,7 @@ const Register = () => {
           required
         />
         <button type="submit" className="w-full p-2 text-white transition-all duration-100 bg-blue-500 rounded hover:bg-blue-600">Registrarse</button>
-        {errorText && <p className="mt-2 text-red-500" >{errorText}</p>}
+        {errorText && <p className="mt-2 text-red-500">{errorText}</p>}
       </form>
     </div>
   );

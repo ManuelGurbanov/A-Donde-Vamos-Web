@@ -6,6 +6,10 @@ import screen3 from '../img/screen3.png';
 import screen4 from '../img/screen4.png';
 import review from '../img/review.png';
 
+import screen1_selected from '../img/screen1-selected.png';
+import screen2_selected from '../img/screen2-selected.png';
+import screen3_selected from '../img/screen3-selected.png';
+import screen4_selected from '../img/screen4-selected.png';
 const Layout = () => {
   const location = useLocation();
 
@@ -22,19 +26,19 @@ const Layout = () => {
         <div className="flex justify-end gap-8" style={{ flexBasis: '35%', flexGrow: 1 }}>
           <Link to="/home" className="flex flex-col items-center justify-center w-6">
             <img
-              src={screen1}
+              src={location.pathname === '/home' ? screen1_selected : screen1}
               alt="Pantalla 1"
               className={`w-full ${location.pathname === '/home' ? 'scale-105' : 'scale-100'}`}
             />
-            <span className={`text-xs ${location.pathname === '/home' ? 'text-c' : 'opacity-0'}`}>Home</span>
+            <span className={`text-xs ${location.pathname === '/home' ? 'text-c' : 'opacity-0'}`}>Inicio</span>
           </Link>
           <Link to="/coffee-all" className="flex flex-col items-center justify-center w-6">
             <img
-              src={screen2}
+              src={location.pathname === '/coffee-all' ? screen2_selected : screen2}
               alt="Pantalla 2"
               className={`w-full ${location.pathname === '/coffee-all' ? 'scale-105' : 'scale-100'}`}
             />
-            <span className={`text-xs ${location.pathname === '/coffee-all' ? 'text-c' : 'opacity-0'}`}>Coffee</span>
+            <span className={`text-xs ${location.pathname === '/coffee-all' ? 'text-c' : 'opacity-0'}`}>Cafés</span>
           </Link>
         </div>
 
@@ -49,19 +53,19 @@ const Layout = () => {
         <div className="flex justify-start gap-8" style={{ flexBasis: '35%', flexGrow: 1 }}>
           <Link to="/add" className="flex flex-col items-center justify-center w-6">
             <img
-              src={screen3}
+              src={location.pathname === '/add' ? screen3_selected : screen3}
               alt="Pantalla 3"
               className={`w-full ${location.pathname === '/add' ? 'scale-105' : 'scale-100'}`}
             />
-            <span className={`text-xs ${location.pathname === '/add' ? 'text-c' : 'opacity-0'}`}>Add</span>
+            <span className={`text-xs ${location.pathname === '/add' ? 'text-c' : 'opacity-0'}`}>Agregar</span>
           </Link>
           <Link to="/login" className="flex flex-col items-center justify-center w-6">
             <img
-              src={screen4}
+              src={location.pathname === '/login' ? screen4_selected : screen4}
               alt="Pantalla 4"
               className={`w-full ${location.pathname === '/login' ? 'scale-105' : 'scale-100'}`}
             />
-            <span className={`text-xs ${location.pathname === '/login' ? 'text-c' : 'opacity-0'}`}>Login</span>
+            <span className={`text-xs ${location.pathname === '/login' ? 'text-c' : 'opacity-0'}`}>Perfil</span>
           </Link>
         </div>
       </div>

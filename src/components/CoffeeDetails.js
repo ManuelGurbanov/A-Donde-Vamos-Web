@@ -7,15 +7,15 @@ import outsideIcon from '../img/outside.png';
 import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
-import screen4 from '../img/screen4.png';
-import fullStar from '../img/fullStarWhite.png';
-import halfStar from '../img/halfStarWhite.png';
-import emptyStar from '../img/emptyStarWhite.png';
+
+
+import fav from '../img/fav.png';
 
 import fullStarDark from '../img/fullStar.png';
 import halfStarDark from '../img/halfStar.png';
 import emptyStarDark from '../img/emptyStar.png';
 import StarRating from './StarRating';
+import Top from './Top';
 
 const CoffeeDetails = () => {
   const { id } = useParams();
@@ -92,7 +92,7 @@ const CoffeeDetails = () => {
       if (schedule.apertura <= currentTime && currentTime <= schedule.cierre) {
         if (timeUntilClose <= oneHourInMillis) {
           setStatus('Próximo a cerrar');
-          setTextColor('text-yellow-500'); // Color para "Próximo a cerrar"
+          setTextColor('text-yellow-500');
         } else {
           setStatus('Abierto');
           setTextColor('text-green-500');
@@ -253,11 +253,13 @@ const CoffeeDetails = () => {
   };
 
   if (loading) {
-    return <div className="p-4 text-white">Cargando...</div>;
+    return <div className="mt-24 text-3xl text-center text-white">Cargando...</div>;
   }
 
   return (
-    <div className="text-c2">
+    <div className='flex flex-col items-center justify-center w-screen'>
+    <Top/>
+    <div className="text-c2 sm:w-1/2">
       {coffee ? (
         <>
         <div className='p-4 bg-c'>
@@ -270,7 +272,7 @@ const CoffeeDetails = () => {
           <p className={`text-xl mb-4 ${textColor}`}>
             {status}
           </p>
-          <button onClick={handleShareWhatsApp} className="px-4 py-2 mb-2 text-white bg-green-600 rounded">
+          <button onClick={handleShareWhatsApp} className="px-4 py-2 mb-2 mr-4 text-white bg-green-600 rounded">
             Compartir en WhatsApp
           </button>
           <button onClick={handleCopyLink} className="px-4 py-2 mb-2 text-white bg-blue-600 rounded">
@@ -375,6 +377,7 @@ const CoffeeDetails = () => {
       ) : (
         <p className="p-4 text-c">No se encontraron detalles de la cafetería.</p>
       )}
+      </div>
     </div>
   );
 };
