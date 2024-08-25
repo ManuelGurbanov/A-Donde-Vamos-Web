@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { CafeProvider } from './components/CafeContext';
 
 import Home from './components/Home';
 import CoffeeDetails from './components/CoffeeDetails';
@@ -17,20 +18,21 @@ function App() {
   return (
     <div className="bg-c">
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/cafe/:id" element={<CoffeeDetails />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/add" element={<AddForm />} />
-            <Route path="/coffee-all" element={<AllCoffeeList />} />
-          </Route>
-        </Routes>
+        <CafeProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/cafe/:id" element={<CoffeeDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/add" element={<AddForm />} />
+              <Route path="/coffee-all" element={<AllCoffeeList />} />
+            </Route>
+          </Routes>
+        </CafeProvider>
       </AuthProvider>
     </div>
-
   );
 }
 

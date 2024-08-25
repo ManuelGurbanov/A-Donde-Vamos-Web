@@ -243,7 +243,7 @@ const CoffeeDetails = () => {
   };
 
   const handleShareWhatsApp = () => {
-    const whatsappUrl = `https://wa.me/?text=¿Conoces está cafetería?: ${window.location.href}`;
+    const whatsappUrl = `https://wa.me/?text=¿Conoces ${coffee.name}?: ${window.location.href}`;
     window.open(whatsappUrl, '_blank');
   };
 
