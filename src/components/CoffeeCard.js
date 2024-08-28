@@ -98,7 +98,7 @@ const CoffeeCard = ({ cafe }) => {
         <div className="relative h-48 overflow-hidden bg-white rounded-lg shadow-md">
           <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
 
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-4 bg-c2 bg-opacity-90 h-1/2">
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-4 bg-c2 bg-opacity-90 h-1/2 hover:bg-opacity-100">
             <div>
               <h2 className="text-xl font-bold text-c">{cafe.name || 'Nombre no disponible'}</h2>
               <p className="text-xs font-regular text-c">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>

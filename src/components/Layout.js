@@ -43,11 +43,14 @@ const Layout = () => {
         </div>
 
         {/* Botón central (Review) */}
-        <div className="flex justify-center -translate-y-6" style={{ flexBasis: '30%', flexGrow: 1 }}>
-          <div className="relative flex items-center justify-center w-16 h-16 border-4 rounded-full shadow-lg border-b2 bg-c">
-            <img src={review} alt="Review" className="w-8 h-8"/>
+          <div className="flex justify-center -translate-y-6" style={{ flexBasis: '30%', flexGrow: 1 }}>
+            <Link to="/review">
+
+              <div className={`relative flex items-center justify-center w-16 h-16 border-4 rounded-full shadow-lg border-b2 ${location.pathname === '/review' ? 'bg-c3' : 'bg-c'}`}>
+                <img src={review} alt="Review" className={`w-8 ${location.pathname === '/review' ? 'scale-110' : 'scale-100'}`}/>
+              </div>
+            </Link>
           </div>
-        </div>
 
         {/* Botones de la derecha */}
         <div className="flex justify-start gap-8" style={{ flexBasis: '35%', flexGrow: 1 }}>

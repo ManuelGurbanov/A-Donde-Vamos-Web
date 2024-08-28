@@ -36,7 +36,7 @@ const AllCoffeeList = () => {
 
   return (
     <>
-      <Top />
+      <Top text={"Todas las Cafeterías"}/>
       <div className="p-4">
         <div className="mb-4 text-center">
           <button

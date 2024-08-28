@@ -11,7 +11,7 @@ import Register from './components/Register';
 import AddForm from './components/AddForm';
 import AllCoffeeList from './components/AllCoffeeList';
 import Layout from './components/Layout';
-
+import Review from './components/Review';
 import { Navigate } from 'react-router-dom';
 
 function App() {
@@ -28,6 +28,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/add" element={<AddForm />} />
               <Route path="/coffee-all" element={<AllCoffeeList />} />
+              <Route path="/review" element={<Review />} />
             </Route>
           </Routes>
         </CafeProvider>

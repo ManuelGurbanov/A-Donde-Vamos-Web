@@ -309,13 +309,13 @@ const CoffeeDetails = () => {
           <button onClick={handleCopyLink} className="px-4 py-2 mb-2 text-white bg-blue-600 rounded">
             Copiar Enlace
           </button>
-          <button onClick={handleFavoriteToggle} className="ml-auto">
+          {/* <button onClick={handleFavoriteToggle} className="ml-auto">
             <img 
               src={fav} 
               alt={isFavorite ? 'Remove from favorites' : 'Add to favorites'} 
               className={`h-6 w-6 ${isFavorite ? 'fill-current text-yellow-500' : 'fill-current text-gray-400'}`} 
             />
-          </button>
+          </button> */}
         </div>
 
         <div className="p-4 rounded shadow-md bg-c2 text-c">

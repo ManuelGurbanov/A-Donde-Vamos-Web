@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { auth } from '../firebase/firebase';
 import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
 
+import Top from './Top';
+
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,6 +47,8 @@ const Register = () => {
   };
 
   return (
+    <>
+    <Top text={"Registro"}/>
     <div className="flex flex-col items-center justify-start min-h-screen">
       <form onSubmit={handleRegister} className="w-4/5 p-4 rounded shadow-md mt-28 sm:w-1/4 bg-zinc-100">
         <h2 className="mb-4 text-2xl font-bold">Registrarse</h2>
@@ -84,6 +88,7 @@ const Register = () => {
         {errorText && <p className="mt-2 text-red-500">{errorText}</p>}
       </form>
     </div>
+    </>
   );
 };
 
