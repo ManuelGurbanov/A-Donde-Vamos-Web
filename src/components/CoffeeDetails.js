@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import outsideIcon from '../img/outside.png';
 import petIcon from '../img/pet.png';
@@ -32,6 +32,8 @@ const CoffeeDetails = () => {
   const [status, setStatus] = useState('');
   const [textColor, setTextColor] = useState('text-red-500');
 
+  const [isFavorite, setIsFavorite] = useState(false);
+
   useEffect(() => {
     const fetchCoffee = async () => {
       try {
@@ -47,6 +49,13 @@ const CoffeeDetails = () => {
           if (currentUser) {
             const userHasRated = data.reviews?.some(review => review.userId === currentUser.uid);
             setHasRated(userHasRated);
+
+            const userDocRef = doc(db, 'usuarios', currentUser.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+              const userFavorites = userDocSnap.data().favorites || [];
+              setIsFavorite(userFavorites.includes(id));
+            }
           }
 
           // Verificar si la cafetería está abierta
@@ -64,6 +73,28 @@ const CoffeeDetails = () => {
     fetchCoffee();
   }, [id, currentUser]);
 
+  const handleFavoriteToggle = async () => {
+    if (!currentUser) return;
+  
+    try {
+      const userDocRef = doc(db, 'usuarios', currentUser.uid);
+  
+      if (isFavorite) {
+        await updateDoc(userDocRef, {
+          favorites: arrayRemove(id)
+        });
+        setIsFavorite(false);
+      } else {
+        await updateDoc(userDocRef, {
+          favorites: arrayUnion(id)
+        });
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      console.error('Error updating favorites:', err);
+    }
+  };
+  
   const checkIfOpen = (data) => {
     const now = new Date();
     const day = now.getDay();
@@ -262,7 +293,7 @@ const CoffeeDetails = () => {
     <div className="text-c2 sm:w-1/2">
       {coffee ? (
         <>
-        <div className='p-4 bg-c'>
+        <div className='p-4'>
           <h1 className="mb-2 text-3xl font-bold text-left">{coffee.name}</h1>
           <p className="max-w-screen-md mb-2 text-xl"> - {coffee.adress}, <strong className='font-black'> {coffee.neigh} </strong></p>
           <p className="mb-2 text-xl">
@@ -277,6 +308,13 @@ const CoffeeDetails = () => {
           </button>
           <button onClick={handleCopyLink} className="px-4 py-2 mb-2 text-white bg-blue-600 rounded">
             Copiar Enlace
+          </button>
+          <button onClick={handleFavoriteToggle} className="ml-auto">
+            <img 
+              src={fav} 
+              alt={isFavorite ? 'Remove from favorites' : 'Add to favorites'} 
+              className={`h-6 w-6 ${isFavorite ? 'fill-current text-yellow-500' : 'fill-current text-gray-400'}`} 
+            />
           </button>
         </div>
 
