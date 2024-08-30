@@ -10,6 +10,8 @@ export const CafeProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [favoritos, setFavoritos] = useState([]);
 
+  const [selectedCafe, setSelectedCafe] = useState(null);
+
   useEffect(() => {
     const fetchCafes = async () => {
       try {
@@ -37,7 +39,7 @@ export const CafeProvider = ({ children }) => {
   };
 
   return (
-    <CafeContext.Provider value={{ cafes, loading, error, favoritos, agregarAFavoritos }}>
+    <CafeContext.Provider value={{ cafes, loading, error, favoritos, agregarAFavoritos, selectedCafe, setSelectedCafe }}>
       {children}
     </CafeContext.Provider>
   );

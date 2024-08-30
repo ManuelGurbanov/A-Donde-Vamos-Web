@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
@@ -8,6 +8,8 @@ import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
 
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { CafeContext } from './CafeContext';
 
 import fav from '../img/fav.png';
 
@@ -34,6 +36,10 @@ const CoffeeDetails = () => {
 
   const [isFavorite, setIsFavorite] = useState(false);
 
+  const navigate = useNavigate();
+  const { setSelectedCafe } = useContext(CafeContext);
+
+  
   useEffect(() => {
     const fetchCoffee = async () => {
       try {
@@ -287,6 +293,10 @@ const CoffeeDetails = () => {
     return <div className="mt-24 text-3xl text-center text-white">Cargando...</div>;
   }
 
+  const goToReviewPage = () => {
+    navigate('/review', { state: { coffee } });
+  };
+
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
     <Top/>
@@ -351,27 +361,13 @@ const CoffeeDetails = () => {
           </div>
         </div>
 
-        <form onSubmit={handleReviewSubmit} className="p-4 mt-4 rounded shadow-md bg-c2 text-c">
-          <h2 className="mb-4 text-2xl font-bold">Escribe una reseña</h2>
-
-          {/* Aquí usamos el componente StarRating */}
-          <StarRating initialRating={rating} onRatingChange={setRating} />
-
-          <textarea
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-            className="w-full p-2 mb-4 text-black border rounded"
-            placeholder="Escribe tu reseña aquí..."
-            rows="4"
-          />
-          <button
-            type="submit"
-            disabled={rating === 0 || hasRated}
-            className="px-4 py-2 text-white bg-blue-600 rounded disabled:bg-gray-400"
-          >
-            Enviar Reseña
-          </button>
-      </form>
+        {/* Botón para redirigir a la página de reseñas */}
+        <button
+          onClick={goToReviewPage}
+          className="px-4 py-2 mt-4 text-white bg-blue-600 rounded"
+        >
+          Escribir una reseña
+        </button>
 
         <div className="p-4 mt-4 mb-24 rounded shadow-md bg-c2 text-c">
           <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
