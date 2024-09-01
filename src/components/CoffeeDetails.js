@@ -294,9 +294,15 @@ const CoffeeDetails = () => {
   }
 
   const goToReviewPage = () => {
-    navigate('/review', { state: { coffee } });
+    if (coffee) {
+      navigate('/review', { state: { cafeName: coffee.name } });
+    } else {
+      console.error('El café no está definido.');
+    }
   };
-
+  
+  
+  
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
     <Top/>
