@@ -10,65 +10,79 @@ import screen1_selected from '../img/screen1-selected.png';
 import screen2_selected from '../img/screen2-selected.png';
 import screen3_selected from '../img/screen3-selected.png';
 import screen4_selected from '../img/screen4-selected.png';
+import navbarBg from '../img/navbar_bg.png'; // Importa la imagen de fondo
+import './Nav.css';
+
 const Layout = () => {
   const location = useLocation();
 
   return (
-    <div className="flex flex-col w-screen h-screen">
-      <div className="flex-grow overflow-y-auto">
+    <div className="layout-container">
+      <div className="content-container">
         <Outlet />
       </div>
 
       {/* Menú de navegación inferior */}
-      <div className="fixed bottom-0 flex items-center w-full h-20 text-white bg-b2" style={{ borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem' }}>
-
+      <div className="navbar bg-b2">
+        <div className='absolute bottom-0 flex items-center w-screen'>
+          
+        </div>
         {/* Botones de la izquierda */}
-        <div className="flex justify-end gap-8" style={{ flexBasis: '35%', flexGrow: 1 }}>
-          <Link to="/home" className="flex flex-col items-center justify-center w-6">
-            <img
-              src={location.pathname === '/home' ? screen1_selected : screen1}
-              alt="Pantalla 1"
-              className={`w-full ${location.pathname === '/home' ? 'scale-105' : 'scale-100'}`}
-            />
-            <span className={`text-xs ${location.pathname === '/home' ? 'text-c' : 'opacity-0'}`}>Inicio</span>
+        <div className="navbar-section navbar-left">
+          <Link to="/home" className="navbar-link">
+            <div className="navbar-icon-container">
+              <img
+                src={location.pathname === '/home' ? screen1_selected : screen1}
+                alt="Pantalla 1"
+                className={`navbar-icon ${location.pathname === '/home' ? 'icon-selected' : ''}`}
+              />
+              <span className={`navbar-text ${location.pathname === '/home' ? 'text-selected' : ''}`}>Inicio</span>
+            </div>
           </Link>
-          <Link to="/coffee-all" className="flex flex-col items-center justify-center w-6">
-            <img
-              src={location.pathname === '/coffee-all' ? screen2_selected : screen2}
-              alt="Pantalla 2"
-              className={`w-full ${location.pathname === '/coffee-all' ? 'scale-105' : 'scale-100'}`}
-            />
-            <span className={`text-xs ${location.pathname === '/coffee-all' ? 'text-c' : 'opacity-0'}`}>Cafés</span>
+          <Link to="/coffee-all" className="navbar-link">
+            <div className="navbar-icon-container">
+              <img
+                src={location.pathname === '/coffee-all' ? screen2_selected : screen2}
+                alt="Pantalla 2"
+                className={`navbar-icon ${location.pathname === '/coffee-all' ? 'icon-selected' : ''}`}
+              />
+              <span className={`navbar-text ${location.pathname === '/coffee-all' ? 'text-selected' : ''}`}>Cafés</span>
+            </div>
           </Link>
         </div>
 
         {/* Botón central (Review) */}
-          <div className="flex justify-center -translate-y-6" style={{ flexBasis: '30%', flexGrow: 1 }}>
-            <Link to="/review">
-
-              <div className={`relative flex items-center justify-center w-16 h-16 border-4 rounded-full shadow-lg border-b2 ${location.pathname === '/review' ? 'bg-c3' : 'bg-c'}`}>
-                <img src={review} alt="Review" className={`w-8 ${location.pathname === '/review' ? 'scale-110' : 'scale-100'}`}/>
-              </div>
-            </Link>
-          </div>
+        <div className="navbar-center">
+          {/* Fondo del botón de revisión */}
+          <div className="review-background"></div>
+          <Link to="/review">
+            <div className={`review-button ${location.pathname === '/review' ? 'review-selected' : ''}`}>
+              <img src={review} alt="Review" className="review-icon" />
+            </div>
+          </Link>
+        </div>  
 
         {/* Botones de la derecha */}
-        <div className="flex justify-start gap-8" style={{ flexBasis: '35%', flexGrow: 1 }}>
-          <Link to="/add" className="flex flex-col items-center justify-center w-6">
-            <img
-              src={location.pathname === '/add' ? screen3_selected : screen3}
-              alt="Pantalla 3"
-              className={`w-full ${location.pathname === '/add' ? 'scale-105' : 'scale-100'}`}
-            />
-            <span className={`text-xs ${location.pathname === '/add' ? 'text-c' : 'opacity-0'}`}>Agregar</span>
+        <div className="navbar-section navbar-right">
+          <Link to="/notifications" className="navbar-link">
+            <div className="navbar-icon-container">
+              <img
+                src={location.pathname === '/notifications' ? screen3_selected : screen3}
+                alt="Pantalla 3"
+                className={`navbar-icon ${location.pathname === '/notifications' ? 'icon-selected' : ''}`}
+              />
+              <span className={`navbar-text ${location.pathname === '/notifications' ? 'text-selected' : ''}`}>Notificaciones</span>
+            </div>
           </Link>
-          <Link to="/login" className="flex flex-col items-center justify-center w-6">
-            <img
-              src={location.pathname === '/login' ? screen4_selected : screen4}
-              alt="Pantalla 4"
-              className={`w-full ${location.pathname === '/login' ? 'scale-105' : 'scale-100'}`}
-            />
-            <span className={`text-xs ${location.pathname === '/login' ? 'text-c' : 'opacity-0'}`}>Perfil</span>
+          <Link to="/login" className="navbar-link">
+            <div className="navbar-icon-container">
+              <img
+                src={location.pathname === '/login' ? screen4_selected : screen4}
+                alt="Pantalla 4"
+                className={`navbar-icon ${location.pathname === '/login' ? 'icon-selected' : ''}`}
+              />
+              <span className={`navbar-text ${location.pathname === '/login' ? 'text-selected' : ''}`}>Perfil</span>
+            </div>
           </Link>
         </div>
       </div>

@@ -3,9 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useAuth } from '../contexts/AuthContext';
-
 import CoffeeCard from './CoffeeCard';
-import AdBanner from './AdBanner';
 import Top from './Top';
 import { CafeContext } from './CafeContext';
 
@@ -24,8 +22,13 @@ const Home = () => {
   if (loading) return <div className="mt-24 text-3xl text-center text-white">Cargando Cafeterías...</div>;
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
-  const sortedCafes = [...cafes].sort((a, b) => (b.valoraciones || 0) - (a.valoraciones || 0));
-  const popularCafes = sortedCafes.slice(0, 5);
+  // Ordenar cafeterías por número de reseñas
+  const sortedByRatings = [...cafes].sort((a, b) => (b.numRatings || 0) - (a.numRatings || 0));
+  const popularCafes = sortedByRatings.slice(0, 5);
+
+  // Ordenar cafeterías por fecha
+  const sortedByDate = [...cafes].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+  const newCafes = sortedByDate.slice(0, 5);
 
   const sliderSettings = {
     arrows: false,
@@ -65,6 +68,7 @@ const Home = () => {
       </button>
     </div>
   );
+
   return (
     <>
       <Top />
@@ -120,10 +124,10 @@ const Home = () => {
             <div className='mb-24'>
               <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Apariciones</h2>
               {isLargeScreen ? (
-                renderCarousel(cafes, currentSlideNew, setCurrentSlideNew)
+                renderCarousel(newCafes, currentSlideNew, setCurrentSlideNew)
               ) : (
                 <Slider {...sliderSettings}>
-                  {cafes.map((cafe, index) => (
+                  {newCafes.map((cafe, index) => (
                     <CoffeeCard key={index} cafe={cafe} />
                   ))}
                 </Slider>
