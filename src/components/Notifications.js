@@ -6,10 +6,12 @@ import Notif from './Notif';
 const Notifications = () => {
 
   return (
-    <div className="flex flex-col items-center justify-start">
-      <Top text={"Notificaciones"}/>
+    <>
+    <Top text={"Notificaciones"}/>
+    <div className="flex flex-col items-center justify-start w-1/2 sm:m-auto">
       <Notif tittle = '¿Te gustó la app?' subt={'Reseñá en Google Play!'}/>
     </div>
+    </>
   );
 };
 

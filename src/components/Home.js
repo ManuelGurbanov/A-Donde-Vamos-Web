@@ -73,8 +73,8 @@ const Home = () => {
     <>
       <Top />
 
-      <div className='m-auto sm:w-3/4 '>
-        <div className="p-4 md:px-20 lg:px-32 xl:px-48">
+      <div className='m-auto sm:w-3/4'>
+        <div className="p-4">
           {currentUser && (
             <p className="mb-1 text-xl italic text-center text-b2 md:text-2xl">
               Bienvenido, <strong>{currentUser.displayName}</strong>

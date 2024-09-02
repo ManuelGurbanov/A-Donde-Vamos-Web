@@ -1,5 +1,5 @@
 import React from 'react';
-const icon = './icon.png';
+const icon = '/icon.png';
 
 const Top = ({text}) => {
   return (

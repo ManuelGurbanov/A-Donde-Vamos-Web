@@ -25,6 +25,10 @@ const Review = () => {
     setErrorMessage('');
     setSuccessMessage('');
 
+    if (!currentUser) {
+      setErrorMessage('Por favor, inicia sesión para hacer una reseña.');
+    }
+
     const cafeName = location.state?.cafeName;
 
     if (cafeName) {
@@ -49,7 +53,7 @@ const Review = () => {
 
       fetchCafeData();
     }
-  }, [location.state]);
+  }, [location.state, currentUser]);
 
   const handleCafeChange = async (e) => {
     const cafeId = e.target.value;
@@ -123,7 +127,7 @@ const Review = () => {
   return (
     <>
       <Top text={"Reseñar"}></Top>
-      <div className="p-8 m-5 mt-4 rounded shadow-md bg-c2 text-c">
+      <div className="p-8 m-5 mt-4 rounded shadow-md sm:m-auto bg-c2 text-c sm:w-1/2 sm:mt-9">
         <h2 className="mb-4 text-2xl font-bold">Escribe una reseña</h2>
         {errorMessage && (
           <div className="mb-4 text-red-500">
@@ -162,7 +166,7 @@ const Review = () => {
               />
               <button
                 type="submit"
-                disabled={rating === 0 || hasRated}
+                disabled={!currentUser || rating === 0 || hasRated}
                 className="px-4 py-2 text-white bg-blue-600 rounded disabled:bg-gray-400"
               >
                 Enviar Reseña

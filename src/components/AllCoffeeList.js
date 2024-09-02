@@ -37,7 +37,7 @@ const AllCoffeeList = () => {
   return (
     <>
       <Top text={"Todas las Cafeterías"}/>
-      <div className="p-4">
+      <div className="p-4 m-auto sm:w-3/4">
         <div className="mb-4 text-center">
           <button
             onClick={() => setIsFilterPanelOpen(true)}
