@@ -121,6 +121,8 @@ const Review = ({ onClose }) => {
   };
 
   return (
+    <>
+    <div className='absolute top-0 bottom-0 left-0 right-0 w-screen h-screen bg-black bg-opacity-80'></div>
     <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-b1 text-c h-[90vh] shadow-lg overflow-y-auto rounded-lg">
       <button
         className='absolute text-sm bg-transparent left-4 text-c top-4 text-opacity-60'
@@ -230,6 +232,7 @@ const Review = ({ onClose }) => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
