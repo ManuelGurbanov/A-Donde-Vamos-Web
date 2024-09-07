@@ -1,33 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import screen1 from '../img/screen1.png';
 import screen2 from '../img/screen2.png';
 import screen3 from '../img/screen3.png';
 import screen4 from '../img/screen4.png';
-import review from '../img/review.png';
-
 import screen1_selected from '../img/screen1-selected.png';
 import screen2_selected from '../img/screen2-selected.png';
 import screen3_selected from '../img/screen3-selected.png';
 import screen4_selected from '../img/screen4-selected.png';
 import navbarBg from '../img/navbar_bg.png'; // Importa la imagen de fondo
 import './Nav.css';
+import navBg from '../img/nav_bg.png';
+import addsquare from '../img/add-square-white.png';
+import Review from './Review';
 
 const Layout = () => {
   const location = useLocation();
+  const [showReview, setShowReview] = useState(false);
+
+  const handleReviewClick = () => {
+    setShowReview(prevShowReview => !prevShowReview); // Alterna el estado
+  };
+
+  const handleCloseReview = () => {
+    setShowReview(false);
+  };
 
   return (
     <div className="layout-container">
+      <img className='absolute bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
+
       <div className="content-container">
         <Outlet />
       </div>
 
-      {/* Menú de navegación inferior */}
-      <div className="navbar bg-b2">
-        <div className='absolute bottom-0 flex items-center w-screen'>
-          
+      {showReview && (
+        <div className="review-popup">
+          <Review onClose={handleCloseReview} />
         </div>
-        {/* Botones de la izquierda */}
+      )}
+
+      <div className="z-50 bg-transparent navbar sm:bg-b1">
         <div className="navbar-section navbar-left">
           <Link to="/home" className="navbar-link">
             <div className="navbar-icon-container">
@@ -51,18 +64,12 @@ const Layout = () => {
           </Link>
         </div>
 
-        {/* Botón central (Review) */}
-        <div className="navbar-center">
-          {/* Fondo del botón de revisión */}
-          <div className="review-background"></div>
-          <Link to="/review">
-            <div className={`review-button ${location.pathname === '/review' ? 'review-selected' : ''}`}>
-              <img src={review} alt="Review" className="review-icon" />
-            </div>
-          </Link>
-        </div>  
+        <div className="navbar-center bg-c">
+          <button onClick={handleReviewClick} className={`review-button ${location.pathname === '/review' ? 'review-selected' : ''}`}>
+            <img src={addsquare} alt="Review" className="review-icon" />
+          </button>
+        </div>
 
-        {/* Botones de la derecha */}
         <div className="navbar-section navbar-right">
           <Link to="/notifications" className="navbar-link">
             <div className="navbar-icon-container">

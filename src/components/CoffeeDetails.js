@@ -16,8 +16,17 @@ import fav from '../img/fav.png';
 import fullStarDark from '../img/fullStar.png';
 import halfStarDark from '../img/halfStar.png';
 import emptyStarDark from '../img/emptyStar.png';
+
+import location from '../img/location.png';
+import heartadd from '../img/heart-add.png';
+import clock from '../img/clock.png';
+import additem from '../img/additem.png';
+import addsquare from '../img/add-square.png';
+
 import StarRating from './StarRating';
 import Top from './Top';
+
+import Slider from 'react-slick';
 
 const CoffeeDetails = () => {
   const { id } = useParams();
@@ -301,79 +310,104 @@ const CoffeeDetails = () => {
     }
   };
   
-  
+  const sliderSettings = {
+    arrows: false,
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
   
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
     <Top/>
-    <div className="text-c2 sm:w-1/2">
+    <div className="w-screen text-c2 sm:w-1/2">
       {coffee ? (
         <>
         <div className='p-4'>
-          <h1 className="mb-2 text-3xl font-bold text-left">{coffee.name}</h1>
-          <p className="max-w-screen-md mb-2 text-xl"> - {coffee.adress}, <strong className='font-black'> {coffee.neigh} </strong></p>
+          <div className="w-full overflow-x-auto rounded-lg">
+              <Slider {...sliderSettings}>
+                  {coffee.picsLinks?.map((picLink, index) => (
+                                    <img
+                  key={index}
+                  src={picLink}
+                  alt={`Imagen ${index + 1}`}
+                  className="object-cover h-48 rounded-lg shadow-md"
+                  onError={() => handleImageError(index)}
+                />
+                  ))}
+              </Slider>
+          </div>
+
+          <h1 className="mt-2 text-3xl font-bold text-left">{coffee.name}</h1>
+          
           <p className="mb-2 text-xl">
             {starRating(calculateAverageRating())}
             <span className="ml-2">{numRatings} valoraciones</span>
           </p>
-          <p className={`text-xl mb-4 ${textColor}`}>
-            {status}
-          </p>
-          <button onClick={handleShareWhatsApp} className="px-4 py-2 mb-2 mr-4 text-white bg-green-600 rounded">
-            Compartir en WhatsApp
-          </button>
-          <button onClick={handleCopyLink} className="px-4 py-2 mb-2 text-white bg-blue-600 rounded">
-            Copiar Enlace
-          </button>
-          {/* <button onClick={handleFavoriteToggle} className="ml-auto">
-            <img 
-              src={fav} 
-              alt={isFavorite ? 'Remove from favorites' : 'Add to favorites'} 
-              className={`h-6 w-6 ${isFavorite ? 'fill-current text-yellow-500' : 'fill-current text-gray-400'}`} 
-            />
-          </button> */}
-        </div>
+          
+            <p className='mb-8 text-xl'>
+              <span className={`${textColor}`}> {status} - </span> Abre a las {coffee.schedules.lunes_viernes.apertura}
+            </p>
 
-        <div className="p-4 rounded shadow-md bg-c2 text-c">
-          <div className="w-full p-4 overflow-x-auto">
-            <div className="flex flex-row justify-center w-full">
-              {coffee.picsLinks?.map((picLink, index) => (
-                <img
-                  key={index}
-                  src={picLink}
-                  alt={`Imagen ${index + 1}`}
-                  className="object-contain w-64 h-64 mr-2 rounded-lg shadow-md"
-                  onError={() => handleImageError(index)}
-                />
-              ))}
-            </div>
+            { (coffee.pets || coffee.vegan || coffee.tac || coffee.outside) && (
+                            <div className="flex items-center gap-4 mt-2 mb-6">
+                            {coffee.pets && (
+                              <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
+                            )}
+                            {coffee.vegan && (
+                              <img src={veganIcon} alt="Vegan Options" className="w-12 h-12 mr-2" />
+                            )}
+                            {coffee.tac && (
+                              <img src={tacIcon} alt="TAC Accepted" className="w-12 h-12 mr-2" />
+                            )}
+                            {coffee.outside && (
+                              <img src={outsideIcon} alt="Outdoor Seating" className="w-12 h-12 mr-2" />
+                            )}
+                          </div>
+              )}
+
+          <div className='flex flex-row items-center gap-1 mb-2'>
+          <img src={location} className='w-4 h-4 mt-2'></img>
+          <p className="text-lg ml-1`">{coffee.adress} - {coffee.neigh} </p>
           </div>
 
-          <p className="max-w-screen-md mb-2 text-lg">{coffee.desc}</p>
+          <div className='flex flex-row items-center gap-1 mb-2'>
+            <img src={clock} className='w-4 h-4 mt-2'></img>
+            <p className={`text-xl`}>
+              <span className={`${textColor} ml-1`}> {status} - </span> Abre a las {coffee.schedules.lunes_viernes.apertura}
+            </p>
+          </div>
+          
+          <div className='flex flex-row items-center gap-1 mb-2'>
+          <img src={heartadd} className='w-4 h-4 mt-2'></img>
+          <p className="ml-1 text-lg">¿Qué te pareció {coffee.name}?</p>
+          </div>
 
-          <div className="flex items-center mt-4">
-            {coffee.pets && (
-              <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
-            )}
-            {coffee.vegan && (
-              <img src={veganIcon} alt="Vegan Options" className="w-12 h-12 mr-2" />
-            )}
-            {coffee.tac && (
-              <img src={tacIcon} alt="TAC Accepted" className="w-12 h-12 mr-2" />
-            )}
-            {coffee.outside && (
-              <img src={outsideIcon} alt="Outdoor Seating" className="w-12 h-12 mr-2" />
-            )}
+          <div className='flex flex-col items-center justify-start w-full mt-4'>
+            {/* <button onClick={handleCopyLink} className="px-4 py-2 mb-2 text-white bg-blue-600 rounded">
+              Copiar Enlace
+            </button> */}
+
+            <button onClick={handleCopyLink} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium text-c bg-b1 rounded-2xl">
+              <img src={additem} className='flex-[1]'></img>
+              <p className='text-center text-lg flex-[9]'>
+              Compartir
+              </p>
+            </button>
+
+            
+            <button onClick={goToReviewPage} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium text-c bg-b1 rounded-2xl">
+              <img src={addsquare} className='flex-[1]'></img>
+              <p className='text-center text-lg flex-[9]'>
+              Agregar una reseña
+              </p>
+            </button>
+
           </div>
         </div>
 
-        {/* Botón para redirigir a la página de reseñas */}
-        <button
-          onClick={goToReviewPage}
-          className="px-4 py-2 mt-4 text-white bg-blue-600 rounded"
-        >
-          Escribir una reseña
-        </button>
 
         <div className="p-4 mt-4 mb-24 rounded shadow-md bg-c2 text-c">
           <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>

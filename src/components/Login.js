@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, provider } from '../firebase/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import Top from './Top';
+import { CafeContext } from './CafeContext'; // Asegúrate de importar el contexto
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
   const [loginMessage, setLoginMessage] = useState('');
+  const [saveMessage, setSaveMessage] = useState('');
 
   const navigate = useNavigate();
+
+  const { selectedNeighs, handleNeighSelection, cafes } = useContext(CafeContext); // Usa el contexto para obtener los barrios seleccionados
+  const uniqueNeighs = [...new Set(cafes.map(cafe => cafe.neigh))];
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -64,6 +70,13 @@ const Login = () => {
     navigate('/register');
   };
 
+  const handleSavePreferences = () => {
+    setSaveMessage('Preferencias guardadas');
+    setTimeout(() => {
+      setSaveMessage('');
+    }, 3000); // Mensaje visible por 3 segundos
+  };
+
   return (
     <div className="flex flex-col items-center justify-start">
       <Top text={"Perfil"}/>
@@ -107,6 +120,33 @@ const Login = () => {
           <h2 className={loggedIn ? 'text-green-500' : 'text-red-500'}>{loginMessage}</h2>
         </form>
       )}
+      
+      {/* Aquí va la selección de barrios */}
+      <div className="w-4/5 p-4 mt-4 rounded shadow-md sm:w-1/4 bg-zinc-100">
+        <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Selecciona tus barrios de preferencia</h1>
+        <div className="text-center">
+          {uniqueNeighs.map((neigh, index) => (
+            <button
+              key={index}
+              onClick={() => handleNeighSelection(neigh)}
+              className={`p-2 m-2 rounded ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+            >
+              {neigh}
+            </button>
+          ))}
+        </div>
+        <div className='flex flex-col items-center justify-center w-full p-4'>
+          <button
+            onClick={handleSavePreferences}
+            className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
+          >
+            Guardar Preferencias
+          </button>
+          {saveMessage && (
+            <p className="mt-2 text-green-500">{saveMessage}</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -8,7 +8,7 @@ const Notifications = () => {
   return (
     <>
     <Top text={"Notificaciones"}/>
-    <div className="flex flex-col items-center justify-start w-1/2 sm:m-auto">
+    <div className="flex flex-col items-center justify-start w-full sm:w-1/2 sm:m-auto">
       <Notif tittle = '¿Te gustó la app?' subt={'Reseñá en Google Play!'}/>
     </div>
     </>

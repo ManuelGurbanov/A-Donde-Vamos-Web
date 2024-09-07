@@ -1,25 +1,28 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { doc, updateDoc, arrayUnion, getDoc, getDocs, collection, query, where } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { CafeContext } from './CafeContext'; // Importa el contexto
-
+import { CafeContext } from './CafeContext';
 import StarRating from './StarRating';
-import Top from './Top';
 
-const Review = () => {
+import screen2 from '../img/screen2.png';
+
+import fav from '../img/fav.png';
+
+const Review = ({ onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { cafes } = useContext(CafeContext); // Usa el contexto para obtener la lista de cafeterías
+  const { cafes } = useContext(CafeContext);
   const { currentUser } = useAuth();
-  
+
   const [selectedCafe, setSelectedCafe] = useState(null);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(0);
   const [hasRated, setHasRated] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setErrorMessage('');
@@ -27,31 +30,6 @@ const Review = () => {
 
     if (!currentUser) {
       setErrorMessage('Por favor, inicia sesión para hacer una reseña.');
-    }
-
-    const cafeName = location.state?.cafeName;
-
-    if (cafeName) {
-      const fetchCafeData = async () => {
-        try {
-          const cafesCollectionRef = collection(db, 'cafeterias');
-          const q = query(cafesCollectionRef, where('name', '==', cafeName));
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-            const cafeDoc = querySnapshot.docs[0];
-            setSelectedCafe({ id: cafeDoc.id, ...cafeDoc.data() });
-          } else {
-            setErrorMessage('No se encontró la cafetería.');
-            setSelectedCafe(null);
-          }
-        } catch (error) {
-          setErrorMessage('Error al buscar la cafetería.');
-          setSelectedCafe(null);
-        }
-      };
-
-      fetchCafeData();
     }
   }, [location.state, currentUser]);
 
@@ -62,7 +40,7 @@ const Review = () => {
       setSelectedCafe(null);
       return;
     }
-    
+
     const cafeDocRef = doc(db, 'cafeterias', cafeId);
     try {
       const cafeDocSnap = await getDoc(cafeDocRef);
@@ -124,58 +102,127 @@ const Review = () => {
     }
   };
 
-  return (
-    <>
-      <Top text={"Reseñar"}></Top>
-      <div className="p-8 m-5 mt-4 rounded shadow-md sm:m-auto bg-c2 text-c sm:w-1/2 sm:mt-9">
-        <h2 className="mb-4 text-2xl font-bold">Escribe una reseña</h2>
-        {errorMessage && (
-          <div className="mb-4 text-red-500">
-            {errorMessage}
-          </div>
-        )}
-        {successMessage && (
-          <div className="mb-4 text-green-500">
-            {successMessage}
-          </div>
-        )}
-        {!selectedCafe ? (
-          <div>
-            <h3 className="mb-4 text-xl">Selecciona una cafetería</h3>
-            <select onChange={handleCafeChange} className="w-full p-2 mb-4 text-black border rounded">
-              <option value="">Selecciona una cafetería</option>
-              {cafes.map(cafe => (
-                <option key={cafe.id} value={cafe.id}>
-                  {cafe.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : (
-          <div>
-            <h3 className="mb-4 text-xl italic font-bold">{selectedCafe.name}</h3>
-            <form onSubmit={handleReviewSubmit}>
-              <StarRating initialRating={rating} onRatingChange={setRating} />
+  // Filtrar cafeterías por el término de búsqueda
+  const filteredCafes = cafes.filter(cafe =>
+    cafe.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-              <textarea
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                className="w-full p-2 mb-4 text-black border rounded"
-                placeholder="Escribe tu reseña aquí..."
-                rows="4"
-              />
-              <button
-                type="submit"
-                disabled={!currentUser || rating === 0 || hasRated}
-                className="px-4 py-2 text-white bg-blue-600 rounded disabled:bg-gray-400"
-              >
-                Enviar Reseña
-              </button>
-            </form>
+  const handleCancel = () => {
+    // Puedes limpiar el estado si es necesario
+    setSelectedCafe(null);
+    setReview('');
+    setRating(0);
+    setHasRated(false);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    // Llama a la función onClose pasada como prop
+    if (onClose) onClose();
+  };
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-b1 text-c h-[90vh] shadow-lg overflow-y-auto rounded-lg">
+      <button
+        className='absolute text-sm bg-transparent left-4 text-c top-4 text-opacity-60'
+        onClick={handleCancel}
+      >
+        Cancelar
+      </button>
+
+      <button
+        className='absolute text-sm bg-transparent left-4 text-c top-4 text-opacity-60'
+        onClick={handleCancel}
+      >
+        Cancelar
+      </button>
+
+      <h2 className="mt-6 mb-4 text-lg font-bold text-center">Reseñar una cafetería</h2>
+
+      {!selectedCafe ? (
+        // Vista de selección de cafetería
+        <div className="flex flex-col items-center">
+          <div className="relative flex-col items-center w-full m-auto mb-4 sm:w-1/2">
+            <input
+              type="text"
+              placeholder="Nombre de Cafetería..."
+              className="w-full h-full p-2 text-center text-black border rounded placeholder-c"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {/* Icono de búsqueda */}
+            <img 
+              src={screen2} 
+              alt="Search Icon" 
+              className="absolute w-5 h-5 transform -translate-y-1/2 top-1/2 left-3" 
+            />
           </div>
-        )}
-      </div>
-    </>
+
+          <div className="flex flex-col w-full space-y-4">
+            {filteredCafes.map(cafe => (
+              <>
+              <hr className='border-solid border-1 border-c'></hr>
+              <div
+                key={cafe.id}
+                className="p-2 rounded cursor-pointer"
+                onClick={() => setSelectedCafe(cafe)}
+              >
+                {cafe.name}
+              </div>
+              </>
+            ))}
+          </div>
+        </div>
+      ) : (
+        // Vista de reseña de la cafetería seleccionada
+        <div>
+          <hr className='border-solid border-1 border-c2'></hr>
+          <h3 className="mt-2 mb-2 text-lg italic text-left text-opacity-60 text-c2"><span className='mr-4 text-2xl font-bold text-opacity-100'>{selectedCafe.name},</span> {selectedCafe.adress}</h3>
+          <hr className='mb-2 border-solid border-1 border-c2'></hr>
+          <form onSubmit={handleReviewSubmit} className="flex flex-col items-center bg-b1">
+            <section className='flex flex-row items-start justify-around w-screen px-6'>
+
+              <div className='flex flex-col w-full h-full gap-2'>
+                <h3 className=' text-c2'>Calificá</h3>
+                <StarRating initialRating={rating} onRatingChange={setRating} />
+              </div>
+
+              <div>
+                <h3 className=' text-c2'>Favorito</h3>
+                <img src={fav} className='w-8 h-8 mt-2 ml-4'/>
+              </div>
+            </section>
+
+
+            <textarea
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              className="w-full p-2 mb-4 border rounded border-c2 bg-b1 text-c2 placeholder-c2"
+              placeholder="Escribe tu reseña aquí..."
+              rows="4"
+            />
+
+            <button
+              type="submit"
+              disabled={!currentUser || rating === 0 || hasRated}
+              className="px-4 py-2 text-white bg-blue-600 rounded disabled:bg-gray-400"
+            >
+              Enviar Reseña
+            </button>
+
+                  {errorMessage && (
+              <div className="mt-4 mb-4 font-bold text-center">
+                {errorMessage}
+              </div>
+            )}
+            {successMessage && (
+              <div className="mt-4 mb-4 font-bold text-center">
+                {successMessage}
+              </div>
+            )}
+          </form>
+        </div>
+      )}
+    </div>
   );
 };
 

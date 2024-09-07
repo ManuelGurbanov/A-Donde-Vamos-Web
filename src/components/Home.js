@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -11,24 +11,53 @@ const Home = () => {
   const { cafes, loading, error } = useContext(CafeContext);
   const { currentUser } = useAuth();
 
+  const [selectedNeighs, setSelectedNeighs] = useState([]);
+  const [showWelcome, setShowWelcome] = useState(false);
+  
   const isLargeScreen = window.innerWidth >= 1024;
 
-  // Estados separados para cada carrusel
   const [currentSlidePopular, setCurrentSlidePopular] = useState(0);
   const [currentSlideFavorites, setCurrentSlideFavorites] = useState(0);
   const [currentSlideNearby, setCurrentSlideNearby] = useState(0);
   const [currentSlideNew, setCurrentSlideNew] = useState(0);
 
+  useEffect(() => {
+    const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
+    if (storedNeighs && storedNeighs.length > 0) {
+      setSelectedNeighs(storedNeighs);
+    } else {
+      setShowWelcome(true);
+    }
+  }, []);
+
+  const handleSavePreferences = () => {
+    localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
+    setShowWelcome(false);
+  };
+
+  const handleFilterChange = (neigh) => {
+    if (selectedNeighs.includes(neigh)) {
+      setSelectedNeighs(selectedNeighs.filter(n => n !== neigh));
+    } else {
+      setSelectedNeighs([...selectedNeighs, neigh]);
+    }
+  };
+
+  const uniqueNeighs = [...new Set(cafes.map(cafe => cafe.neigh))];
+
   if (loading) return <div className="mt-24 text-3xl text-center text-white">Cargando Cafeterías...</div>;
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
-  // Ordenar cafeterías por número de reseñas
   const sortedByRatings = [...cafes].sort((a, b) => (b.numRatings || 0) - (a.numRatings || 0));
   const popularCafes = sortedByRatings.slice(0, 5);
 
-  // Ordenar cafeterías por fecha
   const sortedByDate = [...cafes].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
   const newCafes = sortedByDate.slice(0, 5);
+
+  // Filtrar cafeterías para "Cerca Tuyo"
+  const nearbyCafes = selectedNeighs.length > 0
+    ? cafes.filter(cafe => selectedNeighs.includes(cafe.neigh))
+    : cafes;
 
   const sliderSettings = {
     arrows: false,
@@ -74,6 +103,33 @@ const Home = () => {
       <Top />
 
       <div className='m-auto sm:w-3/4'>
+        {showWelcome && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/4">
+              <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Bienvenido, elegí tus barrios de preferencia:</h1>
+              <div className="text-center">
+                {uniqueNeighs.map((neigh, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleFilterChange(neigh)}
+                    className={`p-2 m-2 rounded ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+                  >
+                    {neigh}
+                  </button>
+                ))}
+              </div>
+              <div className='flex flex-col items-center justify-center w-full p-4'>
+                <button
+                  onClick={() => handleSavePreferences()}
+                  className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="p-4">
           {currentUser && (
             <p className="mb-1 text-xl italic text-center text-b2 md:text-2xl">
@@ -111,10 +167,10 @@ const Home = () => {
             <div>
               <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
               {isLargeScreen ? (
-                renderCarousel(cafes, currentSlideNearby, setCurrentSlideNearby)
+                renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)
               ) : (
                 <Slider {...sliderSettings}>
-                  {cafes.map((cafe, index) => (
+                  {nearbyCafes.map((cafe, index) => (
                     <CoffeeCard key={index} cafe={cafe} />
                   ))}
                 </Slider>

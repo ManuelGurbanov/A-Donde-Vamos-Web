@@ -17,15 +17,16 @@
   /* Navbar */
   .navbar {
     position: fixed;
+    padding: 0;
     bottom: 0;
     display: flex;
     align-items: center;
     width: 100%;
-    height: 65px;
-    /*background-image: url('../img/navbar_bg.png'); /* Usa la imagen de fondo */
-    background-size: cover;
+    height: 10vh;
+    /*background-image: url('../img/nav_bg.png'); /* Usa la imagen de fondo */
+    background-size:auto;
+    background-repeat: no-repeat;
     background-position: center;
-    box-shadow: 0px -3px 2.8px rgba(219, 159, 104, 0.49);
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
     z-index: 10; /* Asegúrate de que esté por encima del contenido */
@@ -107,8 +108,8 @@
     width: 55px;
     height: 55px;
     left: 50%;
-    top: -22px;
-    background-color: #DB9F68;
+    bottom: 7vh;
+    background-color: #630508;
     box-shadow: 0px 3px 10px #630508;
     border-radius: 50%;
     display: flex;

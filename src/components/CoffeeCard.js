@@ -5,9 +5,9 @@ import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
 
-import fullStarWhite from '../img/fullStarWhite.png';
-import halfStarWhite from '../img/halfStarWhite.png';
-import emptyStarWhite from '../img/emptyStarWhite.png';
+import fullStarWhite from '../img/fullStar.png';
+import halfStarWhite from '../img/halfStar.png';
+import emptyStarWhite from '../img/emptyStar.png';
 
 const CoffeeCard = ({ cafe }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,11 +15,13 @@ const CoffeeCard = ({ cafe }) => {
   const [textColor, setTextColor] = useState('text-red-500');
 
   useEffect(() => {
-    checkIfOpen(cafe);
+    if (cafe && cafe.schedules) {
+      checkIfOpen(cafe);
+    }
   }, [cafe]);
 
   const calculateAverageRating = () => {
-    if (cafe.numRatings === 0) return 0;
+    if (!cafe.numRatings || cafe.numRatings === 0) return 0;
     return (cafe.totalRatings / cafe.numRatings).toFixed(1);
   };
 
@@ -98,17 +100,17 @@ const CoffeeCard = ({ cafe }) => {
         <div className="relative h-48 overflow-hidden bg-white rounded-lg shadow-md">
           <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
 
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-4 bg-c2 bg-opacity-90 h-1/2 hover:bg-opacity-100">
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-4 bg-b1 bg-opacity-90 h-1/2 hover:bg-opacity-100">
             <div>
-              <h2 className="text-xl font-bold text-c">{cafe.name || 'Nombre no disponible'}</h2>
-              <p className="text-xs font-regular text-c">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
+              <h2 className="text-xl font-bold text-c2">{cafe.name || 'Nombre no disponible'}</h2>
+              <p className="text-xs font-regular text-c2">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
 
               <div className="flex items-center space-x-1">
                 {starRating(calculateAverageRating())}
-                <span className="text-sm font-medium text-c">{cafe.numRatings} valoraciones</span>
+                <span className="text-sm font-medium text-c2">{cafe.numRatings} valoraciones</span>
               </div>
 
-              <p className={`text-sm ${textColor}`}>
+              <p className={`text-sm ${textColor} font-bold italic`}>
                 {status}
               </p>
             </div>

@@ -3,12 +3,13 @@ import { db } from '../firebase/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
 const AddForm = () => {
+  const [googleLink, setGoogleLink] = useState('');
   const [name, setName] = useState('');
   const [adress, setAdress] = useState('');
   const [neigh, setNeigh] = useState('');
   const [description, setDescription] = useState('');
   const [instagram, setInstagram] = useState('');
-  const [picsLinks, setPicsLinks] = useState(['', '', '', '']);
+  const [picsLinks, setPicsLinks] = useState(['', '', '', '', '']);
   
   // Horarios por día
   const [schedules, setSchedules] = useState({
@@ -25,9 +26,14 @@ const AddForm = () => {
   const [takeaway, setTakeaway] = useState(false);
   const [menuLink, setMenuLink] = useState('');
 
+  const [patio, setPatio] = useState(false);
+  const [terraza, setTerraza] = useState(false);
+  const [cafeNotable, setCafeNotable] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, 'cafeterias'), {
+      googleLink,
       name,
       adress,
       neigh,
@@ -41,15 +47,22 @@ const AddForm = () => {
       outside,
       coworking,
       takeaway,
-      menuLink
+      menuLink,
+      patio,
+      terraza,
+      cafeNotable
     });
     // Resetear el formulario
+    setCafeNotable(false);
+    setTerraza(false);
+    setPatio(false);
+    setGoogleLink('');
     setName('');
     setAdress('');
     setNeigh('');
     setDescription('');
     setInstagram('');
-    setPicsLinks(['', '', '', '']);
+    setPicsLinks(['', '', '', '', '']);
     setSchedules({
       lunes_viernes: { apertura: '', cierre: '' },
       sabado: { apertura: '', cierre: '' },
@@ -75,9 +88,21 @@ const AddForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg p-8 mx-auto mb-20 shadow-md text-c2">
+<form onSubmit={handleSubmit} className="max-w-lg p-8 mx-auto mb-20 shadow-md text-c2">
       <h2 className="mb-6 text-2xl font-bold text-center text-c2">Agregar Cafetería</h2>
       <h2 className="mb-6 text-2xl font-bold text-center text-c2">(SOLO PARA DESARROLLO)</h2>
+      
+      {/* Google Link */}
+        <div className="mb-4">
+        <label className="block text-c2">Link a Maps</label>
+        <input
+          type="text"
+          value={googleLink}
+          onChange={(e) => setGoogleLink(e.target.value)}
+          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
+          placeholder="Nombre"
+        />
+      </div>
       
       {/* Nombre */}
       <div className="mb-4">
@@ -91,6 +116,18 @@ const AddForm = () => {
         />
       </div>
       
+      {/* Barrio */}
+        <div className="mb-4">
+        <label className="block text-c2">Barrio</label>
+        <input
+          type="text"
+          value={neigh}
+          onChange={(e) => setNeigh(e.target.value)}
+          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
+          placeholder="Barrio"
+        />
+      </div>
+
       {/* Dirección */}
       <div className="mb-4">
         <label className="block text-c2">Dirección</label>
@@ -103,18 +140,95 @@ const AddForm = () => {
         />
       </div>
       
-      {/* Barrio */}
+      {/* Café Notable */}
       <div className="mb-4">
-        <label className="block text-c2">Barrio</label>
+        <label className="block text-c2">¿Café Notable?</label>
         <input
-          type="text"
-          value={neigh}
-          onChange={(e) => setNeigh(e.target.value)}
-          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
-          placeholder="Barrio"
+          type="checkbox"
+          checked={cafeNotable}
+          onChange={(e) => setCafeNotable(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+      </div>
+
+      {/* CoWorking */}
+      <div className="mb-4">
+        <label className="block text-c2">¿Coworking?</label>
+        <input
+          type="checkbox"
+          checked={coworking}
+          onChange={(e) => setCoworking(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+      </div>
+
+      {/* Apto Celíacos */}
+      <div className="mb-4">
+        <label className="block text-c2">¿Apto Celíacos?</label>
+        <input
+          type="checkbox"
+          checked={tac}
+          onChange={(e) => setTac(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+      </div>
+
+      {/* Vegano */}
+      <div className="mb-4">
+        <label className="block text-c2">¿Vegano?</label>
+        <input
+          type="checkbox"
+          checked={vegan}
+          onChange={(e) => setVegan(e.target.checked)}
+          className="mr-2 leading-tight"
         />
       </div>
       
+      {/* Mesas Afuera */}
+      <div className="mb-4">
+        <label className="block text-c2">Mesas Afuera</label>
+        <input
+          type="checkbox"
+          checked={outside}
+          onChange={(e) => setOutside(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+      </div>
+      
+      {/* Pet Friendly */}
+      <div className="mb-4">
+        <label className="block text-c2">Pet Friendly</label>
+        <input
+          type="checkbox"
+          checked={pet}
+          onChange={(e) => setPet(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+      </div>
+      
+      {/* Patio */}
+      <div className="mb-4">
+        <label className="block text-c2">¿Tiene Patio?</label>
+        <input
+          type="checkbox"
+          checked={patio}
+          onChange={(e) => setPatio(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+      </div>
+
+        {/* Terraza */}
+        <div className="mb-4">
+        <label className="block text-c2">¿Tiene Terraza?</label>
+        <input
+          type="checkbox"
+          checked={terraza}
+          onChange={(e) => setTerraza(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+      </div>
+
+    
       {/* Descripción */}
       <div className="mb-4">
         <label className="block text-c2">Descripción</label>
@@ -140,10 +254,10 @@ const AddForm = () => {
       
       {/* Fotos */}
       <div className="mb-4">
-        <label className="block text-c2">Fotos (Máx. 4)</label>
+        <label className="block text-c2">Fotos (Máx. 5)</label>
         <div className="flex flex-wrap">
           {picsLinks.map((link, index) => (
-            index < 4 ? (
+            index < 5 ? (
               <input
                 key={index}
                 type="text"
@@ -161,6 +275,18 @@ const AddForm = () => {
             ) : null
           ))}
         </div>
+      </div>
+
+      {/* Link al Menú */}
+      <div className="mb-4">
+        <label className="block text-c2">Link al Menú</label>
+        <input
+          type="text"
+          value={menuLink}
+          onChange={(e) => setMenuLink(e.target.value)}
+          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
+          placeholder="Link al Menú"
+        />
       </div>
 
       {/* Horarios */}
@@ -217,84 +343,6 @@ const AddForm = () => {
             placeholder="Cierre (HHMM)"
           />
         </div>
-      </div>
-      
-      {/* Vegano */}
-      <div className="mb-4">
-        <label className="block text-c2">Vegano</label>
-        <input
-          type="checkbox"
-          checked={vegan}
-          onChange={(e) => setVegan(e.target.checked)}
-          className="mr-2 leading-tight"
-        />
-      </div>
-      
-      {/* Apto Celíacos */}
-      <div className="mb-4">
-        <label className="block text-c2">Apto Celíacos</label>
-        <input
-          type="checkbox"
-          checked={tac}
-          onChange={(e) => setTac(e.target.checked)}
-          className="mr-2 leading-tight"
-        />
-      </div>
-      
-      {/* Pet Friendly */}
-      <div className="mb-4">
-        <label className="block text-c2">Pet Friendly</label>
-        <input
-          type="checkbox"
-          checked={pet}
-          onChange={(e) => setPet(e.target.checked)}
-          className="mr-2 leading-tight"
-        />
-      </div>
-      
-      {/* Mesas Afuera */}
-      <div className="mb-4">
-        <label className="block text-c2">Mesas Afuera</label>
-        <input
-          type="checkbox"
-          checked={outside}
-          onChange={(e) => setOutside(e.target.checked)}
-          className="mr-2 leading-tight"
-        />
-      </div>
-      
-      {/* Coworking */}
-      <div className="mb-4">
-        <label className="block text-c2">Coworking</label>
-        <input
-          type="checkbox"
-          checked={coworking}
-          onChange={(e) => setCoworking(e.target.checked)}
-          className="mr-2 leading-tight"
-        />
-      </div>
-      
-      {/* Takeaway */}
-      <div className="mb-4">
-        <label className="block text-c2">Takeaway</label>
-        <input
-          type="checkbox"
-          checked={takeaway}
-          onChange={(e) => setTakeaway(e.target.checked)}
-          className="mr-2 leading-tight"
-        />
-      </div>
-      
-      {/* Link al Menú */}
-      <div className="mb-4">
-        <label className="block text-c2">Link al Menú</label>
-        <input
-          type="text"
-          value={menuLink}
-          onChange={(e) => setMenuLink(e.target.value)}
-          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
-          placeholder="Link al Menú"
-        />
       </div>
       
       <button

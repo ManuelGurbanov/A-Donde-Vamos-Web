@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import halfStarLeft from '../img/halfStarLeft.png';
-import halfStarRight from '../img/halfStarRight.png';
-import emptyStarLeft from '../img/emptyStarLeft.png'; // Imagen de la mitad vacía izquierda
-import emptyStarRight from '../img/emptyStarRight.png'; // Imagen de la mitad vacía derecha
+import halfStarLeft from '../img/halfStar2.png';
+import halfStarRight from '../img/halfStarRightDark2.png';
+import emptyStarLeft from '../img/emptyStarLeftDark.png'; // Imagen de la mitad vacía izquierda
+import emptyStarRight from '../img/emptyStarRightDark.png'; // Imagen de la mitad vacía derecha
 
 const StarRating = ({ initialRating = 0, onRatingChange }) => {
   const [rating, setRating] = useState(initialRating);
