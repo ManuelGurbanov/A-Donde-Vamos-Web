@@ -409,11 +409,11 @@ const CoffeeDetails = () => {
         </div>
 
 
-        <div className="p-4 mt-4 mb-24 rounded shadow-md bg-c2 text-c">
+        <div className="p-4 mt-4 mb-24 rounded shadow-md bg-b1 text-c">
           <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
           {reviews.length > 0 ? (
             reviews.map((review, index) => (
-              <div key={index} className="p-4 mb-4 rounded shadow-md bg-c2 text-c">
+              <div key={index} className="w-full p-4 mb-4 rounded shadow-md bg-b1 text-c">
                 <div className="flex items-center mb-2">
                   <span className="mr-2 font-bold">{review.user}</span>
                   <span>{starRating(review.rating)}</span>

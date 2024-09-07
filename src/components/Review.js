@@ -176,7 +176,14 @@ const Review = ({ onClose }) => {
         // Vista de reseña de la cafetería seleccionada
         <div>
           <hr className='border-solid border-1 border-c2'></hr>
-          <h3 className="mt-2 mb-2 text-lg italic text-left text-opacity-60 text-c2"><span className='mr-4 text-2xl font-bold text-opacity-100'>{selectedCafe.name},</span> {selectedCafe.adress}</h3>
+
+          <h3 className="w-full mt-2 mb-2 text-lg italic text-left text-opacity-60 text-c2" style={{ whiteSpace: 'nowrap', overflow: 'auto', fontSize: '48px' }}>
+              <span className='mr-4 text-2xl font-bold text-opacity-100'>{selectedCafe.name},</span> 
+              <span className='text-base'>{selectedCafe.adress}</span>
+            </h3>
+
+
+          
           <hr className='mb-2 border-solid border-1 border-c2'></hr>
           <form onSubmit={handleReviewSubmit} className="flex flex-col items-center bg-b1">
             <section className='flex flex-row items-start justify-around w-screen px-6'>
