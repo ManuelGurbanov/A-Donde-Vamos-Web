@@ -30,6 +30,7 @@ const AddForm = () => {
   const [terraza, setTerraza] = useState(false);
   const [cafeNotable, setCafeNotable] = useState(false);
 
+  const [francos, setFrancos] = useState('');
   const handleSubmit = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, 'cafeterias'), {
@@ -50,7 +51,8 @@ const AddForm = () => {
       menuLink,
       patio,
       terraza,
-      cafeNotable
+      cafeNotable,
+      francos
     });
     // Resetear el formulario
     setCafeNotable(false);
@@ -75,6 +77,7 @@ const AddForm = () => {
     setCoworking(false);
     setTakeaway(false);
     setMenuLink('');
+    setFrancos('');
   };
 
   const handleScheduleChange = (day, type, value) => {
@@ -289,6 +292,17 @@ const AddForm = () => {
         />
       </div>
 
+      {/* Francos */}
+      <div className="mb-4">
+        <label className="block text-c2">Francos</label>
+        <input
+          type="text"
+          value={francos}
+          onChange={(e) => setFrancos(e.target.value)}
+          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
+          placeholder="Francos"
+        />
+      </div>
       {/* Horarios */}
       <div className="mb-4">
         <label className="block text-c2">Horarios</label>

@@ -131,13 +131,6 @@ const Review = ({ onClose }) => {
         Cancelar
       </button>
 
-      <button
-        className='absolute text-sm bg-transparent left-4 text-c top-4 text-opacity-60'
-        onClick={handleCancel}
-      >
-        Cancelar
-      </button>
-
       <h2 className="mt-6 mb-4 text-lg font-bold text-center">Reseñar una cafetería</h2>
 
       {!selectedCafe ? (
@@ -179,13 +172,22 @@ const Review = ({ onClose }) => {
         <div>
           <hr className='border-solid border-1 border-c2'></hr>
 
-          <h3 className="w-full mt-2 mb-2 text-lg italic text-left text-opacity-60 text-c2" style={{ whiteSpace: 'nowrap', overflow: 'auto', fontSize: '48px' }}>
-              <span className='mr-4 text-2xl font-bold text-opacity-100'>{selectedCafe.name},</span> 
-              <span className='text-base'>{selectedCafe.adress}</span>
-            </h3>
+          <h3 className="w-full mt-2 text-lg text-left text-opacity-60 text-c2" style={{ whiteSpace: 'nowrap', overflow: 'auto', fontSize: '48px' }}>
+              <span className='text-2xl font-bold text-opacity-100 text-c2'>{selectedCafe.name}</span> 
+          </h3>
+          <h2 className='mb-2 text-sm italic'>{selectedCafe.adress}, <span className='text-sm'>{selectedCafe.neigh}</span></h2>
+          
 
 
           
+          <hr className='mb-2 border-solid border-1 border-c2'></hr>
+
+          <div className='flex justify-between w-full mb-2 text-c2'>
+            <h1>Fecha</h1>
+            {/* texto con la fecha actual */}
+            <p>{new Date().toLocaleDateString()}</p>
+          </div>
+
           <hr className='mb-2 border-solid border-1 border-c2'></hr>
           <form onSubmit={handleReviewSubmit} className="flex flex-col items-center bg-b1">
             <section className='flex flex-row items-start justify-around w-screen px-6'>
