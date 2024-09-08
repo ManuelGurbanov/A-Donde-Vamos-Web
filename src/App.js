@@ -30,7 +30,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/add" element={<AddForm />} />
               <Route path="/coffee-all" element={<AllCoffeeList />} />
-              <Route path="/review" element={<Review />} />
               <Route path="/notifications" element={<Notifications/>} />
             </Route>
           </Routes>

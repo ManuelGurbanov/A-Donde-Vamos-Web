@@ -134,7 +134,6 @@ const Review = ({ onClose }) => {
       <h2 className="mt-6 mb-4 text-lg font-bold text-center">Reseñar una cafetería</h2>
 
       {!selectedCafe ? (
-        // Vista de selección de cafetería
         <div className="flex flex-col items-center">
           <div className="relative flex-col items-center w-full m-auto mb-4 sm:w-1/2">
             <input
@@ -153,19 +152,19 @@ const Review = ({ onClose }) => {
           </div>
 
           <div className="flex flex-col w-full space-y-4">
-            {filteredCafes.map(cafe => (
-              <>
-              <hr className='border-solid border-1 border-c'></hr>
-              <div
-                key={cafe.id}
-                className="p-2 rounded cursor-pointer"
-                onClick={() => setSelectedCafe(cafe)}
-              >
-                {cafe.name}
-              </div>
-              </>
-            ))}
-          </div>
+  {filteredCafes.map(cafe => (
+    <React.Fragment key={cafe.id}>
+      <hr className='border-solid border-1 border-c' />
+      <div
+        className="p-2 rounded cursor-pointer"
+        onClick={() => setSelectedCafe(cafe)}
+      >
+        {cafe.name}
+      </div>
+    </React.Fragment>
+  ))}
+</div>
+
         </div>
       ) : (
         // Vista de reseña de la cafetería seleccionada
@@ -212,15 +211,16 @@ const Review = ({ onClose }) => {
               rows="4"
             />
 
-            <button
-              type="submit"
-              disabled={!currentUser || rating === 0 || hasRated}
-              className="px-4 py-2 text-white bg-blue-600 rounded disabled:bg-gray-400"
-            >
-              Enviar Reseña
-            </button>
+              <button
+                type="submit"
+                disabled={!currentUser || rating === 0 || hasRated}
+                className="px-4 py-2 text-white bg-blue-600 rounded disabled:bg-gray-400"
+              >
+                Enviar Reseña
+              </button>
 
-                  {errorMessage && (
+
+            {errorMessage && (
               <div className="mt-4 mb-4 font-bold text-center">
                 {errorMessage}
               </div>

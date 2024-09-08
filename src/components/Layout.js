@@ -1,3 +1,4 @@
+// Layout.js
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import screen1 from '../img/screen1.png';
@@ -31,7 +32,7 @@ const Layout = () => {
       <img className='absolute bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
 
       <div className="content-container">
-        <Outlet />
+        <Outlet context={{ handleReviewClick }} /> {/* Pasa la función a los componentes hijos */}
       </div>
 
       {showReview && (

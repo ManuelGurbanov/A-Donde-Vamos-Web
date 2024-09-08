@@ -27,8 +27,10 @@ import StarRating from './StarRating';
 import Top from './Top';
 
 import Slider from 'react-slick';
+import { useOutletContext } from 'react-router-dom';
 
 const CoffeeDetails = () => {
+  const { handleReviewClick } = useOutletContext();
   const { id } = useParams();
   const [coffee, setCoffee] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,6 +49,9 @@ const CoffeeDetails = () => {
 
   const navigate = useNavigate();
   const { setSelectedCafe } = useContext(CafeContext);
+
+
+
 
   
   useEffect(() => {
@@ -122,55 +127,31 @@ const CoffeeDetails = () => {
   
     // Función para obtener el horario para un día específico
     const getScheduleForDay = (day) => {
-      console.log(`Obteniendo horario para el día: ${day}`);
       if (day >= 1 && day <= 5) {  // 1 = Lunes, 5 = Viernes
         const schedule = data.schedules.lunes_viernes || {};
-        console.log("Horario para lunes a viernes:", schedule);
         return schedule;
       } else if (day === 6) {  // 6 = Sábado
         const schedule = data.schedules.sabado || {};
-        console.log("Horario para sábado:", schedule);
         return schedule;
       } else {  // 0 = Domingo
         const schedule = data.schedules.domingo || {};
-        console.log("Horario para domingo:", schedule);
         return schedule;
       }
     };
     
     const getNextOpen = () => {
-      console.log("Iniciando búsqueda del próximo horario de apertura");
     
       for (let i = 1; i <= 7; i++) {
-        console.log(`\nIteración ${i}:`);
         const nextDay = (today + i) % 7; // Ajuste para el próximo día, usando % 7 para ciclos semanales
-        console.log("Día siguiente calculado:", nextDay);
     
         const nextSchedule = getScheduleForDay(nextDay);
-        console.log("Horario del siguiente día:", nextSchedule);
-    
-        // Si el siguiente día es un franco o no hay horario válido, continuar buscando
-        if (francos.includes(nextDay)) {
-          console.log("El día siguiente es franco. Continuando...");
-          continue;
-        }
-        if (!nextSchedule.apertura || !nextSchedule.cierre) {
-          console.log("No hay horario de apertura o cierre definido. Continuando...");
-          continue;
-        }
-        if (nextSchedule.apertura === "0000" || nextSchedule.cierre === "0000") {
-          console.log("Horario de apertura o cierre es 0000 (cerrado). Continuando...");
-          continue;
-        }
     
         // Si encontramos un horario válido, devolver la próxima apertura
         const openingTime = parseInt(nextSchedule.apertura, 10);
         const openingHours = Math.floor(openingTime / 100);
         const openingMinutes = openingTime % 100;
-        console.log("Horario de apertura encontrado:", openingTime);
     
         const formattedTime = `${openingHours.toString().padStart(2, '0')}:${openingMinutes.toString().padStart(2, '0')}`;
-        console.log(`Próxima apertura: ${formattedTime} en el día ${nextDay}`);
     
         return {
           day: nextDay,
@@ -178,7 +159,6 @@ const CoffeeDetails = () => {
         };
       }
     
-      console.log("No se encontró un horario de apertura válido");
       return null; // En caso de que no se encuentre un horario de apertura válido
     };
     
@@ -485,7 +465,7 @@ const CoffeeDetails = () => {
             </button>
 
             
-            <button onClick={goToReviewPage} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium text-c bg-b1 rounded-2xl">
+            <button onClick={handleReviewClick} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium text-c bg-b1 rounded-2xl">
               <img src={addsquare} className='flex-[1]'></img>
               <p className='text-center text-lg flex-[9]'>
               Agregar una reseña
