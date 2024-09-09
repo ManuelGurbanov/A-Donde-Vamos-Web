@@ -118,107 +118,43 @@ const CoffeeDetails = () => {
   const checkIfOpen = (data) => {
     const now = new Date();
     const today = now.getDay();  // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const currentTime = hours * 100 + minutes;
   
     // Convertir los "francos" (días libres) en un array de números
     const francos = data.francos ? data.francos.split(',').map(Number) : [];
   
-    // Función para obtener el horario para un día específico
-    const getScheduleForDay = (day) => {
-      if (day >= 1 && day <= 5) {  // 1 = Lunes, 5 = Viernes
-        const schedule = data.schedules.lunes_viernes || {};
-        return schedule;
-      } else if (day === 6) {  // 6 = Sábado
-        const schedule = data.schedules.sabado || {};
-        return schedule;
-      } else {  // 0 = Domingo
-        const schedule = data.schedules.domingo || {};
-        return schedule;
-      }
-    };
-    
+    // Función para obtener el próximo día que no sea franco
     const getNextOpen = () => {
-    
       for (let i = 1; i <= 7; i++) {
         const nextDay = (today + i) % 7; // Ajuste para el próximo día, usando % 7 para ciclos semanales
-    
-        const nextSchedule = getScheduleForDay(nextDay);
-    
-        // Si encontramos un horario válido, devolver la próxima apertura
-        const openingTime = parseInt(nextSchedule.apertura, 10);
-        const openingHours = Math.floor(openingTime / 100);
-        const openingMinutes = openingTime % 100;
-    
-        const formattedTime = `${openingHours.toString().padStart(2, '0')}:${openingMinutes.toString().padStart(2, '0')}`;
-    
-        return {
-          day: nextDay,
-          time: formattedTime
-        };
+        
+        // Si el día no es franco, devolvemos ese día
+        if (!francos.includes(nextDay)) {
+          return nextDay;
+        }
       }
-    
-      return null; // En caso de que no se encuentre un horario de apertura válido
+  
+      return null; // En caso de que todos los días sean francos
     };
-    
   
-    const currentSchedule = getScheduleForDay(today);
-    let closingFormatted = null;  // Inicializamos la variable para evitar el error
-  
-    // Si el horario actual existe y no es 00:00
-    if (currentSchedule && currentSchedule.apertura !== "0000" && currentSchedule.cierre !== "0000") {  
-      const openingTime = parseInt(currentSchedule.apertura, 10);
-      const closingTime = parseInt(currentSchedule.cierre, 10);
-      const closingHours = Math.floor(closingTime / 100);
-      const closingMinutes = closingTime % 100;
-      const closingDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), closingHours, closingMinutes);
-  
-      closingFormatted = `${closingHours.toString().padStart(2, '0')}:${closingMinutes.toString().padStart(2, '0')}`;  // Formatear la hora de cierre
-  
-      const oneHourInMillis = 60 * 60 * 1000;
-      const timeUntilClose = closingDate - now;
-  
-      if (openingTime <= currentTime && currentTime <= closingTime) {
-        // Está abierto, mostrar la hora de cierre
-        if (timeUntilClose <= oneHourInMillis) {
-          setStatus(`Próximo a cerrar. Cierra a las ${closingFormatted}`);
-          setTextColor('text-yellow-500');
-        } else {
-          setStatus(`Abierto. Cierra a las ${closingFormatted}`);
-          setTextColor('text-green-500');
-        }
-        setIsOpen(true);
-      } else {
-        // Está cerrado, buscar próxima apertura
-        const nextOpen = getNextOpen();
-        if (nextOpen) {
-          const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-          setStatus(`Cerrado - Abre el ${daysOfWeek[nextOpen.day]} a las ${nextOpen.time}`);
-          setTextColor('text-red-500');
-        } else {
-          setStatus('Cerrado');
-          setTextColor('text-red-500');
-        }
-        setIsOpen(false);
-      }
-    } else {
-      // Si no hay horarios definidos o el horario es 00:00
-      const nextOpen = getNextOpen();
-      if (nextOpen) {
+    // Verificar si hoy es un día franco
+    if (francos.includes(today)) {
+      // Buscar el próximo día que no sea franco
+      const nextOpenDay = getNextOpen();
+      if (nextOpenDay !== null) {
         const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-        setStatus(`Cerrado - Abre el ${daysOfWeek[nextOpen.day]} a las ${nextOpen.time}`);
+        setStatus(`Cerrado - Abre el ${daysOfWeek[nextOpenDay]}`);
       } else {
-        setStatus('Cerrado');
+        setStatus('Cerrado indefinidamente');
       }
       setTextColor('text-red-500');
       setIsOpen(false);
+    } else {
+      // Si hoy no es franco, está abierto
+      setStatus('Abierto');
+      setTextColor('text-green-500');
+      setIsOpen(true);
     }
   };
-  
-  
-  
-  
   
   
   
@@ -443,7 +379,7 @@ const CoffeeDetails = () => {
           <div className='flex flex-row items-center gap-1 mb-2'>
             <img src={clock} className='w-4 h-4 mt-2'></img>
             <p className={`text-xl`}>
-              <span className={`${textColor} ml-1`}> {status} - </span>
+              <span className={`${textColor} ml-1`}>{status}</span>
             </p>
           </div>
           

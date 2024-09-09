@@ -11,7 +11,6 @@ const AddForm = () => {
   const [instagram, setInstagram] = useState('');
   const [picsLinks, setPicsLinks] = useState(['', '', '', '', '']);
   
-  // Horarios por día
   const [schedules, setSchedules] = useState({
     lunes_viernes: { apertura: '', cierre: '' },
     sabado: { apertura: '', cierre: '' },
@@ -30,9 +29,42 @@ const AddForm = () => {
   const [terraza, setTerraza] = useState(false);
   const [cafeNotable, setCafeNotable] = useState(false);
 
-  const [francos, setFrancos] = useState('');
+  const [closedDays, setClosedDays] = useState([]);
+
+  const daysOfWeek = [
+    { id: 0, label: "Domingo" },
+    { id: 1, label: "Lunes" },
+    { id: 2, label: "Martes" },
+    { id: 3, label: "Miércoles" },
+    { id: 4, label: "Jueves" },
+    { id: 5, label: "Viernes" },
+    { id: 6, label: "Sábado" },
+  ];
+
+  const toggleDay = (dayId) => {
+    setClosedDays((prevClosedDays) =>
+      prevClosedDays.includes(dayId)
+        ? prevClosedDays.filter((day) => day !== dayId)
+        : [...prevClosedDays, dayId]
+    );
+  };
+
+  const handleScheduleChange = (day, type, value) => {
+    setSchedules((prevSchedules) => ({
+      ...prevSchedules,
+      [day]: {
+        ...prevSchedules[day],
+        [type]: value,
+      },
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Convertir closedDays a una cadena separada por comas
+    const francos = closedDays.join(',');
+
     await addDoc(collection(db, 'cafeterias'), {
       googleLink,
       name,
@@ -52,12 +84,10 @@ const AddForm = () => {
       patio,
       terraza,
       cafeNotable,
-      francos
+      francos, // Enviar los días no laborables como string
     });
+
     // Resetear el formulario
-    setCafeNotable(false);
-    setTerraza(false);
-    setPatio(false);
     setGoogleLink('');
     setName('');
     setAdress('');
@@ -77,17 +107,10 @@ const AddForm = () => {
     setCoworking(false);
     setTakeaway(false);
     setMenuLink('');
-    setFrancos('');
-  };
-
-  const handleScheduleChange = (day, type, value) => {
-    setSchedules((prevSchedules) => ({
-      ...prevSchedules,
-      [day]: {
-        ...prevSchedules[day],
-        [type]: value,
-      },
-    }));
+    setPatio(false);
+    setTerraza(false);
+    setCafeNotable(false);
+    setClosedDays([]);
   };
 
   return (
@@ -292,17 +315,25 @@ const AddForm = () => {
         />
       </div>
 
-      {/* Francos */}
-      <div className="mb-4">
-        <label className="block text-c2">Francos</label>
-        <input
-          type="text"
-          value={francos}
-          onChange={(e) => setFrancos(e.target.value)}
-          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
-          placeholder="Francos"
-        />
+{/* Francos */}
+<div className="mb-4">
+        <label className="block mb-2 text-c2">Francos (Días no laborables)</label>
+        <div className="grid grid-cols-7 gap-2">
+          {daysOfWeek.map((day) => (
+            <button
+              key={day.id}
+              type="button"
+              onClick={() => toggleDay(day.id)}
+              className={`px-3 py-2 border rounded-lg focus:outline-none ${
+                closedDays.includes(day.id) ? "bg-blue-500 text-white" : "bg-blue-200"
+              }`}
+            >
+              {day.label}
+            </button>
+          ))}
+        </div>
       </div>
+
       {/* Horarios */}
       <div className="mb-4">
         <label className="block text-c2">Horarios</label>
