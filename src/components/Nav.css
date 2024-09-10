@@ -16,7 +16,7 @@
   
   /* Navbar */
   .navbar {
-    position: fixed;
+    position: absolute;
     padding: 0;
     bottom: 0;
     display: flex;
