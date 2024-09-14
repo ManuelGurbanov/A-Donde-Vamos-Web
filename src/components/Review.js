@@ -102,10 +102,12 @@ const Review = ({ onClose }) => {
     }
   };
 
-  // Filtrar cafeterías por el término de búsqueda
-  const filteredCafes = cafes.filter(cafe =>
-    cafe.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCafes = cafes
+  .filter(cafe => {
+    return cafe.name && cafe.name.toLowerCase().includes(searchTerm.toLowerCase());
+  })
+  .sort((a, b) => a.name.localeCompare(b.name));
+
 
   const handleCancel = () => {
     // Puedes limpiar el estado si es necesario
@@ -123,7 +125,7 @@ const Review = ({ onClose }) => {
   return (
     <>
     <div className='absolute top-0 bottom-0 left-0 right-0 w-screen h-screen bg-black bg-opacity-80'></div>
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-b1 text-c h-[90vh] shadow-lg overflow-y-auto rounded-lg">
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-b1 text-c h-[90vh] w-full sm:w-1/2 shadow-lg overflow-y-auto rounded-lg m-auto">
       <button
         className='absolute text-sm bg-transparent left-4 text-c top-4 text-opacity-60'
         onClick={handleCancel}
@@ -188,8 +190,9 @@ const Review = ({ onClose }) => {
           </div>
 
           <hr className='mb-2 border-solid border-1 border-c2'></hr>
+
           <form onSubmit={handleReviewSubmit} className="flex flex-col items-center bg-b1">
-            <section className='flex flex-row items-start justify-around w-screen px-6'>
+            <section className='flex flex-row items-start justify-around w-full sm:px-6'>
 
               <div className='flex flex-col w-full h-full gap-2'>
                 <h3 className=' text-c2'>Calificá</h3>

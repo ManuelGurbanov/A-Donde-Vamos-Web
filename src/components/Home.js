@@ -131,13 +131,13 @@ const Home = () => {
         )}
 
         <div className="p-4">
-          {currentUser && (
+          {/* {currentUser && (
             <p className="mb-1 text-xl italic text-center text-b2 md:text-2xl">
               Bienvenido, <strong>{currentUser.displayName}</strong>
             </p>
-          )}
+          )} */}
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
             <div className="mb-1">
               <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>
               {isLargeScreen ? (

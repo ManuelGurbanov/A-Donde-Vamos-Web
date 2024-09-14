@@ -13,16 +13,21 @@ const AllCoffeeList = () => {
   // Actualizar la lista filtrada cada vez que cambien las cafeterías o el texto de búsqueda
   useEffect(() => {
     if (searchQuery === '') {
-      setFilteredCafeterias(cafes);
+      setFilteredCafeterias(
+        [...cafes].sort((a, b) => a.name.localeCompare(b.name)) // Ordena alfabéticamente por nombre
+      );
     } else {
       setFilteredCafeterias(
-        cafes.filter(cafe =>
-          cafe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          cafe.neigh.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+        cafes
+          .filter(cafe =>
+            cafe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            cafe.neigh.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .sort((a, b) => a.name.localeCompare(b.name)) // Ordena alfabéticamente por nombre después de filtrar
       );
     }
   }, [searchQuery, cafes]);
+  
 
   if (loading) return <div className="mt-24 text-3xl text-center text-white">Cargando Cafeterías...</div>;
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;

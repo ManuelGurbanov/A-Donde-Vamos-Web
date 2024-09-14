@@ -52,7 +52,7 @@ const CoffeeCard = ({ cafe }) => {
       const nextOpenDay = getNextOpen();
       if (nextOpenDay !== null) {
         const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-        setStatus(`Cerrado - Abre el ${daysOfWeek[nextOpenDay]}`);
+        setStatus(`Cerrado`);
       } else {
         setStatus('Cerrado indefinidamente');
       }
@@ -75,15 +75,15 @@ const CoffeeCard = ({ cafe }) => {
     const emptyStarsCount = totalStars - fullStarsCount - (hasHalfStar ? 1 : 0);
 
     for (let i = 0; i < fullStarsCount; i++) {
-      stars.push(<img key={`full-${i}`} src={fullStarWhite} alt="Full Star" className="inline-block w-3 h-3" />);
+      stars.push(<img key={`full-${i}`} src={fullStarWhite} alt="Full Star" className="inline-block w-2 h-2" />);
     }
 
     if (hasHalfStar) {
-      stars.push(<img key="half" src={halfStarWhite} alt="Half Star" className="inline-block w-3 h-3" />);
+      stars.push(<img key="half" src={halfStarWhite} alt="Half Star" className="inline-block w-2 h-2" />);
     }
 
     for (let i = 0; i < emptyStarsCount; i++) {
-      stars.push(<img key={`empty-${i}`} src={emptyStarWhite} alt="Empty Star" className="inline-block w-3 h-3" />);
+      stars.push(<img key={`empty-${i}`} src={emptyStarWhite} alt="Empty Star" className="inline-block w-2 h-2" />);
     }
 
     return stars;
@@ -92,35 +92,51 @@ const CoffeeCard = ({ cafe }) => {
   return (
     <div className="p-2">
       <Link to={`/cafe/${cafe.id}`}>
-        <div className="relative h-48 overflow-hidden bg-white rounded-lg shadow-md">
+        <div className="relative overflow-hidden bg-white rounded-lg shadow-md h-[143px]">
           <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
-
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-4 bg-b1 bg-opacity-90 h-1/2 hover:bg-opacity-100">
-            <div>
-              <h2 className="text-xl font-bold text-c2">{cafe.name || 'Nombre no disponible'}</h2>
-              <p className="text-xs font-regular text-c2">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
-
-              <div className="flex items-center space-x-1">
+  
+          {/* Contenedor padre que tiene position relative */}
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between h-20 p-2 bg-b1 bg-opacity-95 hover:bg-opacity-100">
+            
+            {/* Contenedor de los textos con position relative */}
+            <div className="relative w-full h-full"> {/* Aquí solo va relative */}
+              <h2 className="absolute top-[-5px] left-2 text-xl font-bold text-c2">{cafe.name || 'Nombre no disponible'}</h2>
+  
+              <p className="absolute text-xs left-2 top-5 font-regular text-c2">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
+  
+              <div className="absolute flex items-center mt-1 space-x-1 left-2 top-8">
                 {starRating(calculateAverageRating())}
-                <span className="text-sm font-medium text-c2">{cafe.numRatings} valoraciones</span>
+                <span className="text-[8px] font-medium text-c2">
+                  {typeof cafe.numRatings === 'undefined'
+                    ? "Sin valoraciones"
+                    : cafe.numRatings === 1
+                    ? `${cafe.numRatings} valoración`
+                    : `${cafe.numRatings} valoraciones`}
+                </span>
               </div>
 
-              <p className={`text-sm ${textColor} font-bold italic`}>
+
+  
+              {/* Texto status con posicionamiento absoluto dentro del div relativo */}
+              <p className={`absolute top-12 left-2 text-xs ${textColor} font-bold italic`}>
                 {status}
               </p>
             </div>
-
-            <div className="flex flex-col max-h-full space-y-2">
+  
+            {/* Iconos */}
+            <div className="flex flex-col max-h-full gap-1">
               {cafe.vegan && <img src={veganIcon} alt="Vegan Options" className="w-5 h-5" />}
               {cafe.tac && <img src={tacIcon} alt="Take Away Cup" className="w-5 h-5" />}
               {cafe.pet && <img src={petIcon} alt="Pet Friendly" className="w-5 h-5" />}
-              {cafe.outside && <img src={outsideIcon} alt="Outside" className="w-5 h-5" />}
+              {/* {cafe.outside && <img src={outsideIcon} alt="Outside" className="w-5 h-5" />} */}
             </div>
           </div>
         </div>
       </Link>
     </div>
   );
+  
+  
 };
 
 export default CoffeeCard;

@@ -1,16 +1,20 @@
 import React from 'react';
-const icon = './icon.png';
+import like_notif from '../img/like_notif.png';
 
-const Notif = ({tittle, subt}) => {
+
+const Notif = ({ tittle, subt }) => {
   return (
-    <div className= 'flex items-center w-full h-20 m-0 mt-4 border-b-2 bg-b2 border-red-950'>
+    <div className='flex items-center justify-between w-full h-16 p-5 m-0 mt-4 border-b-2 bg-b2 border-c rounded-3xl bg-opacity-60'>
+      <img src={like_notif} className='flex-shrink-0 w-7' alt="like icon" />
 
-     <div className='flex flex-col'>
-      <h1 className="w-full p-1 ml-4 text-xl font-bold text-left text-black md:text-xl">{tittle || "Nueva Cafetería en Colegiales"}</h1>
-      <h2 className="w-full p-1 ml-4 text-xl font-normal text-left text-c md:text-xl">{subt || "Boiro Café"}</h2>
-     </div>
-        <img src={icon} className='w-12 ml-24'></img>
-
+      <div className='flex flex-col flex-grow w-full ml-6'>
+        <h1 className="text-lg font-bold text-left text-c md:text-xl">
+          {tittle}
+        </h1>
+        <h2 className="text-base font-bold text-left text-c2 md:text-xl">
+          {subt}
+        </h2>
+      </div>      
     </div>
   );
 };

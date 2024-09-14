@@ -29,6 +29,11 @@ import Top from './Top';
 import Slider from 'react-slick';
 import { useOutletContext } from 'react-router-dom';
 
+import instagram from '../img/instagram.png';
+import menu from '../img/menu.png';
+import web from '../img/web.png';
+import share from '../img/share.png';
+
 const CoffeeDetails = () => {
   const { handleReviewClick } = useOutletContext();
   const { id } = useParams();
@@ -329,14 +334,14 @@ const CoffeeDetails = () => {
       {coffee ? (
         <>
         <div className='p-4'>
-          <div className="w-full overflow-x-auto rounded-lg">
+          <div className="w-full overflow-x-auto rounded-lg sm:h-80">
               <Slider {...sliderSettings}>
                   {coffee.picsLinks?.map((picLink, index) => (
                                     <img
                   key={index}
                   src={picLink}
                   alt={`Imagen ${index + 1}`}
-                  className="object-cover h-48 rounded-lg shadow-md"
+                  className="object-cover h-48 rounded-lg shadow-md sm:h-72"
                   onError={() => handleImageError(index)}
                 />
                   ))}
@@ -353,6 +358,8 @@ const CoffeeDetails = () => {
             <p className='mb-8 text-xl'>
               <span className={`${textColor}`}> {status}</span>
             </p>
+
+
 
             { (coffee.pets || coffee.vegan || coffee.tac || coffee.outside) && (
                             <div className="flex items-center gap-4 mt-2 mb-6">
@@ -371,6 +378,24 @@ const CoffeeDetails = () => {
                           </div>
               )}
 
+            <div className='flex items-center justify-center gap-4 mb-2 text-center'>
+                  <button className='flex flex-row w-1/3 gap-2 p-2 rounded-2xl bg-b1'>
+                    <img src={menu} className=''></img> <p className='font-medium text-c'>Menú</p>
+                  </button>
+
+                  <button className='flex flex-row w-1/3 gap-2 p-2 rounded-2xl bg-b1'>
+                    <img src={web} className=''></img> <p className='font-medium text-c'>Web</p>
+                  </button>
+
+                  <button className='w-1/6 p-2 rounded-2xl bg-b1'>
+                    <img src={instagram} className='m-auto'></img>
+                  </button>
+                  
+                  <button className='w-1/6 p-2 rounded-2xl bg-b1'>
+                    <img src={share} className='m-auto'></img>
+                  </button>
+            </div>
+
           <div className='flex flex-row items-center gap-1 mb-2'>
           <img src={location} className='w-4 h-4 mt-2'></img>
           <p className="text-lg ml-1`">{coffee.adress} - {coffee.neigh} </p>
@@ -382,6 +407,16 @@ const CoffeeDetails = () => {
               <span className={`${textColor} ml-1`}>{status}</span>
             </p>
           </div>
+
+          {/* <div className="w-full max-w-lg">
+            <iframe
+              src={coffee.googleLink}
+              width="100%" height="450" allowFullScreen="" loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-64"
+            ></iframe>
+          </div> */}
+
           
           <div className='flex flex-row items-center gap-1 mb-2'>
           <img src={heartadd} className='w-4 h-4 mt-2'></img>
@@ -393,7 +428,7 @@ const CoffeeDetails = () => {
               Copiar Enlace
             </button> */}
 
-            <button onClick={handleCopyLink} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium text-c bg-b1 rounded-2xl">
+            <button onClick={handleCopyLink} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl">
               <img src={additem} className='flex-[1]'></img>
               <p className='text-center text-lg flex-[9]'>
               Compartir
@@ -401,7 +436,7 @@ const CoffeeDetails = () => {
             </button>
 
             
-            <button onClick={handleReviewClick} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium text-c bg-b1 rounded-2xl">
+            <button onClick={handleReviewClick} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl">
               <img src={addsquare} className='flex-[1]'></img>
               <p className='text-center text-lg flex-[9]'>
               Agregar una reseña
