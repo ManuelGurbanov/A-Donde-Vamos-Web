@@ -33,7 +33,7 @@ import instagram from '../img/instagram.png';
 import menu from '../img/menu.png';
 import web from '../img/web.png';
 import share from '../img/share.png';
-
+import arrowdown from '../img/arrow_down.png';
 const CoffeeDetails = () => {
   const { handleReviewClick } = useOutletContext();
   const { id } = useParams();
@@ -49,7 +49,7 @@ const CoffeeDetails = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState('');
   const [textColor, setTextColor] = useState('text-red-500');
-
+  const [showSchedule, setShowSchedule] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
   const navigate = useNavigate();
@@ -66,8 +66,6 @@ const CoffeeDetails = () => {
   const handleGoIg = () => {
     window.open(`https://www.instagram.com/${coffee.instagram}/`, '_blank');
   };
-  
-
   
   useEffect(() => {
     const fetchCoffee = async () => {
@@ -171,9 +169,6 @@ const CoffeeDetails = () => {
     }
   };
   
-  
-  
-
   const handleImageError = (index) => {
     setCoffee(prevState => ({
       ...prevState,
@@ -307,8 +302,19 @@ const CoffeeDetails = () => {
   };
 
   const handleShareWhatsApp = () => {
-    const whatsappUrl = `https://wa.me/?text=¿Conoces ${coffee.name}?: ${window.location.href}`;
-    window.open(whatsappUrl, '_blank');
+    if (navigator.share) {
+      navigator.share({
+        title: `¿Conoces ${coffee.name}?`,
+        text: `Echa un vistazo a este café: ${coffee.name}`,
+        url: window.location.href,
+      })
+      .then(() => console.log('Contenido compartido con éxito.'))
+      .catch((error) => console.error('Error al compartir:', error));
+    } else {
+      // Fallback para navegadores que no soportan la Web Share API
+      const whatsappUrl = `https://wa.me/?text=¿Conoces ${coffee.name}?: ${window.location.href}`;
+      window.open(whatsappUrl, '_blank');
+    }
   };
 
   const handleCopyLink = () => {
@@ -336,7 +342,25 @@ const CoffeeDetails = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
   
+  const handleScheduleToggle = () => {
+    setShowSchedule(!showSchedule); // Alterna el menú de horarios
+  };
+  
+  const formatTime = (timeString) => {
+    if (!timeString || timeString.length !== 4) return timeString;
+    return `${timeString.slice(0, 2)}:${timeString.slice(2)}`;
+  };
+  
+  // Función para verificar si el día está en los francos
+  const isClosedDay = (day) => {
+    const closedDays = coffee.francos?.split(',').map(Number);
+    return closedDays?.includes(day);
+  };
+  
+  // Diccionario para los nombres de los días
+  const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
     <Top/>
@@ -389,14 +413,9 @@ const CoffeeDetails = () => {
               )}
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
-                  <button className='flex flex-row w-2/3 gap-2 p-2 rounded-2xl bg-b1' onClick={handleGoMenu}>
-                    <img src={menu} className='mr-7'></img> <p className='font-medium text-c'>Ver Menú</p>
+                  <button className='flex flex-row w-2/5 gap-2 p-2 rounded-2xl bg-b1' onClick={handleGoMenu}>
+                    <img src={menu} className='mr-2'></img> <p className='font-medium text-c'>Ver Menú</p>
                   </button>
-
-                  {/* <button className='flex flex-row w-1/3 gap-2 p-2 rounded-2xl bg-b1'>
-                    <img src={web} className=''></img> <p className='font-medium text-c'>Web</p>
-                  </button> */}
-
                   <button className='w-1/6 p-2 rounded-2xl bg-b1' onClick={handleGoIg}>
                     <img src={instagram} className='m-auto'></img>
                   </button>
@@ -416,7 +435,63 @@ const CoffeeDetails = () => {
             <p className={`text-xl`}>
               <span className={`${textColor} ml-1`}>{status}</span>
             </p>
+
+            {/* Agrega el botón para abrir el menú de horarios */}
+            <button 
+              onClick={handleScheduleToggle}
+              className='p-2 mt-2 ml-2 text-xs rounded-md bg-b1 text-c2'
+            >
+              <img src={arrowdown} className='w-2/3 m-auto'></img>
+            </button>
           </div>
+
+              {/* Menú desplegable de horarios */}
+              {showSchedule && (
+              <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
+                <h3 className="mb-2 text-lg font-bold">Horarios</h3>
+
+                {/* Lunes a Viernes */}
+                <div className="mb-4">
+                  {[1, 2, 3, 4, 5].map((day) => (
+                    <div key={day} className="mb-2">
+                      <p className="font-semibold">{daysOfWeek[day]}</p>
+                      {isClosedDay(day) ? (
+                        <p className="text-red-600">Cerrado</p>
+                      ) : (
+                        <>
+                          <p>{formatTime(coffee.schedules.lunes_viernes.apertura)} - {formatTime(coffee.schedules.lunes_viernes.cierre)}</p>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+
+                {/* Sábado */}
+                <div className="mb-4">
+                  <h4 className="font-semibold text-md">Sábado</h4>
+                  {isClosedDay(6) ? (
+                    <p className="text-red-600">CERRADO</p>
+                  ) : (
+                    <>
+                      <p>{formatTime(coffee.schedules.sabado.apertura)} - {formatTime(coffee.schedules.sabado.cierre)}</p>
+                    </>
+                  )}
+                </div>
+
+                  {/* Domingo */}
+                  <div className="mb-4">
+                  <h4 className="font-semibold text-md">Domingo</h4>
+                  {isClosedDay(0) ? (
+                    <p className="text-red-600">CERRADO</p>
+                  ) : (
+                    <>
+                      <p>{formatTime(coffee.schedules.domingo.apertura)} - {formatTime(coffee.schedules.sabado.cierre)}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
 
           {/* <div className="w-full max-w-lg">
             <iframe

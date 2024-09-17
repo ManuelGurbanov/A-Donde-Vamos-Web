@@ -35,9 +35,10 @@ const Notifications = () => {
 
   if (!currentUser) {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full">
+      <div className="flex flex-col items-center justify-start w-full">
         <Top text={"Notificaciones"} />
-        <Notif tittle="Cargando..." subt="Espera un momento mientras cargamos tus notificaciones." />
+        <o className="mt-4 text-lg text-center text-black">Inicia Sesión para ver tus notificaciones.</o>
+        {/* <Notif tittle="Cargando..." subt="Espera un momento mientras cargamos tus notificaciones." /> */}
       </div>
     );
   }

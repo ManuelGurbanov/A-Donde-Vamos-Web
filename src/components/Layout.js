@@ -31,7 +31,7 @@ const Layout = () => {
     <div className="layout-container">
       <img className='fixed bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
 
-      <div className="content-container">
+      <div className="overflow-y-scroll content-container">
         <Outlet context={{ handleReviewClick }} /> {/* Pasa la función a los componentes hijos */}
       </div>
 
