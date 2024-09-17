@@ -1,5 +1,6 @@
 /* Contenedor principal */
 .layout-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 100dvw;
@@ -16,7 +17,7 @@
   
   /* Navbar */
   .navbar {
-    position: absolute;
+    position: fixed;
     padding: 0;
     bottom: 0;
     display: flex;

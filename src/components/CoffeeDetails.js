@@ -57,6 +57,16 @@ const CoffeeDetails = () => {
 
 
 
+  const handleGoMenu = () => {
+    // ir al link de menu que está en la base de datos de la cafetería
+
+    window.open(coffee.menuLink, '_blank');
+  };
+
+  const handleGoIg = () => {
+    window.open(`https://www.instagram.com/${coffee.instagram}/`, '_blank');
+  };
+  
 
   
   useEffect(() => {
@@ -379,19 +389,19 @@ const CoffeeDetails = () => {
               )}
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
-                  <button className='flex flex-row w-1/3 gap-2 p-2 rounded-2xl bg-b1'>
-                    <img src={menu} className=''></img> <p className='font-medium text-c'>Menú</p>
+                  <button className='flex flex-row w-2/3 gap-2 p-2 rounded-2xl bg-b1' onClick={handleGoMenu}>
+                    <img src={menu} className='mr-7'></img> <p className='font-medium text-c'>Ver Menú</p>
                   </button>
 
-                  <button className='flex flex-row w-1/3 gap-2 p-2 rounded-2xl bg-b1'>
+                  {/* <button className='flex flex-row w-1/3 gap-2 p-2 rounded-2xl bg-b1'>
                     <img src={web} className=''></img> <p className='font-medium text-c'>Web</p>
-                  </button>
+                  </button> */}
 
-                  <button className='w-1/6 p-2 rounded-2xl bg-b1'>
+                  <button className='w-1/6 p-2 rounded-2xl bg-b1' onClick={handleGoIg}>
                     <img src={instagram} className='m-auto'></img>
                   </button>
                   
-                  <button className='w-1/6 p-2 rounded-2xl bg-b1'>
+                  <button className='w-1/6 p-2 rounded-2xl bg-b1' onClick={handleShareWhatsApp}>
                     <img src={share} className='m-auto'></img>
                   </button>
             </div>

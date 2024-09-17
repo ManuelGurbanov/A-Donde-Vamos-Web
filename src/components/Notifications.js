@@ -51,11 +51,11 @@ const Notifications = () => {
             <Notif 
               key={index}
               tittle={notif.message}
-              subt={notif.link ? <a href={notif.link} className="text-blue-500 underline">Ver más</a> : ''}
+              subt={notif.link ? <a href={notif.link} className="underline text-c">{notif.submessage}</a> : ''}
             />
           ))
         ) : (
-          <Notif tittle="No tienes notificaciones" subt={'¡Te actualizaremos pronto!'}/>
+          <h1 c1assName="text-xl text-center text-gray-500">No tienes notificaciones</h1>
         )}
       </div>
     </>
