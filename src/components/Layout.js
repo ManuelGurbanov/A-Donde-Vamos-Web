@@ -29,7 +29,7 @@ const Layout = () => {
 
   return (
     <div className="layout-container">
-      <img className='absolute bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
+      <img className='fixed bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
 
       <div className="content-container">
         <Outlet context={{ handleReviewClick }} /> {/* Pasa la función a los componentes hijos */}
