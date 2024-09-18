@@ -414,14 +414,18 @@ const CoffeeDetails = () => {
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
                   <button className='flex flex-row w-2/5 gap-2 p-2 rounded-2xl bg-b1' onClick={handleGoMenu}>
-                    <img src={menu} className='mr-2'></img> <p className='font-medium text-c'>Ver Menú</p>
+                    <img src={menu} className='mr-2'></img> <p className='font-medium text-c'>Menú</p>
                   </button>
-                  <button className='w-1/6 p-2 rounded-2xl bg-b1' onClick={handleGoIg}>
+                  <button className='w-1/6 h-12 p-2 rounded-2xl bg-b1' onClick={handleGoIg}>
                     <img src={instagram} className='m-auto'></img>
                   </button>
                   
-                  <button className='w-1/6 p-2 rounded-2xl bg-b1' onClick={handleShareWhatsApp}>
+                  <button className='w-1/6 h-12 p-2 rounded-2xl bg-b1' onClick={handleShareWhatsApp}>
                     <img src={share} className='m-auto'></img>
+                  </button>
+
+                  <button className='w-1/6 h-12 p-2 rounded-2xl bg-b1'>
+                    <img src={fav} className='m-auto'></img>
                   </button>
             </div>
 
@@ -439,9 +443,9 @@ const CoffeeDetails = () => {
             {/* Agrega el botón para abrir el menú de horarios */}
             <button 
               onClick={handleScheduleToggle}
-              className='p-2 mt-2 ml-2 text-xs rounded-md bg-b1 text-c2'
+              className='mt-2 ml-2 text-xs bg-transparent rounded-md text-c2'
             >
-              <img src={arrowdown} className='w-2/3 m-auto'></img>
+              <img src={arrowdown} className='w-full m-auto'></img>
             </button>
           </div>
 

@@ -50,7 +50,7 @@ const Layout = () => {
                 alt="Pantalla 1"
                 className={`navbar-icon ${location.pathname === '/home' ? 'icon-selected' : ''}`}
               />
-              <span className={`navbar-text ${location.pathname === '/home' ? 'text-selected' : ''}`}>Inicio</span>
+              <span className={`navbar-text text-c ${location.pathname === '/home' ? '' : 'text-transparent'}`}>Inicio</span>
             </div>
           </Link>
           <Link to="/coffee-all" className="navbar-link">
@@ -58,15 +58,15 @@ const Layout = () => {
               <img
                 src={location.pathname === '/coffee-all' ? screen2_selected : screen2}
                 alt="Pantalla 2"
-                className={`navbar-icon ${location.pathname === '/coffee-all' ? 'icon-selected' : ''}`}
+                className={`navbar-icon ${location.pathname === '/coffee-all' ? 'icon-selected' : 'text-transparent'}`}
               />
-              <span className={`navbar-text ${location.pathname === '/coffee-all' ? 'text-selected' : ''}`}>Cafés</span>
+              <span className={`navbar-text text-c ${location.pathname === '/coffee-all' ? '' : 'text-transparent'}`}>Cafés</span>
             </div>
           </Link>
         </div>
 
         <div className="navbar-center bg-c">
-          <button onClick={handleReviewClick} className={`review-button ${location.pathname === '/review' ? 'review-selected' : ''}`}>
+          <button onClick={handleReviewClick} className={`review-button ${location.pathname === '/review' ? '' : 'text-transparent'}`}>
             <img src={addsquare} alt="Review" className="review-icon" />
           </button>
         </div>
@@ -79,7 +79,7 @@ const Layout = () => {
                 alt="Pantalla 3"
                 className={`navbar-icon ${location.pathname === '/notifications' ? 'icon-selected' : ''}`}
               />
-              <span className={`navbar-text ${location.pathname === '/notifications' ? 'text-selected' : ''}`}>Notificaciones</span>
+              <span className={`navbar-text text-c ${location.pathname === '/notifications' ? '' : 'text-transparent'}`}>Notificaciones</span>
             </div>
           </Link>
           <Link to="/login" className="navbar-link">
@@ -89,7 +89,7 @@ const Layout = () => {
                 alt="Pantalla 4"
                 className={`navbar-icon ${location.pathname === '/login' ? 'icon-selected' : ''}`}
               />
-              <span className={`navbar-text ${location.pathname === '/login' ? 'text-selected' : ''}`}>Perfil</span>
+              <span className={`navbar-text text-c ${location.pathname === '/login' ? '' : 'text-transparent'}`}>Perfil</span>
             </div>
           </Link>
         </div>

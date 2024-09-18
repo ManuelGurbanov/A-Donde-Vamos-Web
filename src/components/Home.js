@@ -16,7 +16,7 @@ const Home = () => {
 
   const [selectedNeighs, setSelectedNeighs] = useState([]);
   const [showWelcome, setShowWelcome] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
   const isLargeScreen = window.innerWidth >= 1024;
 
@@ -26,6 +26,15 @@ const Home = () => {
   const [currentSlideNew, setCurrentSlideNew] = useState(0);
 
   useEffect(() => {
+    // Verificar si ya se mostró la animación de presentación
+    const hasSeenPresentation = localStorage.getItem('hasSeenPresentation');
+    
+    if (!hasSeenPresentation) {
+      setShowLoading(true);
+      // Mostrar la animación solo una vez
+      localStorage.setItem('hasSeenPresentation', 'true');
+    }
+
     const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
     if (storedNeighs && storedNeighs.length > 0) {
       setSelectedNeighs(storedNeighs);
@@ -35,16 +44,21 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (!loading) {
-      setFadeOut(true);
-      // Ensure to remove the loading div after the transition ends
+    if (!loading && showLoading) {
+      // Aplicar fade-out después de 1 segundo solo si el loading debe mostrarse
       const timer = setTimeout(() => {
-        setFadeOut(false);
-      }, 500); // Match with the CSS transition duration
+        const loadingDiv = document.getElementById('loadingDiv');
+        if (loadingDiv) {
+          loadingDiv.style.opacity = '0';
+          setTimeout(() => {
+            loadingDiv.style.display = 'none'; // Eliminarlo después del fade-out
+          }, 1000); // Coincidir con la duración de la transición
+        }
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
-  }, [loading]);
+  }, [loading, showLoading]);
 
   const handleSavePreferences = () => {
     localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
@@ -124,8 +138,9 @@ const Home = () => {
     <>
       <Top />
 
-      {loading && (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-b1 fade-transition ${fadeOut ? 'fade-out' : ''}`}>
+      {/* Mostrar el loading solo si showLoading es true */}
+      {showLoading && (
+        <div id="loadingDiv" className="fixed top-0 left-0 z-30 flex items-center justify-center w-full h-full transition-opacity duration-1000 opacity-100 bg-b1">
           <img src={loadingLogo} className='w-full p-5 m-auto sm:w-80' alt="Loading..." />
         </div>
       )}
@@ -160,12 +175,6 @@ const Home = () => {
           )}
 
           <div className="p-4">
-            {/* {currentUser && (
-              <p className="mb-1 text-xl italic text-center text-b2 md:text-2xl">
-                Bienvenido, <strong>{currentUser.displayName}</strong>
-              </p>
-            )} */}
-
             <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
               <div className="mb-1">
                 <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>

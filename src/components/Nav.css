@@ -78,8 +78,7 @@
   
   /* Textos de la navbar */
   .navbar-text {
-    font-size: 0.75rem;
-    color: transparent;
+    font-size: 0.6rem;
     transition: color 0.2s;
   }
   
