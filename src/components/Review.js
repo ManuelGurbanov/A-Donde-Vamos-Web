@@ -217,7 +217,7 @@ const Review = ({ onClose }) => {
               <button
                 type="submit"
                 disabled={!currentUser || rating === 0 || hasRated}
-                className="px-4 py-2 text-white bg-opacity-25 rounded bg-c disabled:bg-gray-400"
+                className="px-4 py-2 text-white rounded bg-c2 disabled:bg-gray-400"
               >
                 Enviar Reseña
               </button>

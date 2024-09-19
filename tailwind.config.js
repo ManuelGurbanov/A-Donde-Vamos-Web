@@ -12,7 +12,8 @@ module.exports = {
       'c3': '#FAB575',
       'b1': '#DB9F68',
       'b2': '#DB9F68',
-      'new': '#DB9F68'
+      'new': '#DB9F68',
+      'brown': '#63050880',
     },
   },
 

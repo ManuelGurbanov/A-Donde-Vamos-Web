@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import outsideIcon from '../img/outside.png';
 import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
+
+import { AuthContext } from '../contexts/AuthContext'; // Asegúrate de que la ruta sea correcta
+
 
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import { CafeContext } from './CafeContext';
@@ -34,6 +37,7 @@ import menu from '../img/menu.png';
 import web from '../img/web.png';
 import share from '../img/share.png';
 import arrowdown from '../img/arrow_down.png';
+
 const CoffeeDetails = () => {
   const { handleReviewClick } = useOutletContext();
   const { id } = useParams();
@@ -45,7 +49,6 @@ const CoffeeDetails = () => {
   const [totalRatings, setTotalRatings] = useState(0);
   const [numRatings, setNumRatings] = useState(0);
   const [hasRated, setHasRated] = useState(false);
-  const { currentUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState('');
   const [textColor, setTextColor] = useState('text-red-500');
@@ -55,7 +58,7 @@ const CoffeeDetails = () => {
   const navigate = useNavigate();
   const { setSelectedCafe } = useContext(CafeContext);
 
-
+  const { currentUser, favorites } = useContext(AuthContext);
 
   const handleGoMenu = () => {
     // ir al link de menu que está en la base de datos de la cafetería
@@ -106,26 +109,63 @@ const CoffeeDetails = () => {
     fetchCoffee();
   }, [id, currentUser]);
 
-  const handleFavoriteToggle = async () => {
-    if (!currentUser) return;
-  
-    try {
-      const userDocRef = doc(db, 'usuarios', currentUser.uid);
-  
-      if (isFavorite) {
-        await updateDoc(userDocRef, {
-          favorites: arrayRemove(id)
-        });
-        setIsFavorite(false);
-      } else {
-        await updateDoc(userDocRef, {
-          favorites: arrayUnion(id)
-        });
-        setIsFavorite(true);
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (currentUser) {
+        const userRef = doc(db, 'users', currentUser.email);
+        const userDoc = await getDoc(userRef);
+        const data = userDoc.data();
+        const favorites = data?.favorites || [];
+        setIsFavorite(favorites.includes(id));
       }
-    } catch (err) {
-      console.error('Error updating favorites:', err);
+    };
+
+    checkFavoriteStatus();
+  }, [currentUser, id]);
+
+  // Función para agregar una cafetería favorita
+  const addFavorite = async (userId, coffeeId) => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userRef);
+      const data = userDoc.data();
+      const favorites = data?.favorites || [];
+      
+      if (!favorites.includes(coffeeId)) {
+        favorites.push(coffeeId);
+        await updateDoc(userRef, { favorites });
+        console.log('Cafetería favorita agregada');
+      }
+    } catch (e) {
+      console.error('Error al agregar la cafetería favorita: ', e);
     }
+  };
+
+  // Función para eliminar una cafetería favorita
+  const removeFavorite = async (userId, coffeeId) => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userRef);
+      const data = userDoc.data();
+      const favorites = data?.favorites || [];
+      
+      const updatedFavorites = favorites.filter(id => id !== coffeeId);
+      await updateDoc(userRef, { favorites: updatedFavorites });
+      console.log('Cafetería favorita eliminada');
+    } catch (e) {
+      console.error('Error al eliminar la cafetería favorita: ', e);
+    }
+  };
+
+  const handleFavoriteClick = async () => {
+    if (!currentUser) return;
+
+    if (isFavorite) {
+      await removeFavorite(currentUser.uid, id);
+    } else {
+      await addFavorite(currentUser.uid, id);
+    }
+    setIsFavorite(!isFavorite);
   };
   
   const checkIfOpen = (data) => {
@@ -424,8 +464,11 @@ const CoffeeDetails = () => {
                     <img src={share} className='m-auto'></img>
                   </button>
 
-                  <button className='w-1/6 h-12 p-2 rounded-2xl bg-b1'>
-                    <img src={fav} className='m-auto'></img>
+                  <button
+                    className={`w-1/6 h-12 p-2 rounded-2xl ${isFavorite ? 'bg-red-200' : 'bg-b1'}`} // Cambia el color del botón según si es favorito
+                    onClick={handleFavoriteClick}
+                  >
+                    <img src={isFavorite ? fav : fav} className='m-auto' alt="Favorite Icon" />
                   </button>
             </div>
 

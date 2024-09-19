@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
+import { getStorage } from 'firebase/storage'; // Importar Storage
 
 const firebaseConfig = {
   apiKey: "AIzaSyD9ak8YpdGIYuSZIuOprjxH7UrY6l7WyqY",
@@ -17,6 +18,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
+const storage = getStorage(app); // Inicializar Storage
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -54,4 +56,4 @@ const useAuth = () => {
   return { user, signInWithGoogle, signOut };
 };
 
-export { auth, db, provider, useAuth };
+export { auth, db, storage, provider };
