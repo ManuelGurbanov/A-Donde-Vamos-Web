@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase/firebase';
 import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
-import { db, storage } from '../firebase/firebase'; // Asegúrate de importar Firebase Storage y Firestore
+import { db, storage } from '../firebase/firebase'; 
 import { setDoc, doc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Para manejar la subida de archivos
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
 
 import Top from './Top';
 
 import crearImg from '../img/crearImg.png';
 
 const Register = () => {
+  const [fullName, setFullName] = useState(''); // Nombre completo
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,6 +18,10 @@ const Register = () => {
   const [profilePicture, setProfilePicture] = useState(null); // Archivo de imagen
   const [mainNeighborhood, setMainNeighborhood] = useState(''); // Barrio principal
   const [showNeighborhood, setShowNeighborhood] = useState(false); // Checkbox para mostrar el barrio
+  const [description, setDescription] = useState(''); // Descripción o estado
+  const [showPet, setShowPet] = useState(false); // Insignia pet
+  const [showTac, setShowTac] = useState(false); // Insignia tac
+  const [showVegan, setShowVegan] = useState(false); // Insignia vegano
   const [errorText, setErrorText] = useState('');
 
   const handleRegister = async (e) => {
@@ -53,10 +58,15 @@ const Register = () => {
       // Guardar datos adicionales en Firestore
       await setDoc(doc(db, 'users', user.uid), {
         username: username,
+        fullName: fullName, // Guardar el nombre completo
         email: email,
         profilePicture: profilePictureUrl, // Guardar la URL de la foto
         mainNeighborhood: mainNeighborhood,
-        showNeighborhood: showNeighborhood
+        showNeighborhood: showNeighborhood,
+        description: description, // Guardar la descripción o estado
+        showPet: showPet, // Guardar insignia pet
+        showTac: showTac, // Guardar insignia tac
+        showVegan: showVegan, // Guardar insignia vegano
       });
 
       console.log('Usuario registrado exitosamente:', user);
@@ -85,6 +95,14 @@ const Register = () => {
       <Top text={"Registro"} />
       <div className="flex flex-col items-center justify-start min-h-screen">
         <form onSubmit={handleRegister} className="flex flex-col items-center w-4/5 gap-3 p-4 mt-8 rounded shadow-md sm:w-1/4">
+          <input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Nombre Completo"
+            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            required
+          />
           <input
             type="text"
             value={username}
@@ -120,16 +138,16 @@ const Register = () => {
 
           {/* Campo para subir la foto de perfil */}
           <label htmlFor="profilePicture" className="w-full p-2 mb-2 font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90">
-          {profilePicture ? profilePicture.name : 'Seleccionar Foto de Perfil'}
-          <input
-            id="profilePicture"
-            type="file"
-            onChange={handleProfilePictureChange}
-            className="hidden"
-            accept="image/*"
-          />
-        </label>
-        {profilePicture && <p className="text-center text-green-600">¡Archivo seleccionado!</p>}
+            {profilePicture ? profilePicture.name : 'Seleccionar Foto de Perfil'}
+            <input
+              id="profilePicture"
+              type="file"
+              onChange={handleProfilePictureChange}
+              className="hidden"
+              accept="image/*"
+            />
+          </label>
+          {profilePicture && <p className="text-center text-green-600">¡Archivo seleccionado!</p>}
 
           <input
             type="text"
@@ -138,6 +156,15 @@ const Register = () => {
             placeholder="Barrio Principal"
             className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
           />
+
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Descripción o Estado"
+            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+          />
+
           <div className="mb-2">
             <input
               type="checkbox"
@@ -147,6 +174,21 @@ const Register = () => {
             />
             <label htmlFor="showNeighborhood" className="ml-2">
               Mostrar barrio en perfil
+            </label>
+          </div>
+
+          <div className="flex flex-col mb-2">
+            <label className="flex items-center">
+              <input type="checkbox" checked={showPet} onChange={(e) => setShowPet(e.target.checked)} />
+              <span className="ml-2">Mostrar insignia Pet Friendly</span>
+            </label>
+            <label className="flex items-center">
+              <input type="checkbox" checked={showTac} onChange={(e) => setShowTac(e.target.checked)} />
+              <span className="ml-2">Mostrar insignia Tac</span>
+            </label>
+            <label className="flex items-center">
+              <input type="checkbox" checked={showVegan} onChange={(e) => setShowVegan(e.target.checked)} />
+              <span className="ml-2">Mostrar insignia Vegano</span>
             </label>
           </div>
 
