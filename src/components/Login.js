@@ -3,14 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { auth, provider, db } from '../firebase/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import Top from './Top';
-import { CafeContext } from './CafeContext'; // Asegúrate de importar el contexto
-
-import { doc, getDoc } from 'firebase/firestore'; // Importar Firestore
+import { CafeContext } from './CafeContext';
+import { doc, getDoc } from 'firebase/firestore'; 
 import MiniCard from './MiniCard';
 
-import petIcon from '../img/pet.png'; // Icono para pet-friendly
-import tacIcon from '../img/tac.png'; // Icono para tac
-import veganIcon from '../img/vegan.png'; // Icono para vegano
+import petIcon from '../img/pet.png';
+import tacIcon from '../img/tac.png';
+import veganIcon from '../img/vegan.png';
+
+import fullStarDark from '../img/fullStar.png';
+import halfStarDark from '../img/halfStar.png';
+import emptyStarDark from '../img/emptyStar.png';
+import RatingDistribution from './RatingDistributions';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,9 +22,11 @@ const Login = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loginMessage, setLoginMessage] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
-  const [favoriteCafes, setFavoriteCafes] = useState([]); // Estado para cafeterías favoritas
-  const [userData, setUserData] = useState(null); // Estado para los datos adicionales del usuario
-  const [selectedTab, setSelectedTab] = useState('favorites'); // Estado para manejar la pestaña seleccionada
+  const [favoriteCafes, setFavoriteCafes] = useState([]);
+  const [userData, setUserData] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('favorites');
+
+  const [userReviews, setUserReviews] = useState([]); // Estado para reseñas del usuario
 
   const navigate = useNavigate();
   const { cafes = [], selectedNeighs, handleNeighSelection } = useContext(CafeContext);
@@ -30,33 +36,65 @@ const Login = () => {
       if (user) {
         setLoggedIn(true);
         setLoginMessage('Logueado correctamente');
-        await fetchUserData(user.uid); // Obtener datos adicionales del usuario
-        fetchFavoriteCafes(user.uid);
+        await fetchUserData(user.uid);  // Obtener los datos del usuario
+        fetchFavoriteCafes(user.uid);   // Obtener cafeterías favoritas
+        fetchUserReviews(user.uid);     // Obtener reseñas del usuario
       } else {
         setLoggedIn(false);
         setLoginMessage('');
         setFavoriteCafes([]);
         setUserData(null);
+        setUserReviews([]); // Limpiar reseñas si no está logueado
       }
     });
-
+  
     return () => unsubscribe();
   }, []);
 
   const fetchUserData = async (uid) => {
     try {
+      console.log('Obteniendo datos del usuario con UID:', uid); // Verifica el UID
+  
       const userRef = doc(db, 'users', uid);
       const userDoc = await getDoc(userRef);
-
+  
       if (userDoc.exists()) {
-        setUserData(userDoc.data()); // Almacenar los datos del usuario
+        const userDataFromFirestore = userDoc.data();
+        console.log('Datos del usuario obtenidos de Firestore:', userDataFromFirestore);
+  
+        setUserData(userDataFromFirestore); // Almacena los datos del usuario
       } else {
-        console.log('No se encontró el documento del usuario');
+        console.log('No se encontró el documento del usuario en Firestore.');
       }
     } catch (error) {
       console.error('Error al obtener datos del usuario:', error);
     }
   };
+
+  const starRating = (rating) => {
+    const stars = [];
+    const totalStars = 5;
+    
+    const fullStarsCount = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStarsCount = totalStars - fullStarsCount - (hasHalfStar ? 1 : 0);
+    
+    for (let i = 0; i < fullStarsCount; i++) {
+      stars.push(<img key={`full-${i}`} src={fullStarDark} alt="Full Star" className="inline-block w-6 h-6" />);
+    }
+    
+    if (hasHalfStar) {
+      stars.push(<img key="half" src={halfStarDark} alt="Half Star" className="inline-block w-6 h-6" />);
+    }
+    
+    for (let i = 0; i < emptyStarsCount; i++) {
+      stars.push(<img key={`empty-${i}`} src={emptyStarDark} alt="Empty Star" className="inline-block w-6 h-6" />);
+    }
+    
+    return stars;
+  };
+  
+  
 
   const fetchFavoriteCafes = async (uid) => {
     try {
@@ -77,6 +115,47 @@ const Login = () => {
       setFavoriteCafes([]);
     }
   };
+
+  const fetchUserReviews = async () => {
+
+    const reviewsByUser = [];
+  
+    // Iteramos sobre todas las cafeterías en 'cafes'
+    cafes.forEach(cafe => {
+      if (cafe.reviews && Array.isArray(cafe.reviews)) {
+        // Filtramos las reseñas cuyo autor coincida con el nombre de usuario
+        const userCafeReviews = cafe.reviews.filter(review => {
+          console.log(`Verificando reseña de ${review.user} para la cafetería ${cafe.name}...`); // Log de la reseña
+          return review.user === auth.currentUser.displayName; // Comparar el usuario de la reseña con el nombre de usuario
+        });
+  
+        // Verificar si hay reseñas del usuario para esta cafetería
+        if (userCafeReviews.length > 0) {
+          console.log(`Reseñas encontradas para ${cafe.name}:`, userCafeReviews); // Log de reseñas encontradas
+          // Si hay reseñas del usuario para esta cafetería, las agregamos al array
+          reviewsByUser.push({
+            cafeId: cafe.id,
+            cafeName: cafe.name,
+            reviews: userCafeReviews,  // Las reseñas del usuario en esta cafetería
+          });
+        }
+      }
+    });
+  
+    // Actualizamos el estado con las reseñas del usuario
+    if (reviewsByUser.length === 0) {
+      console.log('No se encontraron reseñas del usuario.'); // Log si no se encontraron reseñas
+    } else {
+      console.log("Reseñas de usuario:", reviewsByUser); // Log de las reseñas que se van a establecer
+    }
+    
+    setUserReviews(reviewsByUser);
+  };
+  
+  
+  
+  
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -150,7 +229,7 @@ const Login = () => {
                 </h2>
                 <button
                   onClick={handleLogout}
-                  className="w-full p-2 mb-2 text-white transition-all duration-100 bg-red-500 rounded hover:bg-red-600 text-xs"
+                  className="w-full p-1 mb-2 text-white transition-all duration-100 bg-red-500 rounded hover:bg-red-600 text-[8px]"
                 >
                   Cerrar Sesión
                 </button>
@@ -172,6 +251,8 @@ const Login = () => {
             )}
           </div>
 
+          <RatingDistribution reviews={userReviews}/>
+
           {/* Pestañas de favoritos y recientes */}
           <div className="w-4/5 flex text-c mt-4">
             <button
@@ -181,29 +262,54 @@ const Login = () => {
               Cafeterías Favoritas
             </button>
             <button
-              onClick={() => handleTabChange('recent')}
-              className={`text-sm font-bold w-1/2 transition-opacity ${selectedTab === 'recent' ? 'opacity-100' : 'opacity-50'}`}
+              onClick={() => handleTabChange('recents')}
+              className={`text-sm font-bold w-1/2 transition-opacity ${selectedTab === 'recents' ? 'opacity-100' : 'opacity-50'}`}
             >
-              Recientes
+              Reseñas
             </button>
           </div>
+
           <hr className="w-4/5 h-[2px] bg-c1 border-none my-4 bg-opacity-40" />
 
-          <div className="w-full p-4 mt-4 rounded sm:w-1/4">
-            {selectedTab === 'favorites' ? (
-              favoriteCafes.length > 0 ? (
-                <div className="grid grid-cols-3 gap-1">
-                  {favoriteCafes.map(cafe => (
-                    <MiniCard key={cafe.id} cafe={cafe} />
-                  ))}
+
+<div className="w-full p-4 mt-2 rounded sm:w-1/4 mb-44">
+  {selectedTab === 'favorites' ? (
+    favoriteCafes.length > 0 ? (
+      <div className="grid grid-cols-3 gap-1">
+        {favoriteCafes.map(cafe => (
+          <MiniCard key={cafe.id} cafe={cafe} />
+        ))}
+      </div>
+    ) : (
+      <p className="text-center">No tienes cafeterías favoritas.</p>
+    )
+  ) : selectedTab === 'recents' ? (
+    <div className="p-2 py-0 mb-4 rounded  text-c">
+      {userReviews.length > 0 ? (
+        userReviews.map(cafe => (
+          <div key={cafe.cafeId} className="mb-4">
+            <h4 className="font-bold mb-2">{cafe.cafeName}</h4>
+            {cafe.reviews.map((review, index) => (
+              <div key={index} className="w-full p-4 mb-4 rounded shadow-md bg-b1 text-c">
+                <div className="flex items-center mb-2">
+                  <span className="mr-2 font-bold">{review.user}</span>
+                  <span>{starRating(review.rating)}</span>
                 </div>
-              ) : (
-                <p className="text-center">No tienes cafeterías favoritas.</p>
-              )
-            ) : (
-              <p className="text-center">No tienes cafeterías recientes.</p>
-            )}
+                <p className="mb-2">{review.text}</p>
+              </div>
+            ))}
           </div>
+        ))
+      ) : (
+        <p className="mb-4 text-xl text-center text-c">No has dejado reseñas todavía.</p>
+      )}
+    </div>
+  ) : (
+    <p className="text-center">Selecciona una pestaña para ver el contenido.</p>
+  )}
+</div>
+
+
         </>
       ) : (
         <form onSubmit={handleLogin} className="w-4/5 p-4 mt-4 rounded shadow-md sm:w-1/4 bg-zinc-100">
@@ -239,36 +345,6 @@ const Login = () => {
           <h2 className={loggedIn ? 'text-green-500' : 'text-red-500'}>{loginMessage}</h2>
         </form>
       )}
-
-      <div className="w-4/5 p-4 mt-4 rounded shadow-md sm:w-1/4 bg-zinc-100">
-        <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Selecciona tus barrios de preferencia</h1>
-        <div className="text-center">
-          {uniqueNeighs.length > 0 ? (
-            uniqueNeighs.map((neigh, index) => (
-              <button
-                key={index}
-                onClick={() => handleNeighSelection(neigh)}
-                className={`p-2 m-2 rounded ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
-              >
-                {neigh}
-              </button>
-            ))
-          ) : (
-            <p className="text-center">No hay barrios disponibles.</p>
-          )}
-        </div>
-        <div className="flex flex-col items-center justify-center w-full p-4">
-          <button
-            onClick={handleSavePreferences}
-            className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
-          >
-            Guardar Preferencias
-          </button>
-          {saveMessage && (
-            <p className="mt-2 text-green-500">{saveMessage}</p>
-          )}
-        </div>
-      </div>
     </div>
   );
 };
