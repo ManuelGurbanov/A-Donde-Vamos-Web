@@ -366,13 +366,6 @@ const CoffeeDetails = () => {
     return <div className="mt-24 text-3xl text-center text-white">Cargando...</div>;
   }
 
-  const goToReviewPage = () => {
-    if (coffee) {
-      navigate('/review', { state: { cafeName: coffee.name } });
-    } else {
-      console.error('El café no está definido.');
-    }
-  };
   
   const sliderSettings = {
     arrows: false,

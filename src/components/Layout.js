@@ -1,6 +1,8 @@
 // Layout.js
-import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { auth } from '../firebase/firebase'; // Asegúrate de importar auth de Firebase
+import { onAuthStateChanged } from 'firebase/auth';
 import screen1 from '../img/screen1.png';
 import screen2 from '../img/screen2.png';
 import screen3 from '../img/screen3.png';
@@ -14,10 +16,22 @@ import './Nav.css';
 import navBg from '../img/nav_bg.png';
 import addsquare from '../img/add-square-white.png';
 import Review from './Review';
+import LoginForm from './LoginForm';
 
 const Layout = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const [showReview, setShowReview] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false); // Estado para mostrar el login form
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado para determinar si el usuario está autenticado
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user); // Establecer autenticación basado en la existencia del usuario
+    });
+
+    return () => unsubscribe(); // Limpia la suscripción al desmontar el componente
+  }, []);
 
   const handleReviewClick = () => {
     setShowReview(prevShowReview => !prevShowReview); // Alterna el estado
@@ -25,6 +39,29 @@ const Layout = () => {
 
   const handleCloseReview = () => {
     setShowReview(false);
+  };
+
+  const handleLoginClick = () => {
+    console.log('handleLoginClick');
+    if (isAuthenticated) {
+      navigate('/login'); // Si está autenticado, redirige a /home
+    } else {
+      setShowLoginForm(true); // Si no, muestra el formulario de login
+    }
+  };
+
+  const handleCloseLoginForm = () => {
+    setShowLoginForm(false); // Función para cerrar el formulario de login
+  };
+
+  const handleSuccessfulLogin = () => {
+    setShowLoginForm(false); // Cierra el formulario
+    navigate('/home'); // Redirige a /home
+  };
+
+  const handleSuccessfulRegister = () => {
+    setShowLoginForm(false); // Cierra el formulario de login tras el registro
+    navigate('/home'); // Redirige a /home
   };
 
   return (
@@ -38,6 +75,19 @@ const Layout = () => {
       {showReview && (
         <div className="review-popup">
           <Review onClose={handleCloseReview} />
+        </div>
+      )}
+
+      {showLoginForm && (
+        <div className="login-form-popup">
+          <div className="login-form-overlay" onClick={handleCloseLoginForm}></div> {/* Fondo oscuro */}
+          <div className="login-form-container z-50">
+            <LoginForm 
+              onClose={handleCloseLoginForm} 
+              onSuccessfulLogin={handleSuccessfulLogin} 
+              onSuccessfulRegister={handleSuccessfulRegister} 
+            /> {/* Llamamos el formulario */}
+          </div>
         </div>
       )}
 
@@ -82,7 +132,7 @@ const Layout = () => {
               <span className={`navbar-text text-c ${location.pathname === '/notifications' ? '' : 'text-transparent'}`}>Notificaciones</span>
             </div>
           </Link>
-          <Link to="/login" className="navbar-link">
+          <button onClick={handleLoginClick} className="navbar-link">
             <div className="navbar-icon-container">
               <img
                 src={location.pathname === '/login' ? screen4_selected : screen4}
@@ -91,7 +141,7 @@ const Layout = () => {
               />
               <span className={`navbar-text text-c ${location.pathname === '/login' ? '' : 'text-transparent'}`}>Perfil</span>
             </div>
-          </Link>
+          </button>
         </div>
       </div>
     </div>

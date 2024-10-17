@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
+import { auth } from '../firebase/firebase'; // Asegúrate de que esta ruta es correcta
+import { onAuthStateChanged } from 'firebase/auth';
 
 export const CafeContext = createContext();
 
@@ -12,8 +14,11 @@ export const CafeProvider = ({ children }) => {
   
   const [selectedCafe, setSelectedCafe] = useState(null);
   const [selectedNeighs, setSelectedNeighs] = useState([]);
+  
+  // Estado para la autenticación
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Fetch cafeterias from Firebase
+  // Fetch cafeterías from Firebase
   useEffect(() => {
     const fetchCafes = async () => {
       try {
@@ -28,6 +33,15 @@ export const CafeProvider = ({ children }) => {
     };
 
     fetchCafes();
+  }, []);
+
+  // Verificar estado de autenticación del usuario
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user); // Establece isAuthenticated a true si hay un usuario
+    });
+
+    return () => unsubscribe(); // Limpia la suscripción al desmontar el componente
   }, []);
 
   // Load selected neighborhoods from localStorage
@@ -75,7 +89,8 @@ export const CafeProvider = ({ children }) => {
       selectedCafe, 
       setSelectedCafe, 
       selectedNeighs, 
-      handleNeighSelection 
+      handleNeighSelection,
+      isAuthenticated // Añadir estado de autenticación al contexto
     }}>
       {children}
     </CafeContext.Provider>

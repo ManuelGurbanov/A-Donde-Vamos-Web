@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase/firebase';
-import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signOut } from 'firebase/auth';
 import { db, storage } from '../firebase/firebase'; 
 import { setDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
@@ -10,19 +10,20 @@ import Top from './Top';
 import crearImg from '../img/crearImg.png';
 
 const Register = () => {
-  const [fullName, setFullName] = useState(''); // Nombre completo
+  const [fullName, setFullName] = useState(''); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState(''); // Nombre de usuario
-  const [profilePicture, setProfilePicture] = useState(null); // Archivo de imagen
-  const [mainNeighborhood, setMainNeighborhood] = useState(''); // Barrio principal
-  const [showNeighborhood, setShowNeighborhood] = useState(false); // Checkbox para mostrar el barrio
-  const [description, setDescription] = useState(''); // Descripción o estado
-  const [showPet, setShowPet] = useState(false); // Insignia pet
-  const [showTac, setShowTac] = useState(false); // Insignia tac
-  const [showVegan, setShowVegan] = useState(false); // Insignia vegano
+  const [username, setUsername] = useState('');
+  const [profilePicture, setProfilePicture] = useState(null); 
+  const [mainNeighborhood, setMainNeighborhood] = useState('');
+  const [showNeighborhood, setShowNeighborhood] = useState(false);
+  const [description, setDescription] = useState('');
+  const [showPet, setShowPet] = useState(false); 
+  const [showTac, setShowTac] = useState(false); 
+  const [showVegan, setShowVegan] = useState(false); 
   const [errorText, setErrorText] = useState('');
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false); 
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -41,36 +42,36 @@ const Register = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Si el usuario cargó una foto de perfil, súbela a Firebase Storage
       let profilePictureUrl = '';
       if (profilePicture) {
         const storageRef = ref(storage, `profilePictures/${user.uid}`);
         await uploadBytes(storageRef, profilePicture);
-        profilePictureUrl = await getDownloadURL(storageRef); // Obtener la URL de descarga de la imagen
+        profilePictureUrl = await getDownloadURL(storageRef);
       }
 
-      // Actualizar el perfil del usuario con el nombre de usuario y la URL de la foto
       await updateProfile(user, { displayName: username, photoURL: profilePictureUrl });
 
       // Enviar correo de verificación
       await sendEmailVerification(user);
+      setVerificationEmailSent(true);
 
       // Guardar datos adicionales en Firestore
       await setDoc(doc(db, 'users', user.uid), {
         username: username,
-        fullName: fullName, // Guardar el nombre completo
+        fullName: fullName,
         email: email,
-        profilePicture: profilePictureUrl, // Guardar la URL de la foto
+        profilePicture: profilePictureUrl,
         mainNeighborhood: mainNeighborhood,
         showNeighborhood: showNeighborhood,
-        description: description, // Guardar la descripción o estado
-        showPet: showPet, // Guardar insignia pet
-        showTac: showTac, // Guardar insignia tac
-        showVegan: showVegan, // Guardar insignia vegano
+        description: description,
+        showPet: showPet,
+        showTac: showTac,
+        showVegan: showVegan,
       });
 
-      console.log('Usuario registrado exitosamente:', user);
-      alert('Usuario registrado exitosamente. Revisa tu correo para verificar tu cuenta.');
+      // Cerrar sesión automáticamente tras el registro
+      signOut(auth);
+      alert('Registro exitoso. Revisa tu correo para verificar tu cuenta.');
     } catch (error) {
       console.error('Error al registrar usuario', error);
 
@@ -82,7 +83,6 @@ const Register = () => {
     }
   };
 
-  // Manejar la carga del archivo de imagen
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -197,6 +197,7 @@ const Register = () => {
             <p className="flex-[6] text-c text-sm">Crear Cuenta</p>
           </button>
           {errorText && <p className="mt-2 text-red-500">{errorText}</p>}
+          {verificationEmailSent && <p className="mt-2 text-green-500">Correo de verificación enviado. Revisa tu bandeja de entrada.</p>}
         </form>
       </div>
     </>
