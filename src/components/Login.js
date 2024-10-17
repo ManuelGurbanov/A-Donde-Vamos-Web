@@ -213,6 +213,8 @@ const Login = () => {
               </p>
             )}
           </div>
+          
+          <RatingDistribution reviews={userReviews} />
 
           {/* Pestañas de favoritos y recientes */}
           <div className="w-4/5 flex text-c mt-4">
