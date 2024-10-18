@@ -77,6 +77,9 @@ const Review = ({ selectedCafe, onClose }) => {
       return;
     }
 
+    const today = new Date();
+    const formattedDate = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getFullYear()).slice(2)}`;
+
     const reviewData = {
       userId: currentUser.uid,
       user: currentUser.displayName || 'Anonymous',
@@ -84,7 +87,8 @@ const Review = ({ selectedCafe, onClose }) => {
       text: review,
       likes: 0,
       dislikes: 0,
-      votes: {}
+      votes: {},
+      date: formattedDate // Aquí se guarda la fecha
     };
 
     try {
@@ -181,7 +185,7 @@ const Review = ({ selectedCafe, onClose }) => {
 
             <div className='flex justify-between w-full mb-2 text-c2'>
               <h1>Fecha</h1>
-              {/* texto con la fecha actual */}
+çç
               <p>{new Date().toLocaleDateString()}</p>
             </div>
 

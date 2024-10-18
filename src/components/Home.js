@@ -26,15 +26,21 @@ const Home = () => {
   const [currentSlideNew, setCurrentSlideNew] = useState(0);
 
   useEffect(() => {
-    // Verificar si ya se mostró la animación de presentación
-    const hasSeenPresentation = localStorage.getItem('hasSeenPresentation');
-    
-    if (!hasSeenPresentation) {
-      setShowLoading(true);
-      // Mostrar la animación solo una vez
-      localStorage.setItem('hasSeenPresentation', 'true');
-    }
+    // Simular el swipe hacia la derecha y luego hacia la izquierda
+    const swipeRightLeft = () => {
+      setTimeout(() => {
+        setCurrentSlidePopular((prev) => (prev + 1) % popularCafes.length); // Swipe derecha
+      }, 1000); // Esperar 1 segundo
 
+      setTimeout(() => {
+        setCurrentSlidePopular((prev) => (prev - 1 + popularCafes.length) % popularCafes.length); // Swipe izquierda
+      }, 3000); // 2 segundos después del primer swipe
+    };
+
+    swipeRightLeft(); // Llamar a la función cuando se monte el componente
+  }, []);
+
+  useEffect(() => {
     const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
     if (storedNeighs && storedNeighs.length > 0) {
       setSelectedNeighs(storedNeighs);
@@ -88,12 +94,25 @@ const Home = () => {
     : cafes;
 
   const sliderSettings = {
-    arrows: false,
+    arrows: true,
     dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+  };
+
+  const sliderSettingsMove = {
+    arrows: true,
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    pauseOnHover: false,
+    beforeChange: (current, next) => setCurrentSlidePopular(next),
   };
 
   const handleNext = (cafesArray, setCurrentSlide, currentSlide) => {
@@ -181,7 +200,7 @@ const Home = () => {
                 {isLargeScreen ? (
                   renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
                 ) : (
-                  <Slider {...sliderSettings}>
+                  <Slider {...sliderSettingsMove}>
                     {popularCafes.map((cafe, index) => (
                       <CoffeeCard key={index} cafe={cafe} />
                     ))}

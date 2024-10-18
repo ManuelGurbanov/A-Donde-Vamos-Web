@@ -11,10 +11,11 @@ import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
 
-import fullStarDark from '../img/fullStar.png';
-import halfStarDark from '../img/halfStar.png';
-import emptyStarDark from '../img/emptyStar.png';
+import fullStarDark from '../img/fullStarRed.webp';
+import halfStarDark from '../img/halfStarRed.webp';
+import emptyStarDark from '../img/emptyStarRed.webp';
 import RatingDistribution from './RatingDistributions';
+
 
 const starRating = (rating) => {
   const stars = [];
@@ -25,15 +26,15 @@ const starRating = (rating) => {
   const emptyStarsCount = totalStars - fullStarsCount - (hasHalfStar ? 1 : 0);
   
   for (let i = 0; i < fullStarsCount; i++) {
-    stars.push(<img key={`full-${i}`} src={fullStarDark} alt="Full Star" className="inline-block w-6 h-6" />);
+    stars.push(<img key={`full-${i}`} src={fullStarDark} alt="Full Star" className="inline-block w-4 h-4" />);
   }
   
   if (hasHalfStar) {
-    stars.push(<img key="half" src={halfStarDark} alt="Half Star" className="inline-block w-6 h-6" />);
+    stars.push(<img key="half" src={halfStarDark} alt="Half Star" className="inline-block w-4 h-4" />);
   }
   
   for (let i = 0; i < emptyStarsCount; i++) {
-    stars.push(<img key={`empty-${i}`} src={emptyStarDark} alt="Empty Star" className="inline-block w-6 h-6" />);
+    stars.push(<img key={`empty-${i}`} src={emptyStarDark} alt="Empty Star" className="inline-block w-4 h-4" />);
   }
   
   return stars;
@@ -109,7 +110,7 @@ const Login = () => {
 
   const fetchUserReviews = async () => {
     const reviewsByUser = [];
-  
+    
     cafes.forEach(cafe => {
       if (cafe.reviews && Array.isArray(cafe.reviews)) {
         const userCafeReviews = cafe.reviews.filter(review => review.user === auth.currentUser?.displayName);
@@ -117,14 +118,16 @@ const Login = () => {
           reviewsByUser.push({
             cafeId: cafe.id,
             cafeName: cafe.name,
+            picsLinks: cafe.picsLinks,  // Asegúrate de agregar esta línea para pasar las imágenes
             reviews: userCafeReviews,
           });
         }
       }
     });
-  
+    
     setUserReviews(reviewsByUser);
   };
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -185,10 +188,10 @@ const Login = () => {
               )}
 
               <div className="ml-4 flex flex-col gap-1">
-                <h2 className="text-lg font-bold text-c2">{userData?.fullName || 'Cargando...'}</h2>
-                <h2 className="text-sm font-thin text-c2">{auth.currentUser?.displayName || 'Cargando...'}</h2>
+                <h2 className="text-lg font-bold text-c2">{userData?.fullName || ''}</h2>
+                <h2 className="text-sm font-thin text-c2">{auth.currentUser?.displayName || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">
-                  {userData?.mainNeighborhood || 'Cargando...'}, <strong className="font-bold italic">CABA</strong>
+                  {userData?.mainNeighborhood || ''}, <strong className="font-bold italic">CABA</strong>
                 </h2>
                 <button
                   onClick={handleLogout}
@@ -233,43 +236,51 @@ const Login = () => {
           </div>
 
           <hr className="w-4/5 h-[2px] bg-c1 border-none my-4 bg-opacity-40" />
+<div className="w-full p-4 mt-2 rounded sm:w-1/4 mb-44">
+  {selectedTab === 'favorites' ? (
+    favoriteCafes.length > 0 ? (
+      <div className="grid grid-cols-3 gap-1">
+        {favoriteCafes.map(cafe => (
+          <MiniCard key={cafe.id} cafe={cafe} />
+        ))}
+      </div>
+    ) : (
+      <p className="text-center">No tienes cafeterías favoritas.</p>
+    )
+  ) : selectedTab === 'recents' ? (
+    userReviews.length > 0 ? (
+      <div className="p-2 py-0 mb-4 rounded text-c">
+        {userReviews.map(cafe => (
+          <div key={cafe.cafeId} className="mb-4">
+            <h4 className="font-bold mb-2">{cafe.cafeName}</h4>
 
-          <div className="w-full p-4 mt-2 rounded sm:w-1/4 mb-44">
-            {selectedTab === 'favorites' ? (
-              favoriteCafes.length > 0 ? (
-                <div className="grid grid-cols-3 gap-1">
-                  {favoriteCafes.map(cafe => (
-                    <MiniCard key={cafe.id} cafe={cafe} />
-                  ))}
+            
+            
+            {cafe.reviews.map((review, index) => (
+              <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
+                <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
+                <div>
+                  <div className="flex items-center mb-2 flex-col p-1">
+                    <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
+                    <div className='flex gap-2'>
+                    <span>{starRating(review.rating)}</span>
+                    <span className='text-c2 text-opacity-70 text-lg'>{review.date}</span>
+                  </div>
+
+                  </div>
+                  <p className="mb-2 text-c2 px-2">{review.text}</p>
                 </div>
-              ) : (
-                <p className="text-center">No tienes cafeterías favoritas.</p>
-              )
-            ) : selectedTab === 'recents' ? (
-              <div className="p-2 py-0 mb-4 rounded text-c">
-                {userReviews.length > 0 ? (
-                  userReviews.map(cafe => (
-                    <div key={cafe.cafeId} className="mb-4">
-                      <h4 className="font-bold mb-2">{cafe.cafeName}</h4>
-                      {cafe.reviews.map((review, index) => (
-                        <div key={index} className="w-full p-4 mb-4 rounded shadow-md bg-b1 text-c">
-                          <div className="flex items-center mb-2">
-                            <span className="mr-2 font-bold">{review.user}</span>
-                            <span>{starRating(review.rating)}</span>
-                          </div>
-                          <p className="mb-2">{review.text}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ))
-                ) : (
-                  <p className="mb-4 text-xl text-center text-c">No has dejado reseñas todavía.</p>
-                )}
               </div>
-            ) : (
-              <p className="text-center">Selecciona una pestaña para ver el contenido.</p>
-            )}
+            ))}
           </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-center">No tienes reseñas recientes.</p>
+    )
+  ) : null}
+</div>
+
     </div>
   );
 };
