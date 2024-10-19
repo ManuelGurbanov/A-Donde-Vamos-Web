@@ -175,7 +175,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center mb-6">
       <Top text={"Perfil"} />
           <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
             <div className="w-full flex items-center">
@@ -235,49 +235,50 @@ const Login = () => {
             </button>
           </div>
 
-          <hr className="w-4/5 h-[2px] bg-c1 border-none my-4 bg-opacity-40" />
-        <div className="w-full p-4 mt-2 rounded sm:w-1/4 mb-44 h-96">
-          {selectedTab === 'favorites' ? (
-            favoriteCafes.length > 0 ? (
-              <div className="grid grid-cols-3 gap-1">
-                {favoriteCafes.map(cafe => (
-                  <MiniCard key={cafe.id} cafe={cafe} />
-                ))}
-              </div>
-            ) : (
-              <p className="text-center">No tienes cafeterías favoritas.</p>
-            )
-          ) : selectedTab === 'recents' ? (
-            userReviews.length > 0 ? (
-              <div className="p-2 py-0 mb-4 rounded text-c">
-                {userReviews.map(cafe => (
-                  <div key={cafe.cafeId} className="mb-4">           
-                    {cafe.reviews.map((review, index) => (
-                      <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
-                        <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
-                        <div>
-                          <div className="flex items-center mb-2 flex-col p-1">
-                            <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
-
-                            <div className='flex w-full gap-1 justify-between'>
-
-                            <span>{starRating(review.rating)}</span>
-                            <span className='text-c2 text-opacity-70 text-xl'>{review.date}</span>
-                            </div>
-
-                          </div>
-                          <p className="mb-2 text-c2 px-2">{review.text}</p>
-                        </div>
-                      </div>
-                    ))}
+          <hr className="w-4/5 h-[2px] bg-c2 border-none my-4 bg-opacity-40" />
+          <div className="w-full p-4 mt-2 rounded sm:w-1/4 h-auto">
+  {selectedTab === 'favorites' ? (
+    favoriteCafes.length > 0 ? (
+      <div className="grid grid-cols-3 gap-1">
+        {favoriteCafes.map(cafe => (
+          <MiniCard key={cafe.id} cafe={cafe} />
+        ))}
+      </div>
+    ) : (
+      <p className="text-center">No tienes cafeterías favoritas.</p>
+    )
+  ) : selectedTab === 'recents' ? (
+    userReviews.length > 0 ? (
+      <div className="p-2 py-0 rounded text-c overflow-y-scroll">  {/* Cambié mb-[100vh] a mb-32 */}
+        {userReviews.map(cafe => (
+          <div key={cafe.cafeId} className="mb-4">
+            {cafe.reviews.map((review, index) => (
+              <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
+                <div className='w-24'>
+                  <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
+                </div>
+                <div>
+                  <div className="flex items-center mb-2 flex-col p-1">
+                    <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
+                    <div className='flex w-full gap-1 justify-between'>
+                      <span>{starRating(review.rating)}</span>
+                      <span className='text-c2 text-opacity-70 text-xl'>{review.date}</span>
+                    </div>
                   </div>
-                ))}
+                  <p className="mb-2 text-c2 px-2">{review.text}</p>
+                </div>
               </div>
-            ) : (
-              <p className="text-center">No tienes reseñas.</p>
-            )
-          ) : null}
-        </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-center">No tienes reseñas.</p>
+    )
+  ) : null}
+</div>
+
+
 
     </div>
   );

@@ -61,7 +61,7 @@ const RatingDistribution = ({ reviews }) => {
 
 
         {ratingsCount.map((count, index) => (
-          <div key={index} className="flex flex-col items-center w-6 overflow-hidden m-0">
+          <div key={index} className="flex flex-col items-center w-6 overflow-hidden m-0 mr-1">
             <div className="relative overflow-hidden flex items-end w-full ring-black" style={{ height: '10vh' }}>
               <div
                 className="w-full bg-c hover:bg-opacity-40"
