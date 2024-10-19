@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const MiniCard = ({ cafe }) => {
   return (
-    <div className="p-2 max-w-[35vw]">
+    <div className="p-2 w-80">
       <Link to={`/cafe/${cafe.id}`}>
         <div className="overflow-hidden bg-b1 rounded-lg shadow-md h-[200px] max-w-[150px] flex flex-col items-center">
           {/* Imagen de la cafetería */}

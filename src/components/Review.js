@@ -185,7 +185,6 @@ const Review = ({ selectedCafe, onClose }) => {
 
             <div className='flex justify-between w-full mb-2 text-c2'>
               <h1>Fecha</h1>
-çç
               <p>{new Date().toLocaleDateString()}</p>
             </div>
 

@@ -26,15 +26,15 @@ const starRating = (rating) => {
   const emptyStarsCount = totalStars - fullStarsCount - (hasHalfStar ? 1 : 0);
   
   for (let i = 0; i < fullStarsCount; i++) {
-    stars.push(<img key={`full-${i}`} src={fullStarDark} alt="Full Star" className="inline-block w-4 h-4" />);
+    stars.push(<img key={`full-${i}`} src={fullStarDark} alt="Full Star" className="inline-block w-5 h-5" />);
   }
   
   if (hasHalfStar) {
-    stars.push(<img key="half" src={halfStarDark} alt="Half Star" className="inline-block w-4 h-4" />);
+    stars.push(<img key="half" src={halfStarDark} alt="Half Star" className="inline-block w-5 h-5" />);
   }
   
   for (let i = 0; i < emptyStarsCount; i++) {
-    stars.push(<img key={`empty-${i}`} src={emptyStarDark} alt="Empty Star" className="inline-block w-4 h-4" />);
+    stars.push(<img key={`empty-${i}`} src={emptyStarDark} alt="Empty Star" className="inline-block w-5 h-5" />);
   }
   
   return stars;
@@ -236,50 +236,48 @@ const Login = () => {
           </div>
 
           <hr className="w-4/5 h-[2px] bg-c1 border-none my-4 bg-opacity-40" />
-<div className="w-full p-4 mt-2 rounded sm:w-1/4 mb-44">
-  {selectedTab === 'favorites' ? (
-    favoriteCafes.length > 0 ? (
-      <div className="grid grid-cols-3 gap-1">
-        {favoriteCafes.map(cafe => (
-          <MiniCard key={cafe.id} cafe={cafe} />
-        ))}
-      </div>
-    ) : (
-      <p className="text-center">No tienes cafeterías favoritas.</p>
-    )
-  ) : selectedTab === 'recents' ? (
-    userReviews.length > 0 ? (
-      <div className="p-2 py-0 mb-4 rounded text-c">
-        {userReviews.map(cafe => (
-          <div key={cafe.cafeId} className="mb-4">
-            <h4 className="font-bold mb-2">{cafe.cafeName}</h4>
-
-            
-            
-            {cafe.reviews.map((review, index) => (
-              <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
-                <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
-                <div>
-                  <div className="flex items-center mb-2 flex-col p-1">
-                    <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
-                    <div className='flex gap-2'>
-                    <span>{starRating(review.rating)}</span>
-                    <span className='text-c2 text-opacity-70 text-lg'>{review.date}</span>
-                  </div>
-
-                  </div>
-                  <p className="mb-2 text-c2 px-2">{review.text}</p>
-                </div>
+        <div className="w-full p-4 mt-2 rounded sm:w-1/4 mb-44 h-96">
+          {selectedTab === 'favorites' ? (
+            favoriteCafes.length > 0 ? (
+              <div className="grid grid-cols-3 gap-1">
+                {favoriteCafes.map(cafe => (
+                  <MiniCard key={cafe.id} cafe={cafe} />
+                ))}
               </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p className="text-center">No tienes reseñas recientes.</p>
-    )
-  ) : null}
-</div>
+            ) : (
+              <p className="text-center">No tienes cafeterías favoritas.</p>
+            )
+          ) : selectedTab === 'recents' ? (
+            userReviews.length > 0 ? (
+              <div className="p-2 py-0 mb-4 rounded text-c">
+                {userReviews.map(cafe => (
+                  <div key={cafe.cafeId} className="mb-4">           
+                    {cafe.reviews.map((review, index) => (
+                      <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
+                        <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
+                        <div>
+                          <div className="flex items-center mb-2 flex-col p-1">
+                            <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
+
+                            <div className='flex w-full gap-1 justify-between'>
+
+                            <span>{starRating(review.rating)}</span>
+                            <span className='text-c2 text-opacity-70 text-xl'>{review.date}</span>
+                            </div>
+
+                          </div>
+                          <p className="mb-2 text-c2 px-2">{review.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center">No tienes reseñas.</p>
+            )
+          ) : null}
+        </div>
 
     </div>
   );

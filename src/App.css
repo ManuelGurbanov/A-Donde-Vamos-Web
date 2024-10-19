@@ -47,4 +47,6 @@
 body {
   font-family: "Platypi", serif;
   background-image: url('./img/white_pattern.png');
+  overflow-x: hidden;
+  max-width: 100vw;
 }

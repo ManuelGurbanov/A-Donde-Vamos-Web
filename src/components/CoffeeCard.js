@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import outsideIcon from '../img/outside.png';
+import outsideIcon from '../img/outside.webp';
 import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';

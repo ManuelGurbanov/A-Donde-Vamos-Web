@@ -3,15 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebase'; // Asegúrate de importar auth de Firebase
 import { onAuthStateChanged } from 'firebase/auth';
-import screen1 from '../img/screen1.png';
+import screen1 from '../img/screen1.webp';
 import screen2 from '../img/screen2.png';
 import screen3 from '../img/screen3.png';
 import screen4 from '../img/screen4.png';
-import screen1_selected from '../img/screen1-selected.png';
+import screen1_selected from '../img/screen1-selected.webp';
 import screen2_selected from '../img/screen2-selected.png';
 import screen3_selected from '../img/screen3-selected.png';
 import screen4_selected from '../img/screen4-selected.png';
-import navbarBg from '../img/navbar_bg.png'; // Importa la imagen de fondo
 import './Nav.css';
 import navBg from '../img/nav_bg.png';
 import addsquare from '../img/add-square-white.png';

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import outsideIcon from '../img/outside.png';
+import outsideIcon from '../img/outside.webp';
 import petIcon from '../img/pet.png';
 import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
@@ -35,7 +35,7 @@ import { useOutletContext } from 'react-router-dom';
 import instagram from '../img/instagram.png';
 import menu from '../img/menu.png';
 import web from '../img/web.png';
-import share from '../img/share.png';
+import share from '../img/share.webp';
 import arrowdown from '../img/arrow_down.png';
 
 const CoffeeDetails = () => {
@@ -414,18 +414,18 @@ const CoffeeDetails = () => {
       {coffee ? (
         <>
         <div className=''>
-              <div className="w-full overflow-x-auto rounded-lg sm:h-80 p-0">
+              <div className="w-full overflow-x-auto sm:h-80 p-0">
         <Slider {...sliderSettings}>
           {coffee.picsLinks?.map((picLink, index) => (
             <div key={index} className="relative w-screen h-64 sm:h-72">
               <img
                 src={picLink}
                 alt={`Imagen ${index + 1}`}
-                className="object-cover h-full w-full rounded-lg"
+                className="object-cover h-full w-full"
                 onError={() => handleImageError(index)}
               />
               {/* Gradiente */}
-              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-transparent to-transparent rounded-b-lg" />
+              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-transparent to-transparent" />
             </div>
           ))}
         </Slider>
@@ -437,10 +437,15 @@ const CoffeeDetails = () => {
 
           <h1 className="mt-0 text-3xl font-bold text-left">{coffee.name}</h1>
           
-          <p className="mb-2 text-xl">
-            {starRating(calculateAverageRating())}
+          <div className='flex gap-4'>
+            <p className="mb-1 text-xl">
+              {starRating(calculateAverageRating())}
+            </p>
+            <p className="mb-1 mt-1 text-xl">
             {numRatings === 1 ? `${numRatings} valoración` : `${numRatings} valoraciones`}
           </p>
+          </div>
+
           
             <p className='mb-8 text-xl'>
               <span className={`${textColor}`}> {status}</span>
@@ -473,8 +478,8 @@ const CoffeeDetails = () => {
                     <img src={instagram} className='m-auto'></img>
                   </button>
                   
-                  <button className='w-1/6 h-12 p-2 rounded-2xl bg-b1 h-10' onClick={handleShareWhatsApp}>
-                    <img src={share} className='m-auto'></img>
+                  <button className='w-1/6 p-2 rounded-2xl bg-b1 h-10' onClick={handleShareWhatsApp}>
+                    <img src={share} className='w-6 m-auto'></img>
                   </button>
 
                   <button
@@ -598,43 +603,54 @@ const CoffeeDetails = () => {
 
 
         <div className="p-4 mt-4 mb-24 rounded shadow-md bg-b1 text-c">
-          <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
-          {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <div key={index} className="w-full p-4 mb-4 rounded shadow-md bg-b1 text-c">
-                <div className="flex items-center mb-2">
-                  <span className="mr-2 font-bold">{review.user}</span>
-                  <span>{starRating(review.rating)}</span>
-                </div>
-                <p className="mb-2">{review.text}</p>
-                <div className="flex items-center">
-                  <button
-                    onClick={() => handleVote(index, 'like')}
-                    className={`mr-2 ${review.votes[currentUser?.uid] === 'like' ? 'text-blue-600' : 'text-gray-600'}`}
-                  >
-                    👍 {review.likes}
-                  </button>
-                  <button
-                    onClick={() => handleVote(index, 'dislike')}
-                    className={`mr-2 ${review.votes[currentUser?.uid] === 'dislike' ? 'text-red-600' : 'text-gray-600'}`}
-                  >
-                    👎 {review.dislikes}
-                  </button>
-                  {currentUser?.uid === review.userId && (
-                    <button
-                      onClick={() => handleDeleteReview(index)}
-                      className="text-red-600"
-                    >
-                      Eliminar
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="mb-4 text-xl text-center text-c">No hay reseñas aún.</p>
-          )}
+  <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
+  {reviews.length > 0 ? (
+    reviews.map((review, index) => (
+      <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-col ring-1 ring-c h-56">
+        <div className="flex flex-col w-full h-full justify-between">
+          {/* Cabecera con nombre de usuario y calificación */}
+          <div className="flex flex-col items-center mb-2 p-1">
+            <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
+            <div className="w-full gap-5 items-center flex justify-between">
+              <span>{starRating(review.rating)}</span>
+              <span className="text-c2 text-opacity-70 text-xl">{review.date}</span>
+            </div>
+          </div>
+
+          {/* Texto de la reseña */}
+          <p className="mb-2 text-c2 px-2 h-full">{review.text}</p>
+
+          {/* Botones de interacción: like, dislike, eliminar */}
+          <div className="flex items-center px-2">
+            <button
+              onClick={() => handleVote(index, 'like')}
+              className="mr-2 text-c2"
+            >
+              👍 {review.likes}
+            </button>
+            <button
+              onClick={() => handleVote(index, 'dislike')}
+              className="mr-2 text-c2"
+            >
+              👎 {review.dislikes}
+            </button>
+            {currentUser?.uid === review.userId && (
+              <button
+                onClick={() => handleDeleteReview(index)}
+                className="bg-red-600 px-2 py-1 text-white rounded"
+              >
+                Eliminar
+              </button>
+            )}
+          </div>
         </div>
+      </div>
+    ))
+  ) : (
+    <p>No hay reseñas.</p>
+  )}
+</div>
+
         </>
       ) : (
         <p className="p-4 text-c">No se encontraron detalles de la cafetería.</p>
