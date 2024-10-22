@@ -21,6 +21,7 @@ import info from '../img/info.png';
 import colaborate from '../img/colaborate.png';
 import settings from '../img/settings.png';
 
+import EditProfile from './EditProfile';
 
 const starRating = (rating) => {
   const stars = [];
@@ -232,13 +233,15 @@ const Login = () => {
              }
 
           {state === 1 && (auth.currentUser.uid !== uid) && (
-                            userData?.profilePicture && (
+                            userData?.profilePicture) && 
+                            <>
+                              <Top text={userData.username} />
                               <img
                                 src={userData.profilePicture}
                                 alt="Foto de perfil"
                                 className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 mt-4"
                               />
-                            ))}
+                            </>}
           
           {state === 1 && (
               <>
@@ -251,10 +254,11 @@ const Login = () => {
 
             {/* Descripción o estado */}
             {userData?.description && (
-              <p className="text-c2 text-sm text-center mt-4 font-semibold">
+              <p className="text-c2 text-xs text-center mt-4 font-semibold sm:w-1/2 w-2/3 break-words whitespace-pre-wrap">
                 {userData.description}
               </p>
             )}
+
                         <RatingDistribution reviews={userReviews} />
                         {/* Pestañas de favoritos y recientes */}
           <div className="w-4/5 flex text-c mt-4">
@@ -376,7 +380,7 @@ const Login = () => {
               <>
               <Top text={"Ajustes"} />
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
-                <p className='text-c text-sm font-semibold italic sm:text-lg'>En esta sección podés modificar tus preferencias y ajustes de la app. Podés cambiar tu foto de perfil, agregar una descripción, y más.</p>
+                <EditProfile/>
               </div>
               </>
             )}

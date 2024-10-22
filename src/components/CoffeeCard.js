@@ -27,48 +27,49 @@ const CoffeeCard = ({ cafe }) => {
 
   const checkIfOpen = (data) => {
     const now = new Date();
-    const today = now.getDay();  // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+    const today = now.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
     const currentTime = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`; // Hora actual en formato "HHMM"
-
-    // Convertir los "francos" (días libres) en un array de números
     const francos = data.francos ? data.francos.split(',').map(Number) : [];
+    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const dayKey = daysOfWeek[today];
+
+    console.log("Día actual:", dayKey);
+    console.log("Hora actual:", currentTime);
+    console.log("Días francos:", francos);
 
     // Obtener el horario de apertura y cierre para el día actual
     const getScheduleForToday = () => {
-        if (today === 0) {
-            return data.schedules.domingo;
-        } else if (today >= 1 && today <= 5) { // De lunes a viernes
-            return data.schedules.lunes_viernes;
-        } else if (today === 6) {
-            return data.schedules.sabado;
-        }
-        return null;
-    };
+        console.log("Verificando si hay horario específico para hoy:", dayKey);
 
-    // Función para obtener el próximo día que no sea franco
-    const getNextOpen = () => {
-        for (let i = 1; i <= 7; i++) {
-            const nextDay = (today + i) % 7; // Ajuste para el próximo día, usando % 7 para ciclos semanales
-
-            // Si el día no es franco, devolvemos ese día
-            if (!francos.includes(nextDay)) {
-                return nextDay;
+        // Verifica si 'data.schedules' y 'data.schedules.dias' existen
+        if (data.schedules && data.schedules.dias) {
+            // Comprobar si existe un horario específico para hoy
+            if (data.schedules.dias[dayKey]) {
+                console.log(`Horario específico para ${dayKey}:`, data.schedules.dias[dayKey]);
+                return data.schedules.dias[dayKey]; // Retornar el horario específico
             }
         }
 
-        return null; // En caso de que todos los días sean francos
+        // Si es de lunes a viernes sin horario específico, usar horario de lunes a viernes
+        if (today >= 1 && today <= 5 && data.schedules && data.schedules.lunes_viernes) {
+            console.log("No hay horario específico, usando horario de lunes a viernes:", data.schedules.lunes_viernes);
+            return data.schedules.lunes_viernes; // Retornar horario de lunes a viernes
+        }
+        
+        // Si es sábado o domingo, usar horario del domingo
+        if (data.schedules && data.schedules.domingo) {
+            console.log("Usando horario de domingo:", data.schedules.domingo);
+            return data.schedules.domingo; // Retornar horario del domingo
+        }
+
+        // Si no hay horario definido, retorna null
+        return null;
     };
 
     // Verificar si hoy es un día franco
     if (francos.includes(today)) {
-        // Buscar el próximo día que no sea franco
-        const nextOpenDay = getNextOpen();
-        if (nextOpenDay !== null) {
-            const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-            setStatus(`Cerrado`);
-        } else {
-            setStatus('Cerrado indefinidamente');
-        }
+        console.log("Hoy es un día franco.");
+        setStatus('Cerrado');
         setTextColor('text-red-500');
         setIsOpen(false);
         return;
@@ -78,7 +79,7 @@ const CoffeeCard = ({ cafe }) => {
     const schedule = getScheduleForToday();
 
     if (!schedule || !schedule.apertura || !schedule.cierre) {
-        // Si no hay horario de apertura/cierre definido para hoy
+        console.log("No hay horario definido para hoy.");
         setStatus('Horario no disponible');
         setTextColor('text-red-500');
         setIsOpen(false);
@@ -89,7 +90,10 @@ const CoffeeCard = ({ cafe }) => {
     const openingTime = schedule.apertura;
     const closingTime = schedule.cierre;
 
-    if (currentTime >= openingTime && currentTime <= closingTime) {
+    console.log("Horario de apertura:", openingTime);
+    console.log("Horario de cierre:", closingTime);
+
+    if (currentTime >= openingTime && currentTime < closingTime) {
         // Está abierto
         setStatus('Abierto');
         setTextColor('text-c2');
@@ -101,6 +105,11 @@ const CoffeeCard = ({ cafe }) => {
         setIsOpen(false);
     }
 };
+
+
+
+
+
 
 
   const starRating = (rating) => {

@@ -1,5 +1,4 @@
 
-  /* styles.css */
 .fade-transition {
   transition: opacity 1.2s ease-out;
   opacity: 1;
@@ -7,4 +6,26 @@
 
 .fade-transition.fade-out {
   opacity: 0;
+}
+
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #630508;
+}
+
+
+/* media query para dispositivos celulares */
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 0px;
+  }
 }

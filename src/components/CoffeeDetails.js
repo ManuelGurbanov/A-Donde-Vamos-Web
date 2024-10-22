@@ -16,6 +16,8 @@ import { CafeContext } from './CafeContext';
 
 import fav from '../img/fav.webp';
 
+import maps from '../img/maps.webp';
+
 import fullStarDark from '../img/fullStar.png';
 import halfStarDark from '../img/halfStar.png';
 import emptyStarDark from '../img/emptyStar.png';
@@ -60,6 +62,8 @@ const CoffeeDetails = () => {
 
   const { currentUser, favorites } = useContext(AuthContext);
 
+  const [mainStatus, extraInfo] = status.split('-');
+
   const handleGoMenu = () => {
     // ir al link de menu que está en la base de datos de la cafetería
 
@@ -68,6 +72,10 @@ const CoffeeDetails = () => {
 
   const handleGoIg = () => {
     window.open(`https://www.instagram.com/${coffee.instagram}/`, '_blank');
+  };
+
+  const handleGoMaps = () => {
+    window.open(coffee.googleLink, '_blank');
   };
   
   useEffect(() => {
@@ -178,93 +186,130 @@ const CoffeeDetails = () => {
     setIsFavorite(!isFavorite);
   };
   
+
+
+
+
   const checkIfOpen = (data) => {
     const now = new Date();
-    const today = now.getDay();  // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+    const today = now.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
     const currentTime = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`; // Hora actual en formato "HHMM"
-    
-    // Convertir los "francos" (días libres) en un array de números
     const francos = data.francos ? data.francos.split(',').map(Number) : [];
-  
+    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    console.log("Día actual:", daysOfWeek[today]);
+    console.log("Hora actual:", currentTime);
+    console.log("Días libres:", francos);
+
+    // Verifica si schedules existe
+    if (!data.schedules) {
+        console.log("Horarios no definidos en schedules");
+        setStatus('Horario no disponible');
+        setTextColor('text-red-500');
+        setIsOpen(false);
+        return;
+    }
+
+    console.log("Horarios en schedules.dias:", data.schedules.dias ? Object.keys(data.schedules.dias) : "No hay horarios definidos");
+
     // Obtener el horario de apertura y cierre para el día actual
     const getScheduleForToday = () => {
-        if (today === 0) {
-            return data.schedules.domingo;
-        } else if (today >= 1 && today <= 5) { // De lunes a viernes
-            return data.schedules.lunes_viernes;
-        } else if (today === 6) {
-            return data.schedules.sabado;
+        const dayKey = daysOfWeek[today];
+        console.log("Verificando si hay horario específico para hoy:", dayKey);
+
+        // Comprobar si existe un horario específico para hoy
+        if (data.schedules.dias && data.schedules.dias[dayKey]) {
+            console.log("Horario específico encontrado para hoy:", data.schedules.dias[dayKey]);
+            return data.schedules.dias[dayKey];
         }
-        return null;
+
+        // Si es de lunes a viernes y no tiene horario específico, usar "lunes_viernes"
+        if (today >= 1 && today <= 5) {
+            if (data.schedules.lunes_viernes) {
+                console.log("No hay horario específico, usando horario de lunes a viernes:", data.schedules.lunes_viernes);
+                return data.schedules.lunes_viernes;
+            }
+        }
+
+        // Si es sábado o domingo y no hay horario específico, usar "domingo"
+        if (data.schedules.domingo) {
+            console.log("No hay horario específico, usando horario de domingo:", data.schedules.domingo);
+            return data.schedules.domingo;
+        }
+
+        console.log("No hay horario definido para hoy.");
+        return null; // Devolver null si no hay horario
     };
 
-    // Obtener el horario de apertura y cierre para el próximo día que no sea franco
-    const getScheduleForDay = (day) => {
-        if (day === 0) {
-            return data.schedules.domingo;
-        } else if (day >= 1 && day <= 5) {
-            return data.schedules.lunes_viernes;
-        } else if (day === 6) {
-            return data.schedules.sabado;
-        }
-        return null;
-    };
-  
-    // Función para obtener el próximo día que no sea franco
+    // Obtener el próximo día abierto y horario
     const getNextOpenDayAndTime = () => {
+        console.log("Buscando el próximo día abierto...");
         for (let i = 1; i <= 7; i++) {
-            const nextDay = (today + i) % 7; // Ajuste para el próximo día, usando % 7 para ciclos semanales
+            const nextDay = (today + i) % 7;
+            const nextDayKey = daysOfWeek[nextDay];
 
             if (!francos.includes(nextDay)) {
-                const nextSchedule = getScheduleForDay(nextDay);
+                const nextSchedule = data.schedules.dias && data.schedules.dias[nextDayKey] ? 
+                    data.schedules.dias[nextDayKey] : 
+                    (nextDay >= 1 && nextDay <= 5 ? data.schedules.lunes_viernes : data.schedules.domingo);
+
                 if (nextSchedule && nextSchedule.apertura) {
+                    console.log("Próximo día abierto encontrado:", nextDayKey, "Horario:", nextSchedule);
                     return { day: nextDay, openingTime: nextSchedule.apertura };
                 }
             }
         }
-  
-        return null; // En caso de que todos los días sean francos o no haya horarios
+
+        console.log("No se encontró próximo día abierto.");
+        return null;
     };
 
-    // Verificar si hoy es un día franco
+    // Verificar si hoy es franco
     if (francos.includes(today)) {
-        // Buscar el próximo día que no sea franco
+        console.log("Hoy es un día franco, buscando el próximo día abierto...");
         const nextOpen = getNextOpenDayAndTime();
-        if (nextOpen) {
-            const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-            const openingTime = `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}`; // Formatear a "HH:MM"
-            setStatus(`Cerrado - Abre ${nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`} a las ${openingTime}`);
-        } else {
-            setStatus('Cerrado indefinidamente');
-        }
+        const openingTime = nextOpen ? `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}` : null;
+
+        setStatus(
+            <span>
+                Cerrado - <span style={{ color: 'blue' }}>
+                    {nextOpen
+                        ? `Abre ${nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`} a las ${openingTime}`
+                        : "indefinidamente"}
+                </span>
+            </span>
+        );
+
         setTextColor('text-red-500');
         setIsOpen(false);
         return;
     }
-  
+
     // Obtener horario de hoy
     const schedule = getScheduleForToday();
-  
+
+    // Comprobar si hay un horario definido
     if (!schedule || !schedule.apertura || !schedule.cierre) {
-        // Si no hay horario de apertura/cierre definido para hoy
+        console.log("No hay horario definido para hoy, verificando el próximo día...");
         const nextOpen = getNextOpenDayAndTime();
-        if (nextOpen) {
-            const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-            const openingTime = `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}`; // Formatear a "HH:MM"
-            setStatus(`Cerrado - Abre ${nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`} a las ${openingTime}`);
-        } else {
-            setStatus('Cerrado indefinidamente');
-        }
+        const openingTime = nextOpen ? `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}` : null;
+
+        setStatus(`Cerrado - Abre ${nextOpen 
+            ? nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`
+            : "indefinidamente"} a las ${openingTime}`);
         setTextColor('text-red-500');
         setIsOpen(false);
         return;
     }
-  
+
     // Comparar la hora actual con los horarios de apertura y cierre
     const openingTime = schedule.apertura;
     const closingTime = schedule.cierre;
-  
-    if (currentTime >= openingTime && currentTime <= closingTime) {
+
+    console.log("Horario de apertura:", openingTime);
+    console.log("Horario de cierre:", closingTime);
+
+    if (currentTime >= openingTime && currentTime < closingTime) {
         // Está abierto
         setStatus('Abierto');
         setTextColor('text-green-500');
@@ -272,16 +317,25 @@ const CoffeeDetails = () => {
     } else {
         // Está cerrado, mostrar cuándo vuelve a abrir
         const nextOpen = getNextOpenDayAndTime();
-        if (nextOpen) {
-            const openingTime = `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}`; // Formatear a "HH:MM"
-            setStatus(`Cerrado - Abre ${nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`} a las ${openingTime}`);
-        } else {
-            setStatus('Cerrado indefinidamente');
-        }
+        const openingTimeFormatted = nextOpen ? `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}` : null;
+
+        setStatus(`Cerrado - Abre ${nextOpen 
+            ? nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`
+            : "indefinidamente"} a las ${openingTimeFormatted}`);
         setTextColor('text-red-500');
         setIsOpen(false);
     }
 };
+
+
+
+
+
+
+
+
+
+
 
 
   
@@ -484,15 +538,37 @@ const CoffeeDetails = () => {
         <Slider {...sliderSettings}>
           {coffee.picsLinks?.map((picLink, index) => (
             <div key={index} className="relative w-screen h-64 sm:h-72">
-              <img
-                src={picLink}
-                alt={`Imagen ${index + 1}`}
-                className="object-cover h-full w-full"
-                onError={() => handleImageError(index)}
-              />
-              {/* Gradiente */}
-              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-transparent to-transparent" />
-            </div>
+        <img
+          src={picLink}
+          alt={`Imagen ${index + 1}`}
+          className="object-cover h-full w-full"
+          onError={() => handleImageError(index)}
+        />  
+
+  <div
+    style={{
+      position: "absolute",
+      bottom: -10,
+      left: 0,
+      width: "100%",
+      height: "30px",
+      background: "linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%)",
+    }}
+  />
+
+  <div
+    style={{
+      position: "absolute",
+      bottom: -8,
+      left: 0,
+      width: "100%",
+      height: "30px",
+      background: "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%)",
+    }}
+  />
+</div>
+
+
           ))}
         </Slider>
       </div>
@@ -513,10 +589,9 @@ const CoffeeDetails = () => {
           </div>
 
           
-            <p className='mb-8 text-xl'>
-              <span className={`${textColor}`}> {status}</span>
+          <p className='text-xl mb-8'>
+              <span className={`${textColor} ml-1`}>{status}</span>
             </p>
-
                 
 
             { (coffee.pets || coffee.vegan || coffee.tac || coffee.outside) && (
@@ -537,8 +612,11 @@ const CoffeeDetails = () => {
               )}
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
-                  <button className='flex flex-row w-1/3 gap-2 p-2 rounded-2xl bg-b1 h-10' onClick={handleGoMenu}>
-                    <img src={menu} className='mr-2'></img> <p className='font-medium text-c'>Menú</p>
+                  <button className='flex flex-row w-1/3 gap-0 p-2 rounded-2xl bg-b1 h-10' onClick={handleGoMenu}>
+                    <img src={menu} className='mr-1'></img> <p className='text-md text-c'>Menú</p>
+                  </button>
+                  <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoMaps}>
+                    <img src={maps} className='m-auto w-7'></img>
                   </button>
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoIg}>
                     <img src={instagram} className='m-auto'></img>
@@ -567,6 +645,7 @@ const CoffeeDetails = () => {
 
           <div className='flex flex-row items-center gap-1 mb-2'>
             <img src={clock} className='w-4 h-4 mt-2'></img>
+            
             <p className={`text-xl`}>
               <span className={`${textColor} ml-1`}>{status}</span>
             </p>
@@ -580,53 +659,75 @@ const CoffeeDetails = () => {
             </button>
           </div>
 
-              {/* Menú desplegable de horarios */}
-              {showSchedule && (
+            {/* Menú desplegable de horarios */}
+            {showSchedule && (
               <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
                 <h3 className="mb-2 text-lg font-bold">Horarios</h3>
 
-                {/* Lunes a Viernes */}
-                <div className="mb-4">
-                  {[1, 2, 3, 4, 5].map((day) => (
-                    <div key={day} className="mb-2">
-                      <p className="font-semibold">{daysOfWeek[day]}</p>
-                      {isClosedDay(day) ? (
-                        <p className="text-red-600">Cerrado</p>
-                      ) : (
-                        <>
-                          <p>{formatTime(coffee.schedules.lunes_viernes.apertura)} - {formatTime(coffee.schedules.lunes_viernes.cierre)}</p>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
+{/* Lunes a Viernes */}
+<div className="mb-4">
+  {[1, 2, 3, 4, 5].map((day) => {
+    const dayName = daysOfWeek[day];
+    const customSchedule = coffee.schedules.dias ? coffee.schedules.dias[dayName] : null; // Verifica si hay un horario específico para el día
 
+    return (
+      <div key={day} className="mb-2">
+        <p className="font-semibold">{dayName}</p>
+        {isClosedDay(day) ? (
+          <p className="text-red-600">Cerrado</p>
+        ) : (
+          <>
+            <p>
+              {
+                formatTime(customSchedule?.apertura || coffee.schedules.lunes_viernes?.apertura || 'Horario no disponible')
+              } - {
+                formatTime(customSchedule?.cierre || coffee.schedules.lunes_viernes?.cierre || 'Horario no disponible')
+              }
+            </p>
+          </>
+        )}
+      </div>
+    );
+  })}
+</div>
 
-                {/* Sábado */}
-                <div className="mb-4">
-                  <h4 className="font-semibold text-md">Sábado</h4>
-                  {isClosedDay(6) ? (
-                    <p className="text-red-600">CERRADO</p>
-                  ) : (
-                    <>
-                      <p>{formatTime(coffee.schedules.sabado.apertura)} - {formatTime(coffee.schedules.sabado.cierre)}</p>
-                    </>
-                  )}
-                </div>
+{/* Sábado */}
+<div className="mb-4">
+  <h4 className="font-semibold text-md">Sábado</h4>
+  {isClosedDay(6) ? (
+    <p className="text-red-600">CERRADO</p>
+  ) : (
+    <>
+      <p>
+        { 
+          formatTime(coffee.schedules.sabado?.apertura || 'Horario no disponible')} - { 
+          formatTime(coffee.schedules.sabado?.cierre || 'Horario no disponible')
+        }
+      </p>
+    </>
+  )}
+</div>
 
-                  {/* Domingo */}
-                  <div className="mb-4">
-                  <h4 className="font-semibold text-md">Domingo</h4>
-                  {isClosedDay(0) ? (
-                    <p className="text-red-600">CERRADO</p>
-                  ) : (
-                    <>
-                      <p>{formatTime(coffee.schedules.domingo.apertura)} - {formatTime(coffee.schedules.sabado.cierre)}</p>
-                    </>
-                  )}
-                </div>
+{/* Domingo */}
+<div className="mb-4">
+  <h4 className="font-semibold text-md">Domingo</h4>
+  {isClosedDay(0) ? (
+    <p className="text-red-600">CERRADO</p>
+  ) : (
+    <>
+      <p>
+        { 
+          formatTime(coffee.schedules.domingo?.apertura || 'Horario no disponible')} - { 
+          formatTime(coffee.schedules.domingo?.cierre || 'Horario no disponible')
+        }
+      </p>
+    </>
+  )}
+</div>
+
               </div>
             )}
+
 
           {/* <div className="w-full max-w-lg">
             <iframe

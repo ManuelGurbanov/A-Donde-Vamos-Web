@@ -85,7 +85,7 @@ const LoginForm = ({ onClose, onSuccessfulLogin }) => {
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-2">
         <input 
           type="password" 
           placeholder="Ingrese su contraseña" 
@@ -94,6 +94,12 @@ const LoginForm = ({ onClose, onSuccessfulLogin }) => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
+
+      {/* Link a olvidaste tu contraseña */}
+      <div className="mb-2 text-right">
+        <a href="/forgot-password" className="text-c">¿Olvidaste tu contraseña?</a>
+      </div>
+
 
       <div className="flex flex-col gap-4 text-center font-semibold">
         <button 

@@ -26,18 +26,20 @@ const Review = ({ selectedCafe, onClose }) => {
   useEffect(() => {
     setErrorMessage('');
     setSuccessMessage('');
-
+  
     if (!currentUser) {
       setErrorMessage('Por favor, inicia sesión para hacer una reseña.');
     } else {
       // Recuperar el nombre de usuario de Firestore si currentUser está disponible
       fetchUserData(currentUser.uid);
     }
-
+  
+    // Si `selectedCafe` está definido, establecemos la cafetería seleccionada automáticamente
     if (selectedCafe) {
       setCafe(selectedCafe);
     }
-  }, [location.state, currentUser, selectedCafe]);
+  }, [currentUser, selectedCafe]);
+  
 
   // Función para obtener el nombre de usuario desde Firestore
   const fetchUserData = async (uid) => {
@@ -149,7 +151,7 @@ const Review = ({ selectedCafe, onClose }) => {
   return (
     <>
       <div className='absolute top-0 bottom-0 left-0 right-0 w-screen h-screen bg-black bg-opacity-80'></div>
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-b1 text-c h-[90vh] w-full sm:w-1/2 shadow-lg overflow-y-auto rounded-lg m-auto">
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-b1 text-c h-[90vh] w-full sm:w-1/2 shadow-lg overflow-y-auto rounded-lg m-auto overflow-x-hidden">
         <button
           className='absolute text-sm bg-transparent left-4 text-c top-4 text-opacity-60'
           onClick={handleCancel}
@@ -182,7 +184,7 @@ const Review = ({ selectedCafe, onClose }) => {
                   <hr className='border-solid border-1 border-c' />
                   <div
                     className="p-2 rounded cursor-pointer"
-                    onClick={() => setCafe(cafe)} // Selecciona la cafetería
+                    onClick={() => setCafe(cafe)}
                   >
                     {cafe.name}
                   </div>
@@ -192,7 +194,7 @@ const Review = ({ selectedCafe, onClose }) => {
           </div>
         ) : (
           <div>
-            <hr className='border-solid border-1 border-c2'></hr>
+            <hr className='border-solid border-1 border-c2 w-screen'></hr>
             <h3 className="w-full mt-2 text-lg text-left text-opacity-60 text-c2" style={{ whiteSpace: 'nowrap', overflow: 'auto', fontSize: '48px' }}>
               <span className='text-2xl font-bold text-opacity-100 text-c2'>{cafe.name}</span> 
             </h3>

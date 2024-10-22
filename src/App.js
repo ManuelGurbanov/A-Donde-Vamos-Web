@@ -12,6 +12,8 @@ import AddForm from './components/AddForm';
 import AllCoffeeList from './components/AllCoffeeList';
 import Layout from './components/Layout';
 import Notifications from './components/Notifications';
+import ForgotPassword from './components/ForgotPassword';
+
 
 function App() {
   return (
@@ -20,19 +22,19 @@ function App() {
         <CafeProvider>
           <Routes>
             <Route path="/" element={<Layout />}>
-              {/* Redireccionar a /home */}
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
               <Route path="/cafe/:id" element={<CoffeeDetails />} />
               
-              {/* Ruta de perfil que redirige a /profile/currentUserUid */}
               <Route path="/profile/:uid" element={<Login />} />
-              <Route path="/profile" element={<ProfileRedirect />} /> {/* Nueva ruta */}
+              <Route path="/profile" element={<ProfileRedirect />} />
 
               <Route path="/register" element={<Register />} />
               <Route path="/add" element={<AddForm />} />
               <Route path="/coffee-all" element={<AllCoffeeList />} />
               <Route path="/notifications" element={<Notifications/>} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+
             </Route>
           </Routes>
         </CafeProvider>
