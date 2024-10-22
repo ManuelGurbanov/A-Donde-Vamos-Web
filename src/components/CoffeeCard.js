@@ -28,43 +28,80 @@ const CoffeeCard = ({ cafe }) => {
   const checkIfOpen = (data) => {
     const now = new Date();
     const today = now.getDay();  // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-  
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`; // Hora actual en formato "HHMM"
+
     // Convertir los "francos" (días libres) en un array de números
     const francos = data.francos ? data.francos.split(',').map(Number) : [];
-  
+
+    // Obtener el horario de apertura y cierre para el día actual
+    const getScheduleForToday = () => {
+        if (today === 0) {
+            return data.schedules.domingo;
+        } else if (today >= 1 && today <= 5) { // De lunes a viernes
+            return data.schedules.lunes_viernes;
+        } else if (today === 6) {
+            return data.schedules.sabado;
+        }
+        return null;
+    };
+
     // Función para obtener el próximo día que no sea franco
     const getNextOpen = () => {
-      for (let i = 1; i <= 7; i++) {
-        const nextDay = (today + i) % 7; // Ajuste para el próximo día, usando % 7 para ciclos semanales
-        
-        // Si el día no es franco, devolvemos ese día
-        if (!francos.includes(nextDay)) {
-          return nextDay;
+        for (let i = 1; i <= 7; i++) {
+            const nextDay = (today + i) % 7; // Ajuste para el próximo día, usando % 7 para ciclos semanales
+
+            // Si el día no es franco, devolvemos ese día
+            if (!francos.includes(nextDay)) {
+                return nextDay;
+            }
         }
-      }
-  
-      return null; // En caso de que todos los días sean francos
+
+        return null; // En caso de que todos los días sean francos
     };
-  
+
     // Verificar si hoy es un día franco
     if (francos.includes(today)) {
-      // Buscar el próximo día que no sea franco
-      const nextOpenDay = getNextOpen();
-      if (nextOpenDay !== null) {
-        const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-        setStatus(`Cerrado`);
-      } else {
-        setStatus('Cerrado indefinidamente');
-      }
-      setTextColor('text-red-500');
-      setIsOpen(false);
-    } else {
-      // Si hoy no es franco, está abierto
-      setStatus('Abierto');
-      setTextColor('text-c2');
-      setIsOpen(true);
+        // Buscar el próximo día que no sea franco
+        const nextOpenDay = getNextOpen();
+        if (nextOpenDay !== null) {
+            const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+            setStatus(`Cerrado`);
+        } else {
+            setStatus('Cerrado indefinidamente');
+        }
+        setTextColor('text-red-500');
+        setIsOpen(false);
+        return;
     }
-  };
+
+    // Obtener horario de hoy
+    const schedule = getScheduleForToday();
+
+    if (!schedule || !schedule.apertura || !schedule.cierre) {
+        // Si no hay horario de apertura/cierre definido para hoy
+        setStatus('Horario no disponible');
+        setTextColor('text-red-500');
+        setIsOpen(false);
+        return;
+    }
+
+    // Comparar la hora actual con los horarios de apertura y cierre
+    const openingTime = schedule.apertura;
+    const closingTime = schedule.cierre;
+
+    if (currentTime >= openingTime && currentTime <= closingTime) {
+        // Está abierto
+        setStatus('Abierto');
+        setTextColor('text-c2');
+        setIsOpen(true);
+    } else {
+        // Está cerrado
+        setStatus('Cerrado');
+        setTextColor('text-red-500');
+        setIsOpen(false);
+    }
+};
+
 
   const starRating = (rating) => {
     const stars = [];

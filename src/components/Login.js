@@ -252,15 +252,15 @@ const Login = () => {
       <div className="p-2 py-0 rounded text-c overflow-y-scroll">  {/* Cambié mb-[100vh] a mb-32 */}
         {userReviews.map(cafe => (
           <div key={cafe.cafeId} className="mb-4">
-            {cafe.reviews.map((review, index) => (
+            {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
               <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
                 <div className='w-24'>
                   <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
                 </div>
                 <div>
                   <div className="flex items-center mb-2 flex-col p-1">
-                    <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
-                    <div className='flex w-full gap-1 justify-between'>
+                    <span className="mr-2 font-bold text-c2 text-left w-full ml-4">{review.user}</span>
+                    <div className='flex w-full gap-1 justify-between ml-2'>
                       <span>{starRating(review.rating)}</span>
                       <span className='text-c2 text-opacity-70 text-xl'>{review.date}</span>
                     </div>

@@ -11,12 +11,15 @@ export const CafeProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favoritos, setFavoritos] = useState([]);
-  
+
   const [selectedCafe, setSelectedCafe] = useState(null);
   const [selectedNeighs, setSelectedNeighs] = useState([]);
-  
+
   // Estado para la autenticación
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Estado para verificar si las cafeterías ya fueron cargadas
+  const [cafesLoaded, setCafesLoaded] = useState(false); // nuevo estado
 
   // Fetch cafeterías from Firebase
   useEffect(() => {
@@ -25,10 +28,15 @@ export const CafeProvider = ({ children }) => {
         const querySnapshot = await getDocs(collection(db, 'cafeterias'));
         const cafesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setCafes(cafesList);
+
+        // Solo se establece loading en false si hay cafés cargados
+        if (cafesList.length > 0) {
+          setLoading(false);
+          setCafesLoaded(true); // Marca que las cafeterías fueron cargadas
+        }
       } catch (err) {
         setError(err.message);
-      } finally {
-        setLoading(false);
+        setLoading(false); // Asegúrate de que loading se establece en false en caso de error
       }
     };
 

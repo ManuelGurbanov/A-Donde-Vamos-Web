@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext';
 import CoffeeCard from './CoffeeCard';
 import Top from './Top';
 import { CafeContext } from './CafeContext';
-
 import loadingLogo from '../img/loading_logo.png';
 import './styles.css'; // Import the CSS file
 
@@ -16,7 +15,7 @@ const Home = () => {
 
   const [selectedNeighs, setSelectedNeighs] = useState([]);
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showLoading, setShowLoading] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   const isLargeScreen = window.innerWidth >= 1024;
 
@@ -24,21 +23,6 @@ const Home = () => {
   const [currentSlideFavorites, setCurrentSlideFavorites] = useState(0);
   const [currentSlideNearby, setCurrentSlideNearby] = useState(0);
   const [currentSlideNew, setCurrentSlideNew] = useState(0);
-
-  useEffect(() => {
-    // Simular el swipe hacia la derecha y luego hacia la izquierda
-    const swipeRightLeft = () => {
-      setTimeout(() => {
-        setCurrentSlidePopular((prev) => (prev + 1) % popularCafes.length); // Swipe derecha
-      }, 1000); // Esperar 1 segundo
-
-      setTimeout(() => {
-        setCurrentSlidePopular((prev) => (prev - 1 + popularCafes.length) % popularCafes.length); // Swipe izquierda
-      }, 3000); // 2 segundos después del primer swipe
-    };
-
-    swipeRightLeft(); // Llamar a la función cuando se monte el componente
-  }, []);
 
   useEffect(() => {
     const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
@@ -50,21 +34,19 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (!loading && showLoading) {
-      // Aplicar fade-out después de 1 segundo solo si el loading debe mostrarse
-      const timer = setTimeout(() => {
-        const loadingDiv = document.getElementById('loadingDiv');
-        if (loadingDiv) {
-          loadingDiv.style.opacity = '0';
-          setTimeout(() => {
-            loadingDiv.style.display = 'none'; // Eliminarlo después del fade-out
-          }, 1000); // Coincidir con la duración de la transición
-        }
-      }, 1000);
+    // Cuando loading cambia, maneja fadeOut
+    if (loading) {
+      setFadeOut(false); // No hacer fadeOut cuando se está cargando
+    } else {
+      // Si ha terminado de cargar, iniciamos fadeOut
+      setFadeOut(true);
+      const fadeOutTimeout = setTimeout(() => {
+        setFadeOut(false); // Reiniciar fadeOut para futuras cargas
+      }, 1000); // Duración del fade-out
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(fadeOutTimeout);
     }
-  }, [loading, showLoading]);
+  }, [loading]);
 
   const handleSavePreferences = () => {
     localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
@@ -153,103 +135,110 @@ const Home = () => {
     );
   };
 
+  console.log(`Loading: ${loading}, FadeOut: ${fadeOut}`); // Para depuración
+
   return (
     <>
       <Top />
 
-      {/* Mostrar el loading solo si showLoading es true */}
-      {showLoading && (
-        <div id="loadingDiv" className="fixed top-0 left-0 z-30 flex items-center justify-center w-full h-full transition-opacity duration-1000 opacity-100 bg-b1">
-          <img src={loadingLogo} className='w-full p-5 m-auto sm:w-80' alt="Loading..." />
+      {/* Controla la visibilidad y eventos del loadingDiv */}
+      <div 
+  id="loadingDiv" 
+  className={`fixed top-0 left-0 z-30 flex items-center justify-center w-full h-full bg-b1 transition-opacity duration-1000 ${loading ? 'opacity-100' : 'opacity-0 pointer-events-none -z-50'}`}
+  style={{ pointerEvents: 'none' }} // Evitar la interacción con los clics
+>
+  <img src={loadingLogo} className='w-full p-5 m-auto sm:w-80' alt="Loading..." />
+</div>
+
+{/* Mostrar el contenido solo si loading es false y fadeOut es false */}
+{!loading && (
+  <div>
+    <div className='m-auto sm:w-3/4'>
+      {showWelcome && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/4">
+            <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Bienvenido, elegí tus barrios de preferencia:</h1>
+            <div className="text-center">
+              {uniqueNeighs.map((neigh, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleFilterChange(neigh)}
+                  className={`p-2 m-2 rounded ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+                >
+                  {neigh}
+                </button>
+              ))}
+            </div>
+            <div className='flex flex-col items-center justify-center w-full p-4'>
+              <button
+                onClick={() => handleSavePreferences()}
+                className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
-      <div className={`transition-opacity duration-500 ${loading ? 'opacity-0' : 'opacity-100'}`}>
-        <div className='m-auto sm:w-3/4'>
-          {showWelcome && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/4">
-                <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Bienvenido, elegí tus barrios de preferencia:</h1>
-                <div className="text-center">
-                  {uniqueNeighs.map((neigh, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleFilterChange(neigh)}
-                      className={`p-2 m-2 rounded ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
-                    >
-                      {neigh}
-                    </button>
-                  ))}
+            <div className="p-4">
+              <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
+                <div className="mb-1">
+                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>
+                  {isLargeScreen ? (
+                    renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
+                  ) : (
+                    <Slider {...sliderSettingsMove}>
+                      {popularCafes.map((cafe, index) => (
+                        <CoffeeCard key={index} cafe={cafe} />
+                      ))}
+                    </Slider>
+                  )}
                 </div>
-                <div className='flex flex-col items-center justify-center w-full p-4'>
-                  <button
-                    onClick={() => handleSavePreferences()}
-                    className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
-                  >
-                    Guardar
-                  </button>
+
+                <div>
+                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Favoritas</h2>
+                  {isLargeScreen ? (
+                    renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
+                  ) : (
+                    <Slider {...sliderSettings}>
+                      {cafes.map((cafe, index) => (
+                        <CoffeeCard key={index} cafe={cafe} />
+                      ))}
+                    </Slider>
+                  )}
                 </div>
-              </div>
-            </div>
-          )}
 
-          <div className="p-4">
-            <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
-              <div className="mb-1">
-                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>
-                {isLargeScreen ? (
-                  renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
-                ) : (
-                  <Slider {...sliderSettingsMove}>
-                    {popularCafes.map((cafe, index) => (
-                      <CoffeeCard key={index} cafe={cafe} />
-                    ))}
-                  </Slider>
-                )}
-              </div>
-              
-              <div>
-                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Tus Favoritas</h2>
-                {isLargeScreen ? (
-                  renderCarousel(cafes, currentSlideFavorites, setCurrentSlideFavorites)
-                ) : (
-                  <Slider {...sliderSettings}>
-                    {cafes.map((cafe, index) => (
-                      <CoffeeCard key={index} cafe={cafe} />
-                    ))}
-                  </Slider>
-                )}
-              </div>
+                <div>
+                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cafeterías Cercanas</h2>
+                  {isLargeScreen ? (
+                    renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)
+                  ) : (
+                    <Slider {...sliderSettings}>
+                      {nearbyCafes.map((cafe, index) => (
+                        <CoffeeCard key={index} cafe={cafe} />
+                      ))}
+                    </Slider>
+                  )}
+                </div>
 
-              <div>
-                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
-                {isLargeScreen ? (
-                  renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)
-                ) : (
-                  <Slider {...sliderSettings}>
-                    {nearbyCafes.map((cafe, index) => (
-                      <CoffeeCard key={index} cafe={cafe} />
-                    ))}
-                  </Slider>
-                )}
-              </div>
-
-              <div className='mb-24'>
-                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Apariciones</h2>
-                {isLargeScreen ? (
-                  renderCarousel(newCafes, currentSlideNew, setCurrentSlideNew)
-                ) : (
-                  <Slider {...sliderSettings}>
-                    {newCafes.map((cafe, index) => (
-                      <CoffeeCard key={index} cafe={cafe} />
-                    ))}
-                  </Slider>
-                )}
+                <div>
+                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Cafeterías</h2>
+                  {isLargeScreen ? (
+                    renderCarousel(newCafes, currentSlideNew, setCurrentSlideNew)
+                  ) : (
+                    <Slider {...sliderSettings}>
+                      {newCafes.map((cafe, index) => (
+                        <CoffeeCard key={index} cafe={cafe} />
+                      ))}
+                    </Slider>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
