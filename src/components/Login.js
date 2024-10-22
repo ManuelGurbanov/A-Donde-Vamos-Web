@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { auth, provider, db } from '../firebase/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import Top from './Top';
@@ -15,7 +15,6 @@ import fullStarDark from '../img/fullStarRed.webp';
 import halfStarDark from '../img/halfStarRed.webp';
 import emptyStarDark from '../img/emptyStarRed.webp';
 import RatingDistribution from './RatingDistributions';
-
 
 const starRating = (rating) => {
   const stars = [];
@@ -40,7 +39,6 @@ const starRating = (rating) => {
   return stars;
 };
 
-
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,27 +50,29 @@ const Login = () => {
   const [userReviews, setUserReviews] = useState([]);
   
   const navigate = useNavigate();
-  const { cafes = [] } = useContext(CafeContext); // Asegúrate de obtener el contexto correctamente
+  const { uid } = useParams(); // Aquí se extrae el uid de la URL
+  const { cafes = [] } = useContext(CafeContext);
 
   useEffect(() => {
+    if (!uid) {
+      console.error("No se proporcionó uid en la URL.");
+      return; // Sal de la función si uid no está presente
+    }
+    fetchUserData(uid);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setLoggedIn(true);
-        setLoginMessage('Logueado correctamente');
-        await fetchUserData(user.uid);
-        fetchFavoriteCafes(user.uid);
-        fetchUserReviews(user.uid);
       } else {
         setLoggedIn(false);
-        setLoginMessage('');
-        setFavoriteCafes([]);
-        setUserData(null);
-        setUserReviews([]);
       }
+      setLoginMessage('Logueado correctamente');
+      await fetchUserData(uid);
+      fetchFavoriteCafes(uid);
+      fetchUserReviews(uid);
     });
   
     return () => unsubscribe();
-  }, []);
+  }, [uid]);
 
   const fetchUserData = async (uid) => {
     try {
@@ -108,17 +108,16 @@ const Login = () => {
     }
   };
 
-  const fetchUserReviews = async () => {
+  const fetchUserReviews = async (uid) => {
     const reviewsByUser = [];
-    
     cafes.forEach(cafe => {
       if (cafe.reviews && Array.isArray(cafe.reviews)) {
-        const userCafeReviews = cafe.reviews.filter(review => review.user === auth.currentUser?.displayName);
+        const userCafeReviews = cafe.reviews.filter(review => review.userId === uid);
         if (userCafeReviews.length > 0) {
           reviewsByUser.push({
             cafeId: cafe.id,
             cafeName: cafe.name,
-            picsLinks: cafe.picsLinks,  // Asegúrate de agregar esta línea para pasar las imágenes
+            picsLinks: cafe.picsLinks,
             reviews: userCafeReviews,
           });
         }
@@ -179,27 +178,39 @@ const Login = () => {
       <Top text={"Perfil"} />
           <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
             <div className="w-full flex items-center">
-              {auth.currentUser && auth.currentUser.photoURL && (
+              {auth.currentUser && auth.currentUser.uid === uid ? (
                 <img
                   src={auth.currentUser.photoURL}
                   alt="Foto de perfil"
                   className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2"
                 />
+              ) : (
+                userData?.profilePicture && (
+                  <img
+                    src={userData.profilePicture}
+                    alt="Foto de perfil"
+                    className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2"
+                  />
+                )
               )}
 
               <div className="ml-4 flex flex-col gap-1">
                 <h2 className="text-lg font-bold text-c2">{userData?.fullName || ''}</h2>
-                <h2 className="text-sm font-thin text-c2">{auth.currentUser?.displayName || ''}</h2>
+                <h2 className="text-sm font-thin text-c2">{userData?.username || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">
                   {userData?.mainNeighborhood || ''}, <strong className="font-bold italic">CABA</strong>
                 </h2>
-                <button
-                  onClick={handleLogout}
-                  className="w-full p-1 mb-2 text-white transition-all duration-100 bg-red-500 rounded hover:bg-red-600 text-[8px]"
-                >
-                  Cerrar Sesión
-                </button>
-              </div>
+                  
+                  {auth.currentUser && auth.currentUser.uid === uid && (
+                    <button
+                      onClick={handleLogout}
+                      className="w-full p-1 mb-2 text-white transition-all duration-100 bg-red-500 rounded hover:bg-red-600 text-[8px] sm:text-base sm:p-2"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  )}
+
+                  </div>
             </div>
 
             {/* Insignias */}
@@ -237,49 +248,46 @@ const Login = () => {
 
           <hr className="w-4/5 h-[2px] bg-c2 border-none my-4 bg-opacity-40" />
           <div className="w-full p-4 mt-2 rounded sm:w-1/4 h-auto">
-  {selectedTab === 'favorites' ? (
-    favoriteCafes.length > 0 ? (
-      <div className="grid grid-cols-3 gap-1">
-        {favoriteCafes.map(cafe => (
-          <MiniCard key={cafe.id} cafe={cafe} />
-        ))}
-      </div>
-    ) : (
-      <p className="text-center">No tienes cafeterías favoritas.</p>
-    )
-  ) : selectedTab === 'recents' ? (
-    userReviews.length > 0 ? (
-      <div className="p-2 py-0 rounded text-c overflow-y-scroll">  {/* Cambié mb-[100vh] a mb-32 */}
-        {userReviews.map(cafe => (
-          <div key={cafe.cafeId} className="mb-4">
-            {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
-              <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
-                <div className='w-24'>
-                  <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
+            {selectedTab === 'favorites' ? (
+              favoriteCafes.length > 0 ? (
+                <div className="grid grid-cols-3 gap-1 gap-y-3">
+                  {favoriteCafes.map(cafe => (
+                    <MiniCard key={cafe.id} cafe={cafe} />
+                  ))}
                 </div>
-                <div>
-                  <div className="flex items-center mb-2 flex-col p-1">
-                    <span className="mr-2 font-bold text-c2 text-left w-full ml-4">{review.user}</span>
-                    <div className='flex w-full gap-1 justify-between ml-2'>
-                      <span>{starRating(review.rating)}</span>
-                      <span className='text-c2 text-opacity-70 text-xl'>{review.date}</span>
+              ) : (
+                <p className="text-center">No tienes cafeterías favoritas.</p>
+              )
+            ) : selectedTab === 'recents' ? (
+              userReviews.length > 0 ? (
+                <div className="p-2 py-0 rounded text-c">
+                  {userReviews.map(cafe => (
+                    <div key={cafe.cafeId} className="mb-4">
+                      {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
+                        <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
+                          <div className='w-24'>
+                            <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
+                          </div>
+                          <div>
+                            <div className="flex items-center mb-2 flex-col p-1 w-full">
+                              <span className="mr-2 font-bold text-c2 text-left w-full ml-4">{review.user}</span>
+                              <div className='flex gap-1 justify-between ml-2 w-full'>
+                                <span>{starRating(review.rating)}</span>
+                                <span className='text-c2 text-opacity-70 text-xl'>{review.date}</span>
+                              </div>
+                            </div>
+                            <p className="mb-2 text-c2 px-2">{review.text}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  <p className="mb-2 text-c2 px-2">{review.text}</p>
+                  ))}
                 </div>
-              </div>
-            ))}
+              ) : (
+                <p className="text-center">No tienes reseñas.</p>
+              )
+            ) : null}
           </div>
-        ))}
-      </div>
-    ) : (
-      <p className="text-center">No tienes reseñas.</p>
-    )
-  ) : null}
-</div>
-
-
-
     </div>
   );
 };

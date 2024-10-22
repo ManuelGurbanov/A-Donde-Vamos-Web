@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, AuthContext } from './contexts/AuthContext'; // Asegúrate de importar el contexto
 import { CafeProvider } from './components/CafeContext';
 
 import Home from './components/Home';
@@ -11,9 +11,6 @@ import Register from './components/Register';
 import AddForm from './components/AddForm';
 import AllCoffeeList from './components/AllCoffeeList';
 import Layout from './components/Layout';
-import Review from './components/Review';
-import { Navigate } from 'react-router-dom';
-
 import Notifications from './components/Notifications';
 
 function App() {
@@ -23,10 +20,15 @@ function App() {
         <CafeProvider>
           <Routes>
             <Route path="/" element={<Layout />}>
+              {/* Redireccionar a /home */}
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
               <Route path="/cafe/:id" element={<CoffeeDetails />} />
-              <Route path="/login" element={<Login />} />
+              
+              {/* Ruta de perfil que redirige a /profile/currentUserUid */}
+              <Route path="/profile/:uid" element={<Login />} />
+              <Route path="/profile" element={<ProfileRedirect />} /> {/* Nueva ruta */}
+
               <Route path="/register" element={<Register />} />
               <Route path="/add" element={<AddForm />} />
               <Route path="/coffee-all" element={<AllCoffeeList />} />
@@ -38,5 +40,9 @@ function App() {
     </div>
   );
 }
+const ProfileRedirect = () => {
+  const { currentUser } = useContext(AuthContext); // Obtiene el usuario actual desde el contexto
+  return <Navigate to={`/profile/${currentUser.uid}`} />;
+};
 
 export default App;

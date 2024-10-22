@@ -135,7 +135,6 @@ const Home = () => {
     );
   };
 
-  console.log(`Loading: ${loading}, FadeOut: ${fadeOut}`); // Para depuración
 
   return (
     <>

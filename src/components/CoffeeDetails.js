@@ -676,7 +676,12 @@ const CoffeeDetails = () => {
         <div className="flex flex-col w-full h-full justify-between">
           {/* Cabecera con nombre de usuario y calificación */}
           <div className="flex flex-col items-center mb-2 p-1">
-            <span className="mr-2 font-bold text-c2 text-left w-full ml-2">{review.user}</span>
+          <span 
+                  className="mr-2 font-bold text-c2 text-left w-full ml-2 cursor-pointer"
+                  onClick={() => navigate(`/profile/${review.userId}`)} // Navegar al perfil del usuario
+                >
+                  {review.user}
+                </span>
             <div className="w-full gap-5 items-center flex justify-between">
               <span>{starRating(review.rating)}</span>
               <span className="text-c2 text-opacity-70 text-xl">{review.date}</span>

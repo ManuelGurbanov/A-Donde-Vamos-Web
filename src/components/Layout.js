@@ -43,7 +43,7 @@ const Layout = () => {
   const handleLoginClick = () => {
     console.log('handleLoginClick');
     if (isAuthenticated) {
-      navigate('/login'); // Si está autenticado, redirige a /home
+      navigate('/profile'); // Si está autenticado, redirige a /home
     } else {
       setShowLoginForm(true); // Si no, muestra el formulario de login
     }
@@ -134,11 +134,11 @@ const Layout = () => {
           <button onClick={handleLoginClick} className="navbar-link">
             <div className="navbar-icon-container">
               <img
-                src={location.pathname === '/login' ? screen4_selected : screen4}
+                src={location.pathname === '/profile' ? screen4_selected : screen4}
                 alt="Pantalla 4"
-                className={`navbar-icon ${location.pathname === '/login' ? 'icon-selected' : ''}`}
+                className={`navbar-icon ${location.pathname === '/profile' ? 'icon-selected' : ''}`}
               />
-              <span className={`navbar-text text-c ${location.pathname === '/login' ? '' : 'text-transparent'}`}>Perfil</span>
+              <span className={`navbar-text text-c ${location.pathname === '/profile' ? '' : 'text-transparent'}`}>Perfil</span>
             </div>
           </button>
         </div>

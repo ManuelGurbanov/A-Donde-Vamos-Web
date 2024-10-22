@@ -12,8 +12,8 @@ const Review = ({ selectedCafe, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { cafes } = useContext(CafeContext);
-  const { currentUser } = useAuth();
-  
+  const { currentUser } = useAuth(); // Asegúrate de que currentUser tiene los datos del usuario
+
   const [cafe, setCafe] = useState(selectedCafe); // Se establece el café en el estado
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(0);
@@ -21,6 +21,7 @@ const Review = ({ selectedCafe, onClose }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [username, setUsername] = useState(''); // Para almacenar el nombre de usuario
 
   useEffect(() => {
     setErrorMessage('');
@@ -28,12 +29,32 @@ const Review = ({ selectedCafe, onClose }) => {
 
     if (!currentUser) {
       setErrorMessage('Por favor, inicia sesión para hacer una reseña.');
+    } else {
+      // Recuperar el nombre de usuario de Firestore si currentUser está disponible
+      fetchUserData(currentUser.uid);
     }
 
     if (selectedCafe) {
       setCafe(selectedCafe);
     }
   }, [location.state, currentUser, selectedCafe]);
+
+  // Función para obtener el nombre de usuario desde Firestore
+  const fetchUserData = async (uid) => {
+    try {
+      const userRef = doc(db, 'users', uid);
+      const userDoc = await getDoc(userRef);
+  
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUsername(userData.username || 'Anonymous'); // Aquí se obtiene el nombre de usuario
+      } else {
+        console.error('No se encontró el usuario en Firestore');
+      }
+    } catch (error) {
+      console.error('Error al obtener los datos del usuario:', error);
+    }
+  };
 
   const handleCafeChange = async (e) => {
     const cafeId = e.target.value;
@@ -82,7 +103,7 @@ const Review = ({ selectedCafe, onClose }) => {
 
     const reviewData = {
       userId: currentUser.uid,
-      user: currentUser.displayName || 'Anonymous',
+      user: username || 'Anonymous', // Usa el nombre de usuario obtenido
       rating,
       text: review,
       likes: 0,
@@ -115,7 +136,6 @@ const Review = ({ selectedCafe, onClose }) => {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const handleCancel = () => {
-    // Puedes limpiar el estado si es necesario
     setCafe(null);
     setReview('');
     setRating(0);
@@ -123,7 +143,6 @@ const Review = ({ selectedCafe, onClose }) => {
     setErrorMessage('');
     setSuccessMessage('');
 
-    // Llama a la función onClose pasada como prop
     if (onClose) onClose();
   };
 
@@ -150,7 +169,6 @@ const Review = ({ selectedCafe, onClose }) => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              {/* Icono de búsqueda */}
               <img 
                 src={screen2} 
                 alt="Search Icon" 
@@ -173,7 +191,6 @@ const Review = ({ selectedCafe, onClose }) => {
             </div>
           </div>
         ) : (
-          // Vista de reseña de la cafetería seleccionada
           <div>
             <hr className='border-solid border-1 border-c2'></hr>
             <h3 className="w-full mt-2 text-lg text-left text-opacity-60 text-c2" style={{ whiteSpace: 'nowrap', overflow: 'auto', fontSize: '48px' }}>
