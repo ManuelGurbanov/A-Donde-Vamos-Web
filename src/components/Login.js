@@ -16,6 +16,12 @@ import halfStarDark from '../img/halfStarRed.webp';
 import emptyStarDark from '../img/emptyStarRed.webp';
 import RatingDistribution from './RatingDistributions';
 
+import screen4 from '../img/screen4-selected.png';
+import info from '../img/info.png';
+import colaborate from '../img/colaborate.png';
+import settings from '../img/settings.png';
+
+
 const starRating = (rating) => {
   const stars = [];
   const totalStars = 5;
@@ -48,6 +54,8 @@ const Login = () => {
   const [userData, setUserData] = useState(null);
   const [selectedTab, setSelectedTab] = useState('favorites');
   const [userReviews, setUserReviews] = useState([]);
+
+  const [state, setState] = useState(0);
   
   const navigate = useNavigate();
   const { uid } = useParams(); // Aquí se extrae el uid de la URL
@@ -62,6 +70,10 @@ const Login = () => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setLoggedIn(true);
+
+        if (user.uid !== uid) {
+          setState(1);
+        }
       } else {
         setLoggedIn(false);
       }
@@ -175,8 +187,10 @@ const Login = () => {
 
   return (
     <div className="flex flex-col items-center justify-center mb-6">
-      <Top text={"Perfil"} />
-          <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
+          {(state === 0 || state === 1) && (auth.currentUser && auth.currentUser.uid === uid) && (
+            <>
+            <Top text={"Mi Perfil"} />
+            <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
             <div className="w-full flex items-center">
               {auth.currentUser && auth.currentUser.uid === uid ? (
                 <img
@@ -212,8 +226,23 @@ const Login = () => {
 
                   </div>
             </div>
+          </div>
+            </>
+            )
+             }
 
-            {/* Insignias */}
+          {state === 1 && (auth.currentUser.uid !== uid) && (
+                            userData?.profilePicture && (
+                              <img
+                                src={userData.profilePicture}
+                                alt="Foto de perfil"
+                                className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 mt-4"
+                              />
+                            ))}
+          
+          {state === 1 && (
+              <>
+                          {/* Insignias */}
             <div className="flex gap-4 w-full items-center justify-center">
               {userData?.showPet && <img className="w-12 h-12 mt-6" src={petIcon} alt="Pet Friendly" />}
               {userData?.showTac && <img className="w-12 h-12 mt-6" src={tacIcon} alt="Tac" />}
@@ -226,11 +255,8 @@ const Login = () => {
                 {userData.description}
               </p>
             )}
-          </div>
-          
-          <RatingDistribution reviews={userReviews} />
-
-          {/* Pestañas de favoritos y recientes */}
+                        <RatingDistribution reviews={userReviews} />
+                        {/* Pestañas de favoritos y recientes */}
           <div className="w-4/5 flex text-c mt-4">
             <button
               onClick={() => handleTabChange('favorites')}
@@ -247,10 +273,10 @@ const Login = () => {
           </div>
 
           <hr className="w-4/5 h-[2px] bg-c2 border-none my-4 bg-opacity-40" />
-          <div className="w-full p-4 mt-2 rounded sm:w-1/4 h-auto">
+          <div className="w-full p-4 mt-2 rounded sm:w-1/2 h-auto">
             {selectedTab === 'favorites' ? (
               favoriteCafes.length > 0 ? (
-                <div className="grid grid-cols-3 gap-1 gap-y-3">
+                <div className="grid grid-cols-3 sm:gap-8 gap-y-3 items-center justify-center">
                   {favoriteCafes.map(cafe => (
                     <MiniCard key={cafe.id} cafe={cafe} />
                   ))}
@@ -288,6 +314,74 @@ const Login = () => {
               )
             ) : null}
           </div>
+              </>
+          )}
+
+          {state === 0 && (
+            <div className='flex flex-col gap-3 items-center w-full sm:w-1/4'>
+
+
+
+            <button className="flex items-center justify-center w-1/2 gap-2 px-4 py-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl" onClick={() => setState(1)}>
+              <img src={screen4} className='flex-[1] w-6'></img>
+              <p className='text-center text-sm flex-[9]'>
+              Ver mi Perfil
+              </p>
+            </button>
+
+            <button className="flex items-center justify-center w-1/2 gap-2 px-4 py-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl" onClick={() => setState(2)}>
+              <img src={info} className='flex-[1] w-6'></img>
+              <p className='text-center text-sm flex-[9]'>
+              Sobre la App
+              </p>
+            </button>
+
+            <button className="flex items-center justify-center w-1/2 gap-2 px-4 py-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl" onClick={() => setState(3)}>
+              <img src={colaborate} className='flex-[1] w-6'></img>
+              <p className='text-center text-sm flex-[9]'>
+              Colaborá
+              </p>
+            </button>
+
+            <button className="flex items-center justify-center w-1/2 gap-2 px-4 py-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl" onClick={() => setState(4)}>
+              <img src={settings} className='flex-[1] w-6'></img>
+              <p className='text-center text-sm flex-[9]'>
+              Ajustes
+              </p>
+            </button>
+
+            </div>
+            )}
+
+            {state === 2 && (
+              <>
+              <Top text={"Sobre la App"} />
+              <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
+                <p className='text-c text-sm font-semibold italic sm:text-lg'>Esta app fue creada con el fin de ayudar a los amantes del café a encontrar lugares nuevos para disfrutar de una buena taza de café. Si tenés alguna sugerencia o comentario, no dudes en contactarnos.</p>
+              </div>
+              </>
+            )}
+
+            {state === 3 && (
+              <>
+              <Top text={"Colaborá"} />
+              <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
+
+                <p className='text-c text-sm font-semibold italic sm:text-lg'>Si te gustaría colaborar con nosotros, no dudes en contactarnos. Estamos buscando gente que nos ayude a mejorar la app y a agregar nuevas funcionalidades.</p>
+              </div>
+              </>
+            )}
+
+            {state === 4 && (
+              <>
+              <Top text={"Ajustes"} />
+              <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
+                <p className='text-c text-sm font-semibold italic sm:text-lg'>En esta sección podés modificar tus preferencias y ajustes de la app. Podés cambiar tu foto de perfil, agregar una descripción, y más.</p>
+              </div>
+              </>
+            )}
+
+
     </div>
   );
 };

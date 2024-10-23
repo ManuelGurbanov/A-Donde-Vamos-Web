@@ -52,7 +52,7 @@ const RatingDistribution = ({ reviews }) => {
   };
 
   return (
-    <div className="p-1 rounded-lg flex w-3/4">
+    <div className="p-1 rounded-lg flex w-3/4 sm:w-1/4">
       <div className="flex w-2/3 gap-0 items-end justify-center">
 
       <div className='flex flex-col justify-end items-end w-full h-full'>

@@ -113,7 +113,7 @@ const Home = () => {
     }
 
     return (
-      <div className="relative flex items-center justify-center h-56">
+      <div className="relative flex items-center justify-center h-56 w-full">
         <button 
           onClick={() => handlePrev(cafesArray, setCurrentSlide, currentSlide)}
           className="px-4 py-2 text-white bg-gray-700 rounded-full hover:bg-gray-800 bg-opacity-20"
