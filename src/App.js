@@ -14,7 +14,6 @@ import Layout from './components/Layout';
 import Notifications from './components/Notifications';
 import ForgotPassword from './components/ForgotPassword';
 
-
 function App() {
   return (
     <div className="">
@@ -24,7 +23,7 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/cafe/:id" element={<CoffeeDetails />} />
+              <Route path="/cafe/:slug" element={<CoffeeDetails />} />
               
               <Route path="/profile/:uid" element={<Login />} />
               <Route path="/profile" element={<ProfileRedirect />} />

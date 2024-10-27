@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import outsideIcon from '../img/outside.webp';
 import petIcon from '../img/pet.png';
@@ -9,7 +9,6 @@ import tacIcon from '../img/tac.png';
 import veganIcon from '../img/vegan.png';
 
 import { AuthContext } from '../contexts/AuthContext'; // Asegúrate de que la ruta sea correcta
-
 
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import { CafeContext } from './CafeContext';
@@ -25,22 +24,19 @@ import emptyStarDark from '../img/emptyStar.png';
 import location from '../img/location.png';
 import heartadd from '../img/heart-add.png';
 import clock from '../img/clock.png';
-import additem from '../img/additem.png';
 import addsquare from '../img/add-square.png';
 
-import StarRating from './StarRating';
-import TopDetails from './TopDetails';
 
 import Slider from 'react-slick';
 import { useOutletContext } from 'react-router-dom';
 
 import instagram from '../img/instagram.png';
 import menu from '../img/menu.png';
-import web from '../img/web.png';
 import share from '../img/share.webp';
 import arrowdown from '../img/arrow_down.png';
 
 const CoffeeDetails = () => {
+  const { slug } = useParams();
   const { handleReviewClick } = useOutletContext();
   const { id } = useParams();
   const [coffee, setCoffee] = useState(null);
@@ -56,6 +52,21 @@ const CoffeeDetails = () => {
   const [textColor, setTextColor] = useState('text-red-500');
   const [showSchedule, setShowSchedule] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [address, setAddress] = useState('');
+  const [coworking, setCoworking] = useState(false);
+  const [description, setDescription] = useState('');
+  const [googleLink, setGoogleLink] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [menuLink, setMenuLink] = useState('');
+  const [neigh, setNeigh] = useState('');
+  const [outside, setOutside] = useState(false);
+  const [patio, setPatio] = useState(false);
+  const [petFriendly, setPetFriendly] = useState(false);
+  const [tac, setTac] = useState(false);
+  const [takeaway, setTakeaway] = useState(false);
+  const [terraza, setTerraza] = useState(false);
+  const [vegan, setVegan] = useState(false);
+  const [name, setName] = useState('');
 
   const navigate = useNavigate();
 
@@ -76,52 +87,86 @@ const CoffeeDetails = () => {
   const handleGoMaps = () => {
     window.open(coffee.googleLink, '_blank');
   };
-  
-  useEffect(() => {
-    const fetchCoffee = async () => {
-      try {
-        const docRef = doc(db, 'cafeterias', id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+
+
+
+ useEffect(() => {
+  const fetchCoffeeBySlug = async () => {
+    const coffeeQuery = query(
+      collection(db, 'cafeterias'),
+      where('slugName', '==', slug) // Asegúrate de que slug está definido correctamente
+    );
+    const querySnapshot = await getDocs(coffeeQuery);
+    if (!querySnapshot.empty) {
+      const data = querySnapshot.docs[0].data();
+      setCoffee(data);
+      setReviews(data.reviews || []); // Guarda las reseñas desde aquí si es necesario
+    }
+  };
+  fetchCoffeeBySlug();
+}, [slug]);
+
+useEffect(() => {
+  let isMounted = true;
+
+  const fetchCoffeeByName = async () => {
+    try {
+      const coffeeQuery = query(collection(db, 'cafeterias'), where('slugName', '==', name)); // Revisa que name se define correctamente
+      const querySnapshot = await getDocs(coffeeQuery);
+      
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0];
+        const data = docSnap.data();
+
+        if (isMounted) {
+          // Actualiza el estado solo si el componente está montado
           setCoffee(data);
-          setReviews(data.reviews || []);
+          setReviews(data.reviews || []); // Asegúrate de que 'reviews' sea un array
           setTotalRatings(data.totalRatings || 0);
           setNumRatings(data.numRatings || 0);
-  
-          if (currentUser) {
-            const userHasRated = data.reviews?.some(review => review.userId === currentUser.uid);
-            setHasRated(userHasRated);
-  
-            // Cargar datos del usuario actual
-            const userDocRef = doc(db, 'users', currentUser.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            if (userDocSnap.exists()) {
-              const userData = userDocSnap.data();
-              console.log('User Data:', userData); // Ver datos del usuario
-  
-              // Establecer estado de isFavorite
-              const userFavorites = userData.favorites || [];
-              console.log('User Favorites:', userFavorites); // Verificar la lista de favoritos
-              setIsFavorite(userFavorites.includes(id)); // Verificar si la cafetería está en favoritos
-            } else {
-              console.log('No such user document!');
-            }
-          }
-  
-          checkIfOpen(data);
-        } else {
-          console.log('No such coffee document!');
+
+          // Otros campos...
         }
-      } catch (err) {
-        console.error('Error fetching coffee details:', err);
-      } finally {
-        setLoading(false);
+
+        if (currentUser) {
+          const userHasRated = data.reviews?.some(review => review.userId === currentUser.uid);
+          setHasRated(userHasRated);
+          
+          const userDocRef = doc(db, 'users', currentUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
+
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            if (isMounted) {
+              const userFavorites = userData.favorites || [];
+              setIsFavorite(userFavorites.includes(docSnap.id));
+            }
+          } else {
+            console.log('No such user document!');
+          }
+        }
+
+        checkIfOpen(data);
+      } else {
+        console.log('No such coffee document with that name!');
       }
-    };
+    } catch (err) {
+      console.error('Error fetching coffee details by name:', err);
+    } finally {
+      if (isMounted) setLoading(false);
+      console.log("LAS REVIEWS SON: ", reviews); // Mueve esto aquí
+    }
+  };
+
+  fetchCoffeeByName();
+
+  return () => {
+    isMounted = false; // Cleanup
+  };
+}, [name, currentUser]);
+
   
-    fetchCoffee();
-  }, [id, currentUser]);
+
   
 
   useEffect(() => {
@@ -148,8 +193,8 @@ const CoffeeDetails = () => {
       const data = userDoc.data();
       const favorites = data?.favorites || [];
       
-      if (!favorites.includes(coffeeId)) {
-        favorites.push(coffeeId);
+      if (!favorites.includes(coffee.slugName)) {
+        favorites.push(coffee.slugName);
         await updateDoc(userRef, { favorites });
         console.log('Cafetería favorita agregada');
       }
@@ -166,7 +211,7 @@ const CoffeeDetails = () => {
       const data = userDoc.data();
       const favorites = data?.favorites || [];
       
-      const updatedFavorites = favorites.filter(id => id !== coffeeId);
+      const updatedFavorites = favorites.filter(id => id !== coffee.slugName);
       await updateDoc(userRef, { favorites: updatedFavorites });
       console.log('Cafetería favorita eliminada');
     } catch (e) {
@@ -670,7 +715,7 @@ const parseTime = (timeString) => {
           <div className="flex flex-col items-center mb-2 p-1">
           <span 
                   className="mr-2 font-bold text-c2 text-left w-full ml-2 cursor-pointer"
-                  onClick={() => navigate(`/profile/${review.userId}`)} // Navegar al perfil del usuario
+                  onClick={() => navigate(`/profile/${review.userId}`)}
                 >
                   {review.user}
                 </span>

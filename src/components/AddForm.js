@@ -58,10 +58,23 @@ const AddForm = () => {
     setPicsLinks(updatedPics);
   };
 
+  const generateSlug = (name) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9 -]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const slugName = generateSlug(name);
+
     await addDoc(collection(db, 'cafeterias'), {
+      slugName,
       googleLink,
       name,
       adress,

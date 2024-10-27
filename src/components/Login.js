@@ -110,7 +110,7 @@ const Login = () => {
         const userData = userDoc.data();
         const favoriteIds = userData.favorites || [];
   
-        const favoriteCafes = cafes.filter(cafe => favoriteIds.includes(cafe.id));
+        const favoriteCafes = cafes.filter(cafe => favoriteIds.includes(cafe.slugName));
         setFavoriteCafes(favoriteCafes);
       } else {
         setFavoriteCafes([]);
@@ -128,7 +128,7 @@ const Login = () => {
         const userCafeReviews = cafe.reviews.filter(review => review.userId === uid);
         if (userCafeReviews.length > 0) {
           reviewsByUser.push({
-            cafeId: cafe.id,
+            cafeId: cafe.slugName,
             cafeName: cafe.name,
             picsLinks: cafe.picsLinks,
             reviews: userCafeReviews,

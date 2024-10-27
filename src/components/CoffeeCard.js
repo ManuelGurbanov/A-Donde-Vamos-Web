@@ -8,6 +8,7 @@ import veganIcon from '../img/vegan.png';
 import fullStarWhite from '../img/fullStar.png';
 import halfStarWhite from '../img/halfStar.png';
 import emptyStarWhite from '../img/emptyStar.png';
+import slugify from 'slugify';
 
 const CoffeeCard = ({ cafe }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -135,9 +136,12 @@ const CoffeeCard = ({ cafe }) => {
     return stars;
   };
 
+
+  const slug = slugify(cafe.name || '', { lower: true, strict: true });
+
   return (
     <div className="p-2">
-      <Link to={`/cafe/${cafe.id}`}>
+      <Link to={`/cafe/${slug}`}>
         <div className="relative overflow-hidden bg-white rounded-lg shadow-md h-[143px]">
           <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
   

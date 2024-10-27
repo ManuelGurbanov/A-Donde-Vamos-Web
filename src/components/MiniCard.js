@@ -22,7 +22,7 @@ const MiniCard = ({ cafe }) => {
 
   return (
     <div className="p-0 w-24">
-      <Link to={`/cafe/${cafe.id}`}>
+      <Link to={`/cafe/${cafe.slugName}`}>
         <div className="overflow-hidden bg-b1 rounded-lg shadow-md flex flex-col items-center">
           {/* Imagen de la cafetería */}
           <img
