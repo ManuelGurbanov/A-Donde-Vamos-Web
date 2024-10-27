@@ -62,7 +62,6 @@ const CoffeeDetails = () => {
 
   const { currentUser, favorites } = useContext(AuthContext);
 
-  const [mainStatus, extraInfo] = status.split('-');
 
   const handleGoMenu = () => {
     // ir al link de menu que está en la base de datos de la cafetería
@@ -272,7 +271,7 @@ const CoffeeDetails = () => {
 
         setStatus(
             <span>
-                Cerrado - <span style={{ color: 'blue' }}>
+                Cerrado - <span>
                     {nextOpen
                         ? `Abre ${nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`} a las ${openingTime}`
                         : "indefinidamente"}
