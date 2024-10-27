@@ -58,14 +58,14 @@ const CoffeeDetails = () => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const navigate = useNavigate();
-  const { setSelectedCafe } = useContext(CafeContext);
 
   const { currentUser, favorites } = useContext(AuthContext);
 
-
+  const { setSelectedCafe } = useContext(CafeContext);
+  
+  // Nuevo estado para la verificación de horario
+  const [statusMessage, setStatusMessage] = useState('');
   const handleGoMenu = () => {
-    // ir al link de menu que está en la base de datos de la cafetería
-
     window.open(coffee.menuLink, '_blank');
   };
 
@@ -184,159 +184,6 @@ const CoffeeDetails = () => {
     }
     setIsFavorite(!isFavorite);
   };
-  
-
-
-
-
-  const checkIfOpen = (data) => {
-    const now = new Date();
-    const today = now.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-    const currentTime = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`; // Hora actual en formato "HHMM"
-    const francos = data.francos ? data.francos.split(',').map(Number) : [];
-    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
-    console.log("Día actual:", daysOfWeek[today]);
-    console.log("Hora actual:", currentTime);
-    console.log("Días libres:", francos);
-
-    // Verifica si schedules existe
-    if (!data.schedules) {
-        console.log("Horarios no definidos en schedules");
-        setStatus('Horario no disponible');
-        setTextColor('text-red-500');
-        setIsOpen(false);
-        return;
-    }
-
-    console.log("Horarios en schedules.dias:", data.schedules.dias ? Object.keys(data.schedules.dias) : "No hay horarios definidos");
-
-    // Obtener el horario de apertura y cierre para el día actual
-    const getScheduleForToday = () => {
-        const dayKey = daysOfWeek[today];
-        console.log("Verificando si hay horario específico para hoy:", dayKey);
-
-        // Comprobar si existe un horario específico para hoy
-        if (data.schedules.dias && data.schedules.dias[dayKey]) {
-            console.log("Horario específico encontrado para hoy:", data.schedules.dias[dayKey]);
-            return data.schedules.dias[dayKey];
-        }
-
-        // Si es de lunes a viernes y no tiene horario específico, usar "lunes_viernes"
-        if (today >= 1 && today <= 5) {
-            if (data.schedules.lunes_viernes) {
-                console.log("No hay horario específico, usando horario de lunes a viernes:", data.schedules.lunes_viernes);
-                return data.schedules.lunes_viernes;
-            }
-        }
-
-        // Si es sábado o domingo y no hay horario específico, usar "domingo"
-        if (data.schedules.domingo) {
-            console.log("No hay horario específico, usando horario de domingo:", data.schedules.domingo);
-            return data.schedules.domingo;
-        }
-
-        console.log("No hay horario definido para hoy.");
-        return null; // Devolver null si no hay horario
-    };
-
-    // Obtener el próximo día abierto y horario
-    const getNextOpenDayAndTime = () => {
-        console.log("Buscando el próximo día abierto...");
-        for (let i = 1; i <= 7; i++) {
-            const nextDay = (today + i) % 7;
-            const nextDayKey = daysOfWeek[nextDay];
-
-            if (!francos.includes(nextDay)) {
-                const nextSchedule = data.schedules.dias && data.schedules.dias[nextDayKey] ? 
-                    data.schedules.dias[nextDayKey] : 
-                    (nextDay >= 1 && nextDay <= 5 ? data.schedules.lunes_viernes : data.schedules.domingo);
-
-                if (nextSchedule && nextSchedule.apertura) {
-                    console.log("Próximo día abierto encontrado:", nextDayKey, "Horario:", nextSchedule);
-                    return { day: nextDay, openingTime: nextSchedule.apertura };
-                }
-            }
-        }
-
-        console.log("No se encontró próximo día abierto.");
-        return null;
-    };
-
-    // Verificar si hoy es franco
-    if (francos.includes(today)) {
-        console.log("Hoy es un día franco, buscando el próximo día abierto...");
-        const nextOpen = getNextOpenDayAndTime();
-        const openingTime = nextOpen ? `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}` : null;
-
-        setStatus(
-            <span>
-                Cerrado - <span>
-                    {nextOpen
-                        ? `Abre ${nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`} a las ${openingTime}`
-                        : "indefinidamente"}
-                </span>
-            </span>
-        );
-
-        setTextColor('text-red-500');
-        setIsOpen(false);
-        return;
-    }
-
-    // Obtener horario de hoy
-    const schedule = getScheduleForToday();
-
-    // Comprobar si hay un horario definido
-    if (!schedule || !schedule.apertura || !schedule.cierre) {
-        console.log("No hay horario definido para hoy, verificando el próximo día...");
-        const nextOpen = getNextOpenDayAndTime();
-        const openingTime = nextOpen ? `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}` : null;
-
-        setStatus(`Cerrado - Abre ${nextOpen 
-            ? nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`
-            : "indefinidamente"} a las ${openingTime}`);
-        setTextColor('text-red-500');
-        setIsOpen(false);
-        return;
-    }
-
-    // Comparar la hora actual con los horarios de apertura y cierre
-    const openingTime = schedule.apertura;
-    const closingTime = schedule.cierre;
-
-    console.log("Horario de apertura:", openingTime);
-    console.log("Horario de cierre:", closingTime);
-
-    if (currentTime >= openingTime && currentTime < closingTime) {
-        // Está abierto
-        setStatus('Abierto');
-        setTextColor('text-green-500');
-        setIsOpen(true);
-    } else {
-        // Está cerrado, mostrar cuándo vuelve a abrir
-        const nextOpen = getNextOpenDayAndTime();
-        const openingTimeFormatted = nextOpen ? `${nextOpen.openingTime.slice(0, 2)}:${nextOpen.openingTime.slice(2)}` : null;
-
-        setStatus(`Cerrado - Abre ${nextOpen 
-            ? nextOpen.day === (today + 1) % 7 ? 'mañana' : `el ${daysOfWeek[nextOpen.day]}`
-            : "indefinidamente"} a las ${openingTimeFormatted}`);
-        setTextColor('text-red-500');
-        setIsOpen(false);
-    }
-};
-
-
-
-
-
-
-
-
-
-
-
-
   
   const handleImageError = (index) => {
     setCoffee(prevState => ({
@@ -526,7 +373,93 @@ const CoffeeDetails = () => {
   };
   
   // Diccionario para los nombres de los días
-  const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const daysOfWeek = ['eomingo', 'lunes', 'martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+
+  const checkIfOpen = (schedules) => {
+    const currentDate = new Date(); // Obtener la fecha y hora actual
+    const currentDay = currentDate.getDay(); // Día actual (0 = Domingo, ..., 6 = Sábado)
+    const currentTimeInMinutes = currentDate.getHours() * 60 + currentDate.getMinutes(); // Hora actual en minutos
+
+    console.log(`Día actual: ${currentDay}, Hora actual: ${currentDate.getHours()}:${currentDate.getMinutes()}`);
+    console.log(`Tiempo actual en minutos: ${currentTimeInMinutes}`);
+
+    const dayNames = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']; // Mapeo de días
+    const currentDayName = dayNames[currentDay];
+    const previousDayName = dayNames[(currentDay - 1 + 7) % 7]; // Día anterior, ajustado para la rotación semanal
+    
+    // Obtener el horario del día actual y del día anterior
+    const todaySchedule = schedules[currentDayName];
+    const previousDaySchedule = schedules[previousDayName];
+
+    // Paso 1: Verificar si el día anterior tenía un horario extendido (cierre después de medianoche)
+    if (previousDaySchedule && !previousDaySchedule.cerrado) {
+        const previousDayOpeningTime = parseTime(previousDaySchedule.apertura); // Apertura del día anterior en minutos
+        let previousDayClosingTime = parseTime(previousDaySchedule.cierre); // Cierre del día anterior en minutos
+
+        // Si el cierre es después de medianoche, ajustar a un valor mayor que 1440
+        if (previousDayClosingTime < previousDayOpeningTime) {
+            previousDayClosingTime += 1440; // Se extiende al siguiente día
+        }
+
+        // Calcular el tiempo que ha pasado desde el inicio del día anterior
+        const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes; // Minutos desde las 00:00 del día anterior hasta la hora actual
+
+        console.log(`Día anterior (${previousDayName}): apertura a ${previousDayOpeningTime} min, cierre a ${previousDayClosingTime} min`);
+        console.log(`Minutos desde inicio del día anterior: ${minutesSincePreviousDayStart}`);
+
+        // Verificar si estamos dentro del horario extendido del día anterior
+        if (minutesSincePreviousDayStart < previousDayClosingTime) {
+            console.log("ABIERTO (según horario del día anterior)");
+            return 'ABIERTO';
+        }
+    }
+
+    // Paso 2: Si no estamos en el horario extendido, verificar el horario del día actual
+    if (!todaySchedule || todaySchedule.cerrado) {
+        console.log("CERRADO (según horario de hoy)");
+        return 'CERRADO';
+    }
+
+    const openingTime = parseTime(todaySchedule.apertura); // Apertura de hoy en minutos
+    const closingTime = parseTime(todaySchedule.cierre); // Cierre de hoy en minutos
+
+    console.log(`Día actual (${currentDayName}): apertura a ${openingTime} min, cierre a ${closingTime} min`);
+
+    // Verificar si la hora actual está dentro del rango de apertura de hoy
+    if (currentTimeInMinutes >= openingTime && currentTimeInMinutes < closingTime) {
+        console.log("ABIERTO (según horario de hoy)");
+        return 'ABIERTO';
+    }
+
+    console.log("CERRADO (fuera del horario de hoy)");
+    return 'CERRADO';
+};
+
+// Función para convertir la hora en formato "HHMM" a minutos
+const parseTime = (timeString) => {
+    const hours = parseInt(timeString.slice(0, 2), 10);
+    const minutes = parseInt(timeString.slice(2, 4), 10);
+    return hours * 60 + minutes; // Devuelve el total en minutos
+};
+
+  
+
+  const getCurrentDayName = () => {
+    const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const currentDate = new Date();
+    const currentDay = currentDate.getDay(); // Devuelve un número entre 0 (domingo) y 6 (sábado)
+    return daysOfWeek[currentDay];
+  };
+  
+  // Función para obtener la hora actual en formato HH:MM
+  const getCurrentTime = () => {
+    const currentDate = new Date();
+    const hours = String(currentDate.getHours()).padStart(2, '0'); // Asegura que tenga dos dígitos
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
     <div className="w-screen text-c2 sm:w-1/2">
@@ -588,10 +521,9 @@ const CoffeeDetails = () => {
           </div>
 
           
-          <p className='text-xl mb-8'>
-              <span className={`${textColor} ml-1`}>{status}</span>
-            </p>
-                
+          <p>{statusMessage}</p>
+          
+          <p className='w-full p-2 text-xl text-center'>{coffee.description}</p>
 
             { (coffee.pets || coffee.vegan || coffee.tac || coffee.outside) && (
                             <div className="flex items-center gap-4 mt-2 mb-6">
@@ -645,8 +577,9 @@ const CoffeeDetails = () => {
           <div className='flex flex-row items-center gap-1 mb-2'>
             <img src={clock} className='w-4 h-4 mt-2'></img>
             
+
             <p className={`text-xl`}>
-              <span className={`${textColor} ml-1`}>{status}</span>
+              <span>{checkIfOpen(coffee.schedules)}</span>
             </p>
 
             {/* Agrega el botón para abrir el menú de horarios */}
@@ -657,75 +590,34 @@ const CoffeeDetails = () => {
               <img src={arrowdown} className='w-full m-auto'></img>
             </button>
           </div>
+          {/* Menú desplegable de horarios */}
+          {showSchedule && (
+            <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
+              <h3 className="mb-2 text-lg font-bold">Horarios</h3>
 
-            {/* Menú desplegable de horarios */}
-            {showSchedule && (
-              <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
-                <h3 className="mb-2 text-lg font-bold">Horarios</h3>
+              {/* Renderiza cada día de la semana */}
+              {['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'].map((dayName, index) => {
+                const customSchedule = coffee.schedules[dayName]; // Obtiene el horario del día específico
+                const isClosed = isClosedDay(index); // Verifica si el día está cerrado
 
-{/* Lunes a Viernes */}
-<div className="mb-4">
-  {[1, 2, 3, 4, 5].map((day) => {
-    const dayName = daysOfWeek[day];
-    const customSchedule = coffee.schedules.dias ? coffee.schedules.dias[dayName] : null; // Verifica si hay un horario específico para el día
+                return (
+                  <div key={dayName} className="mb-2">
+                    <p className="font-semibold">{dayName.charAt(0).toUpperCase() + dayName.slice(1)}</p>
+                    {isClosed ? (
+                      <p className="text-red-600">CERRADO</p>
+                    ) : (
+                      <p>
+                        {formatTime(customSchedule?.apertura || 'Horario no disponible')} - { 
+                        formatTime(customSchedule?.cierre || 'Horario no disponible')}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
-    return (
-      <div key={day} className="mb-2">
-        <p className="font-semibold">{dayName}</p>
-        {isClosedDay(day) ? (
-          <p className="text-red-600">Cerrado</p>
-        ) : (
-          <>
-            <p>
-              {
-                formatTime(customSchedule?.apertura || coffee.schedules.lunes_viernes?.apertura || 'Horario no disponible')
-              } - {
-                formatTime(customSchedule?.cierre || coffee.schedules.lunes_viernes?.cierre || 'Horario no disponible')
-              }
-            </p>
-          </>
-        )}
-      </div>
-    );
-  })}
-</div>
 
-{/* Sábado */}
-<div className="mb-4">
-  <h4 className="font-semibold text-md">Sábado</h4>
-  {isClosedDay(6) ? (
-    <p className="text-red-600">CERRADO</p>
-  ) : (
-    <>
-      <p>
-        { 
-          formatTime(coffee.schedules.sabado?.apertura || 'Horario no disponible')} - { 
-          formatTime(coffee.schedules.sabado?.cierre || 'Horario no disponible')
-        }
-      </p>
-    </>
-  )}
-</div>
-
-{/* Domingo */}
-<div className="mb-4">
-  <h4 className="font-semibold text-md">Domingo</h4>
-  {isClosedDay(0) ? (
-    <p className="text-red-600">CERRADO</p>
-  ) : (
-    <>
-      <p>
-        { 
-          formatTime(coffee.schedules.domingo?.apertura || 'Horario no disponible')} - { 
-          formatTime(coffee.schedules.domingo?.cierre || 'Horario no disponible')
-        }
-      </p>
-    </>
-  )}
-</div>
-
-              </div>
-            )}
 
 
           {/* <div className="w-full max-w-lg">

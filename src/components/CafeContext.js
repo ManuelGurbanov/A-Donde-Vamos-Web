@@ -28,31 +28,27 @@ export const CafeProvider = ({ children }) => {
         const querySnapshot = await getDocs(collection(db, 'cafeterias'));
         const cafesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setCafes(cafesList);
-
-        // Solo se establece loading en false si hay cafés cargados
         if (cafesList.length > 0) {
           setLoading(false);
-          setCafesLoaded(true); // Marca que las cafeterías fueron cargadas
+          setCafesLoaded(true);
         }
       } catch (err) {
         setError(err.message);
-        setLoading(false); // Asegúrate de que loading se establece en false en caso de error
+        setLoading(false);
       }
     };
 
     fetchCafes();
   }, []);
 
-  // Verificar estado de autenticación del usuario
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user); // Establece isAuthenticated a true si hay un usuario
+      setIsAuthenticated(!!user);
     });
 
-    return () => unsubscribe(); // Limpia la suscripción al desmontar el componente
+    return () => unsubscribe();
   }, []);
 
-  // Load selected neighborhoods from localStorage
   useEffect(() => {
     const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
     if (storedNeighs && storedNeighs.length > 0) {
@@ -60,7 +56,6 @@ export const CafeProvider = ({ children }) => {
     }
   }, []);
 
-  // Add or remove a cafe from favorites
   const agregarAFavoritos = (cafe) => {
     setFavoritos((prevFavoritos) => {
       if (prevFavoritos.find(fav => fav.id === cafe.id)) {
@@ -71,7 +66,6 @@ export const CafeProvider = ({ children }) => {
     });
   };
 
-  // Add or remove a neighborhood from the selected list
   const handleNeighSelection = (neigh) => {
     setSelectedNeighs(prevNeighs => {
       if (prevNeighs.includes(neigh)) {
@@ -82,7 +76,42 @@ export const CafeProvider = ({ children }) => {
     });
   };
 
-  // Save selected neighborhoods to localStorage whenever they change
+
+  const checkIfOpen = (cafe) => {
+    const now = new Date();
+    const currentDay = now.toLocaleString('es-ES', { weekday: 'long' }).toLowerCase();
+    const currentTime = now.getHours() * 60 + now.getMinutes(); 
+
+    const schedule = cafe.schedules.dias;
+    if (!schedule || !schedule[currentDay]) {
+        return { open: false, message: "Cerrado - Sin horario definido." };
+    }
+
+    const { apertura, cierre } = schedule[currentDay];
+
+    const openingTime = (apertura.getHours() * 60) + apertura.getMinutes();
+    const closingTime = (cierre.getHours() * 60) + cierre.getMinutes();
+
+    const isClosedOvernight = closingTime < openingTime;
+
+    const isOpen = (currentTime >= openingTime && (currentTime < closingTime || isClosedOvernight));
+
+    if (!isOpen) {
+        for (let i = 1; i <= 7; i++) {
+            const nextDayIndex = (now.getDay() + i) % 7;
+            const nextDay = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][nextDayIndex];
+
+            if (schedule[nextDay] && schedule[nextDay].apertura) {
+                const nextOpeningTime = (schedule[nextDay].apertura.getHours() * 60) + schedule[nextDay].apertura.getMinutes();
+                const nextOpeningMessage = `${nextDay.charAt(0).toUpperCase() + nextDay.slice(1)} a las ${schedule[nextDay].apertura.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                return { open: false, message: `Cerrado - Abre ${nextOpeningMessage}` };
+            }
+        }
+    }
+
+    return { open: true, message: "Abierto" };
+};
+
   useEffect(() => {
     localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
   }, [selectedNeighs]);
@@ -98,7 +127,8 @@ export const CafeProvider = ({ children }) => {
       setSelectedCafe, 
       selectedNeighs, 
       handleNeighSelection,
-      isAuthenticated // Añadir estado de autenticación al contexto
+      isAuthenticated,
+      checkIfOpen 
     }}>
       {children}
     </CafeContext.Provider>
