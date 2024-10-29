@@ -583,9 +583,9 @@ const parseTime = (timeString) => {
         </Link>
       )}
 
-            { (coffee.pets || coffee.vegan || coffee.tac || coffee.outside) && (
+            { (coffee.pet || coffee.vegan || coffee.tac || coffee.outside) && (
                             <div className="flex items-center gap-4 mt-2 mb-6">
-                            {coffee.pets && (
+                            {coffee.pet && (
                               <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
                             )}
                             {coffee.vegan && (

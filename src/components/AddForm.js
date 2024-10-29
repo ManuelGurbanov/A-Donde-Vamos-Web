@@ -31,7 +31,8 @@ const AddForm = () => {
   const [patio, setPatio] = useState(false);
   const [terraza, setTerraza] = useState(false);
   const [cafeNotable, setCafeNotable] = useState(false);
-
+  const [alertVisible, setAlertVisible] = useState(false);
+  
   const handleScheduleChange = (day, type, value) => {
     setSchedules((prevSchedules) => ({
       ...prevSchedules,
@@ -96,6 +97,9 @@ const AddForm = () => {
       terraza,
       cafeNotable
     });
+
+    setAlertVisible(true);
+    setTimeout(() => setAlertVisible(false), 3000)
 
     // Reset del formulario
     setGoogleLink('');
@@ -299,6 +303,13 @@ const AddForm = () => {
       <button type="submit" className="px-4 py-2 mt-4 font-semibold text-white bg-blue-600 rounded-lg">
         Agregar
       </button>
+
+      {/* Alerta de cafetería subida */}
+      {alertVisible && (
+        <div className="p-4 mb-4 text-green-700 bg-green-200 border border-green-400 rounded">
+          Cafetería agregada exitosamente.
+        </div>
+      )}
     </form>
   );
 };

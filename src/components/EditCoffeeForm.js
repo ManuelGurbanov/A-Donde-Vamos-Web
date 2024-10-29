@@ -169,6 +169,16 @@ const EditCoffeeForm = () => {
                  className="form-checkbox text-indigo-600" />
           <span className="text-gray-700 font-semibold">Opciones Veganas</span>
         </label>
+        <label className="flex items-center space-x-2">
+          <input type="checkbox" name="tac" checked={formData.tac || false} onChange={handleChange}
+                 className="form-checkbox text-indigo-600" />
+          <span className="text-gray-700 font-semibold">Apto sin TACC</span>
+        </label>
+        <label className="flex items-center space-x-2">
+          <input type="checkbox" name="outside" checked={formData.outside || false} onChange={handleChange}
+                 className="form-checkbox text-indigo-600" />
+          <span className="text-gray-700 font-semibold">Mesas Afuera</span>
+        </label>
       </div>
 
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Reseñas:</h3>
