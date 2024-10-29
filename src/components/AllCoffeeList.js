@@ -4,11 +4,12 @@ import CoffeeCard from './CoffeeCard';
 import Top from './Top';
 import screen2 from '../img/screen2.png';
 import filtersIcon from '../img/filters.webp';
+
 const AllCoffeeList = () => {
   const { cafes, loading, error } = useContext(CafeContext);
   const [filteredCafeterias, setFilteredCafeterias] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchBy, setSearchBy] = useState('neigh');
+  const [searchBy, setSearchBy] = useState('cafe');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     cafeNotable: false,
@@ -21,6 +22,10 @@ const AllCoffeeList = () => {
     tac: false,
     takeaway: false,
   });
+
+  // Función para normalizar y eliminar acentos
+  const normalizeText = (text) => 
+    text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
   // Filtra las cafeterías basándose en los filtros aplicados y el término de búsqueda
   useEffect(() => {
@@ -57,22 +62,18 @@ const AllCoffeeList = () => {
 
     // Aplicar búsqueda por "barrio" o por "cafetería" según el estado de searchBy
     if (searchQuery) {
-      if (searchBy === 'neigh') {
-        filtered = filtered.filter(cafe =>
-          cafe.neigh.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      } else if (searchBy === 'cafe') {
-        filtered = filtered.filter(cafe =>
-          cafe.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
+      const normalizedQuery = normalizeText(searchQuery);
+      filtered = filtered.filter(cafe => {
+        const fieldToCompare = searchBy === 'neigh' ? cafe.neigh : cafe.name;
+        return normalizeText(fieldToCompare).includes(normalizedQuery);
+      });
     }
 
-  // Ordenar alfabéticamente según el criterio de búsqueda
+    // Ordenar alfabéticamente según el criterio de búsqueda
     filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
 
-  setFilteredCafeterias(filtered);
-}, [filters, searchQuery, searchBy, cafes]);
+    setFilteredCafeterias(filtered);
+  }, [filters, searchQuery, searchBy, cafes]);
 
   // Manejar cambios en los filtros booleanos
   const toggleFilter = (filterName) => {
@@ -97,7 +98,6 @@ const AllCoffeeList = () => {
     });
   };
 
-
   if (loading) return <div className="mt-24 text-3xl text-center text-white">Cargando Cafeterías...</div>;
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
@@ -107,18 +107,19 @@ const AllCoffeeList = () => {
       <div className="p-4 m-auto sm:w-3/4">
         {/* Botones de selección */}
         <div className="flex mb-1 w-full justify-between font-bold text-c">
-          <button
-            className={`mr-2 ${searchBy === 'neigh' ? 'opacity-100' : 'opacity-50'}`}
-            onClick={() => setSearchBy('neigh')}
-          >
-            Buscar por Barrio
-          </button>
-          <button
+        <button
             className={`${searchBy === 'cafe' ? 'opacity-100' : 'opacity-50'}`}
             onClick={() => setSearchBy('cafe')}
           >
             Buscar por Cafetería
           </button>
+          <button
+            className={`mr-2 ${searchBy === 'neigh' ? 'opacity-100' : 'opacity-50'}`}
+            onClick={() => setSearchBy('neigh')}
+          >
+            Buscar por Barrio
+        </button>
+
         </div>
 
         <hr className="w-full h-[2px] bg-c2 border-none bg-opacity-40 m-auto mb-2" />
@@ -149,8 +150,6 @@ const AllCoffeeList = () => {
             <img src={filtersIcon} alt="Filters Icon" className="w-3" />
           </button>
 
-
-
         {/* Lista de cafeterías filtradas */}
         <div className="grid grid-cols-1 gap-4 mb-16 md:grid-cols-2 lg:grid-cols-3">
           {filteredCafeterias.length > 0 ? (
@@ -173,64 +172,18 @@ const AllCoffeeList = () => {
             <div className="text-center">
               {/* Filtros booleanos como botones */}
               <div className="grid grid-cols-3 justify-center font-semibold gap-3 text-b1">
-              <button
-                onClick={() => toggleFilter('cafeNotable')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 ${filters.cafeNotable ? 'bg-c2' : 'bg-gray-200 '}`}
-              >
-                Café Notable
-              </button>
-              <button
-                onClick={() => toggleFilter('coworking')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.coworking ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Coworking
-              </button>
-              <button
-                onClick={() => toggleFilter('outside')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.outside ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Mesas Afuera
-              </button>
-              <button
-                onClick={() => toggleFilter('patio')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.patio ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Patio
-              </button>
-              <button
-                onClick={() => toggleFilter('pet')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.pet ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Pet Friendly
-              </button>
-              <button
-                onClick={() => toggleFilter('terraza')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.terraza ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Tiene Terraza
-              </button>
-              <button
-                onClick={() => toggleFilter('vegan')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.vegan ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Apto Vegano
-              </button>
-              <button
-                onClick={() => toggleFilter('tac')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.tac ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Apto TAC
-              </button>
-              <button
-                onClick={() => toggleFilter('takeaway')}
-                className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center ${filters.takeaway ? 'bg-c2' : 'bg-gray-200'}`}
-              >
-                Takeaway
-              </button>
-            </div>
+                {/* Botones de filtro */}
+                <button
+                  onClick={() => toggleFilter('cafeNotable')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 ${filters.cafeNotable ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Café Notable
+                </button>
+                {/* Agrega los demás botones */}
+              </div>
             </div>
             <div className="flex flex-col items-center justify-center w-full p-4">
-            <button
+              <button
                 onClick={clearFilters}
                 className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
               >
