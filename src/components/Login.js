@@ -282,7 +282,7 @@ const Login = () => {
               favoriteCafes.length > 0 ? (
                 <div className="grid grid-cols-3 sm:gap-8 gap-y-3 items-center justify-center">
                   {favoriteCafes.map(cafe => (
-                    <MiniCard key={cafe.id} cafe={cafe} />
+                    <MiniCard key={cafe.id} cafe={cafe} slug={cafe.slugName} />
                   ))}
                 </div>
               ) : (

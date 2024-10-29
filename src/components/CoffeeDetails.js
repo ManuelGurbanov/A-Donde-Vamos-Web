@@ -34,6 +34,7 @@ import instagram from '../img/instagram.png';
 import menu from '../img/menu.png';
 import share from '../img/share.webp';
 import arrowdown from '../img/arrow_down.png';
+import {Link} from 'react-router-dom';
 
 const CoffeeDetails = () => {
   const { slug } = useParams();
@@ -418,7 +419,7 @@ useEffect(() => {
   };
   
   // Diccionario para los nombres de los días
-  const daysOfWeek = ['eomingo', 'lunes', 'martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const daysOfWeek = ['domingo', 'lunes', 'martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 
   const checkIfOpen = (schedules) => {
@@ -505,6 +506,12 @@ const parseTime = (timeString) => {
     return `${hours}:${minutes}`;
   };
 
+  const adminEmails = ["manuelgurbanov@gmail.com", "nahuferrnandezz@gmail.com"];
+
+  const isAdmin = adminEmails.includes(currentUser?.email);
+
+
+
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
     <div className="w-screen text-c2 sm:w-1/2">
@@ -568,7 +575,13 @@ const parseTime = (timeString) => {
           
           <p>{statusMessage}</p>
           
-          <p className='w-full p-2 text-xl text-center'>{coffee.description}</p>
+          <p className='w-full p-0 text-xl text-left'>{coffee.description}</p>
+
+          {isAdmin && (
+        <Link to={`/cafe/${coffee.slugName}/editar`}>
+          <button className="bg-blue-500 text-white p-2 rounded mt-2 mb-2">Editar</button>
+        </Link>
+      )}
 
             { (coffee.pets || coffee.vegan || coffee.tac || coffee.outside) && (
                             <div className="flex items-center gap-4 mt-2 mb-6">
@@ -640,20 +653,18 @@ const parseTime = (timeString) => {
             <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
               <h3 className="mb-2 text-lg font-bold">Horarios</h3>
 
-              {/* Renderiza cada día de la semana */}
               {['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'].map((dayName, index) => {
-                const customSchedule = coffee.schedules[dayName]; // Obtiene el horario del día específico
-                const isClosed = isClosedDay(index); // Verifica si el día está cerrado
-
+                const customSchedule = coffee.schedules[dayName];
+                const isClosed = isClosedDay(index); 
                 return (
                   <div key={dayName} className="mb-2">
                     <p className="font-semibold">{dayName.charAt(0).toUpperCase() + dayName.slice(1)}</p>
-                    {isClosed ? (
+                    {isClosed || (customSchedule?.apertura == "") ? (
                       <p className="text-red-600">CERRADO</p>
                     ) : (
                       <p>
-                        {formatTime(customSchedule?.apertura || 'Horario no disponible')} - { 
-                        formatTime(customSchedule?.cierre || 'Horario no disponible')}
+                        {formatTime(customSchedule?.apertura || 'Cerrado')} - { 
+                        formatTime(customSchedule?.cierre || 'Cerrado')}
                       </p>
                     )}
                   </div>
@@ -662,19 +673,7 @@ const parseTime = (timeString) => {
             </div>
           )}
 
-
-
-
-          {/* <div className="w-full max-w-lg">
-            <iframe
-              src={coffee.googleLink}
-              width="100%" height="450" allowFullScreen="" loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full h-64"
-            ></iframe>
-          </div> */}
-
-          
+        
           <div className='flex flex-row items-center gap-1 mb-2'>
           <img src={heartadd} className='w-4 h-4 mt-2'></img>
           <p className="ml-1 text-lg">¿Qué te pareció {coffee.name}?</p>

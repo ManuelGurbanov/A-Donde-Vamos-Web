@@ -13,7 +13,7 @@ import AllCoffeeList from './components/AllCoffeeList';
 import Layout from './components/Layout';
 import Notifications from './components/Notifications';
 import ForgotPassword from './components/ForgotPassword';
-
+import EditCoffeeForm from './components/EditCoffeeForm';
 function App() {
   return (
     <div className="">
@@ -24,7 +24,7 @@ function App() {
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
               <Route path="/cafe/:slug" element={<CoffeeDetails />} />
-              
+              <Route path="/cafe/:slug/editar" element={<EditCoffeeForm />} />
               <Route path="/profile/:uid" element={<Login />} />
               <Route path="/profile" element={<ProfileRedirect />} />
 

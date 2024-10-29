@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const MiniCard = ({ cafe }) => {
+const MiniCard = ({ cafe, slug }) => {
 
   const truncateName = (name, maxChars) => {
     if (!name) return 'Nombre no disponible';
@@ -22,7 +22,7 @@ const MiniCard = ({ cafe }) => {
 
   return (
     <div className="p-0 w-24">
-      <Link to={`/cafe/${cafe.slugName}`}>
+      <Link to={`/cafe/${slug}`}>
         <div className="overflow-hidden bg-b1 rounded-lg shadow-md flex flex-col items-center">
           {/* Imagen de la cafetería */}
           <img
