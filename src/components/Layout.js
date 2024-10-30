@@ -132,15 +132,18 @@ const Layout = () => {
             </div>
           </Link>
           <button onClick={handleLoginClick} className="navbar-link">
-            <div className="navbar-icon-container">
-              <img
-                src={location.pathname === '/profile' ? screen4_selected : screen4}
-                alt="Pantalla 4"
-                className={`navbar-icon ${location.pathname === '/profile' ? 'icon-selected' : ''}`}
-              />
-              <span className={`navbar-text text-c ${location.pathname === '/profile' ? '' : 'text-transparent'}`}>Perfil</span>
-            </div>
-          </button>
+  <div className="navbar-icon-container">
+    <img
+      src={location.pathname.startsWith('/profile') ? screen4_selected : screen4}
+      alt="Pantalla 4"
+      className={`navbar-icon ${location.pathname.startsWith('/profile') ? 'icon-selected' : ''}`}
+    />
+    <span className={`navbar-text text-c ${location.pathname.startsWith('/profile') ? '' : 'text-transparent'}`}>
+      Perfil
+    </span>
+  </div>
+</button>
+
         </div>
       </div>
     </div>

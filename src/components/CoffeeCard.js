@@ -38,32 +38,42 @@ const CoffeeCard = ({ cafe }) => {
     const todaySchedule = schedules[currentDayName];
     const previousDaySchedule = schedules[previousDayName];
 
+    // Verificar si el día anterior tenía un horario extendido (cierre después de medianoche)
     if (previousDaySchedule && !previousDaySchedule.cerrado) {
-      const previousDayOpeningTime = parseTime(previousDaySchedule.apertura);
-      let previousDayClosingTime = parseTime(previousDaySchedule.cierre);
+        const previousDayOpeningTime = parseTime(previousDaySchedule.apertura);
+        let previousDayClosingTime = parseTime(previousDaySchedule.cierre);
 
-      if (previousDayClosingTime < previousDayOpeningTime) {
-        previousDayClosingTime += 1440;
-      }
-      const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes;
+        if (previousDayClosingTime < previousDayOpeningTime) {
+            previousDayClosingTime += 1440; // Extender cierre al siguiente día
+        }
+        const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes;
 
-      if (minutesSincePreviousDayStart < previousDayClosingTime) {
-        return 'abierto';
-      }
+        if (minutesSincePreviousDayStart < previousDayClosingTime) {
+            return 'abierto';
+        }
     }
 
+    // Si no estamos en el horario extendido, verificar el horario del día actual
     if (!todaySchedule || todaySchedule.cerrado) {
-      return 'cerrado';
+        return 'cerrado';
     }
 
     const openingTime = parseTime(todaySchedule.apertura);
-    const closingTime = parseTime(todaySchedule.cierre);
+    let closingTime = parseTime(todaySchedule.cierre);
 
-    if (currentTimeInMinutes >= openingTime && currentTimeInMinutes < closingTime) {
-      return 'abierto';
+    // Ajustar si el cierre ocurre después de medianoche
+    if (closingTime < openingTime) {
+        closingTime += 1440; // Extiende el cierre al día siguiente
     }
+
+    // Verificar si la hora actual está dentro del rango de apertura de hoy
+    if (currentTimeInMinutes >= openingTime && currentTimeInMinutes < closingTime) {
+        return 'abierto';
+    }
+
     return 'cerrado';
-  };
+};
+
 
 
 const parseTime = (timeString) => {

@@ -32,6 +32,35 @@ const AddForm = () => {
   const [terraza, setTerraza] = useState(false);
   const [cafeNotable, setCafeNotable] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
+
+  const [bulkData, setBulkData] = useState('');
+  const [schedulesReference , setSchedulesReference] = useState('');
+  const handleBulkInput = () => {
+    const data = bulkData.split('\t');
+
+    setName(data[0]);
+    setNeigh(data[1]);
+    setAdress(data[3]);
+    setTakeaway(data[4] === '1');
+    setCoworking(data[6] === '1');
+    setTac(data[7] === '1');
+    setVegan(data[8] === '1');
+    setCafeNotable(data[5] === '1');
+    setPet(data[10] === '1');
+    setPatio(data[11] === '1');
+    setTerraza(data[12] === '1');
+    setDescription(data[13]);
+    setInstagram(data[14]);
+    setPicsLinks([data[15], data[16], data[17], data[18], data[19]]);
+    setMenuLink(data[20]);
+    setOutside(data[9].trim() === '1');
+    setSchedulesReference(data[21]);
+
+    //print all data array with each element index and value
+    data.forEach((element, index) => {
+      console.log(index, element);
+    });
+  };
   
   const handleScheduleChange = (day, type, value) => {
     setSchedules((prevSchedules) => ({
@@ -134,6 +163,24 @@ const AddForm = () => {
     <form onSubmit={handleSubmit} className="max-w-lg p-8 mx-auto mb-20 shadow-md text-c2">
       <h2 className="mb-6 text-2xl font-bold text-center text-c2">Agregar Cafetería</h2>
 
+      {/* Campo de entrada para los datos en bloque */}
+        <div className="mb-4">
+        <label className="block text-c2">Pegar datos en bloque</label>
+        <textarea
+          value={bulkData}
+          onChange={(e) => setBulkData(e.target.value)}
+          className="w-full px-3 py-2 text-black bg-blue-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-c2"
+          placeholder="Pega las columnas desde Nombre a Horario"
+        />
+        <button
+          type="button"
+          onClick={handleBulkInput}
+          className="px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-lg"
+        >
+          Rellenar datos
+        </button>
+      </div>
+
       {/* Información básica */}
       <div className="mb-4">
         <label className="block text-c2">Nombre</label>
@@ -214,6 +261,8 @@ const AddForm = () => {
         ))}
       </div>
 
+        {/* texto con la referencia de shcedule */}
+        <label className="block text-c2">{schedulesReference}</label>
       {/* Horarios por día */}
       {Object.keys(schedules).map((day) => (
         <div key={day} className="mb-4">

@@ -468,7 +468,12 @@ useEffect(() => {
     }
 
     const openingTime = parseTime(todaySchedule.apertura); // Apertura de hoy en minutos
-    const closingTime = parseTime(todaySchedule.cierre); // Cierre de hoy en minutos
+    let closingTime = parseTime(todaySchedule.cierre); // Cierre de hoy en minutos
+
+    // Si el cierre es después de medianoche, ajustar el tiempo de cierre
+    if (closingTime < openingTime) {
+        closingTime += 1440; // Ajustar a minutos del día siguiente
+    }
 
     console.log(`Día actual (${currentDayName}): apertura a ${openingTime} min, cierre a ${closingTime} min`);
 
@@ -481,6 +486,7 @@ useEffect(() => {
     console.log("CERRADO (fuera del horario de hoy)");
     return 'CERRADO';
 };
+
 
 // Función para convertir la hora en formato "HHMM" a minutos
 const parseTime = (timeString) => {
