@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getFirestore, collection, query, where, getDocs, updateDoc, doc, arrayRemove } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, updateDoc, doc, arrayRemove, deleteDoc } from 'firebase/firestore';
 
 const EditCoffeeForm = () => {
   const { slug } = useParams();
@@ -19,6 +19,7 @@ const EditCoffeeForm = () => {
     sabado: { apertura: '', cierre: '', cerrado: false },
     domingo: { apertura: '', cierre: '', cerrado: false },
   });
+  const [picsLinks, setPicsLinks] = useState(['', '', '', '', '']);
 
   useEffect(() => {
     const fetchCafeData = async () => {
@@ -26,15 +27,15 @@ const EditCoffeeForm = () => {
         const cafesRef = collection(db, 'cafeterias');
         const q = query(cafesRef, where('slugName', '==', slug));
         const querySnapshot = await getDocs(q);
-  
+
         if (!querySnapshot.empty) {
           const cafeDoc = querySnapshot.docs[0];
           const cafe = cafeDoc.data();
           setCafeData({ ...cafe, id: cafeDoc.id });
           setFormData(cafe);
           setReviews(cafe.reviews || []);
-          
-          // Si los datos de horarios están disponibles, actualizarlos en el estado `schedules`
+          setPicsLinks(cafe.picsLinks || ['', '', '', '', '']); // Configuración de fotos inicial
+
           if (cafe.schedules) {
             setSchedules(cafe.schedules);
           }
@@ -45,10 +46,10 @@ const EditCoffeeForm = () => {
         console.error('Error al obtener los datos de la cafetería:', error);
       }
     };
-  
+
     fetchCafeData();
   }, [slug, db]);
-  
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
@@ -65,6 +66,12 @@ const EditCoffeeForm = () => {
     }));
   };
 
+  const handlePicChange = (index, value) => {
+    const updatedPics = [...picsLinks];
+    updatedPics[index] = value;
+    setPicsLinks(updatedPics);
+  };
+
   const toggleClosedDay = (day) => {
     setSchedules((prevSchedules) => ({
       ...prevSchedules,
@@ -75,14 +82,13 @@ const EditCoffeeForm = () => {
     }));
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (!cafeData?.id) throw new Error('ID de cafetería no encontrado');
       
       const cafeRef = doc(db, 'cafeterias', cafeData.id);
-      await updateDoc(cafeRef, { ...formData, schedules });
+      await updateDoc(cafeRef, { ...formData, schedules, picsLinks });
       alert('Cafetería actualizada exitosamente.');
       navigate(`/cafe/${slug}`);
     } catch (error) {
@@ -109,10 +115,29 @@ const EditCoffeeForm = () => {
     }
   };
 
+  const handleDeleteCafe = async () => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar esta cafetería? Esta acción no se puede deshacer.")) return;
+
+    try {
+      if (!cafeData?.id) throw new Error('ID de cafetería no encontrado');
+
+      const cafeRef = doc(db, 'cafeterias', cafeData.id);
+      await deleteDoc(cafeRef);
+      alert('Cafetería eliminada exitosamente.');
+      navigate('/');
+    } catch (error) {
+      console.error('Error al eliminar la cafetería:', error);
+      alert('Error al eliminar la cafetería. Inténtalo de nuevo.');
+    }
+  };
+
   if (!cafeData) return <p className="text-center text-gray-500">Cargando datos de la cafetería...</p>;
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-lg mt-10">
+      <button type="button" onClick={handleDeleteCafe} className="w-full py-2 px-4 bg-red-600 text-white font-semibold rounded hover:bg-red-700 mt-4">
+        Eliminar Cafetería
+      </button>
       <h1 className="text-2xl font-bold mb-4 text-gray-800">Editar Cafetería</h1>
 
       <label className="block text-gray-700 font-semibold mb-2">Nombre:</label>
@@ -134,6 +159,21 @@ const EditCoffeeForm = () => {
       <label className="block text-gray-700 font-semibold mb-2">Instagram:</label>
       <input type="text" name="instagram" value={formData.instagram || ''} onChange={handleChange}
              className="w-full p-2 mb-4 border border-gray-300 rounded" />
+
+             {/* Campos adicionales para editar enlaces de fotos */}
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Enlaces de Fotos:</h3>
+      {picsLinks.map((pic, index) => (
+        <div key={index} className="mb-4">
+          <label className="block text-gray-700 font-semibold mb-2">Enlace de Foto {index + 1}:</label>
+          <input
+            type="url"
+            value={pic || ''}
+            onChange={(e) => handlePicChange(index, e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder={`URL de la foto ${index + 1}`}
+          />
+        </div>
+      ))}
 
       <label className="block text-gray-700 font-semibold mb-2">Link del Menú:</label>
       <input type="url" name="menuLink" value={formData.menuLink || ''} onChange={handleChange}

@@ -6,7 +6,6 @@ import { setDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
 
 import Top from './Top';
-
 import crearImg from '../img/crearImg.png';
 
 const Register = () => {
@@ -53,7 +52,7 @@ const Register = () => {
 
       // Enviar correo de verificación
       await sendEmailVerification(user);
-      setVerificationEmailSent(true);
+      setVerificationEmailSent(true); // Mostrar mensaje en la pantalla
 
       // Guardar datos adicionales en Firestore
       await setDoc(doc(db, 'users', user.uid), {
@@ -94,21 +93,23 @@ const Register = () => {
     <>
       <Top text={"Registro"} />
       <div className="flex flex-col items-center justify-start min-h-screen">
-        <form onSubmit={handleRegister} className="flex flex-col items-center w-4/5 gap-3 p-4 mt-8 rounded shadow-md sm:w-1/4">
+        <form onSubmit={handleRegister} className="flex flex-col items-center w-4/5 gap-1 p-4 mt-8 rounded sm:w-1/4">
+          <label className='w-full text-left text-c2 text-lg italic font-bold'>Nombre Privado</label>
           <input
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Nombre Completo"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            placeholder="Nombre"
+            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
           />
+          <label className='w-full text-left text-c2 text-lg italic font-bold'>Usuario (no se puede cambiar)</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Nombre de Usuario"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
           />
           <input
@@ -116,7 +117,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
           />
           <input
@@ -124,7 +125,7 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contraseña"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
           />
           <input
@@ -132,7 +133,7 @@ const Register = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirmar Contraseña"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
           />
 
@@ -154,7 +155,7 @@ const Register = () => {
             value={mainNeighborhood}
             onChange={(e) => setMainNeighborhood(e.target.value)}
             placeholder="Barrio Principal"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
           />
 
           <input
@@ -162,7 +163,7 @@ const Register = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Descripción o Estado"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
           />
 
           <div className="mb-2">
@@ -177,7 +178,7 @@ const Register = () => {
             </label>
           </div>
 
-          <div className="flex flex-col mb-2">
+          <div className="flex flex-col mb-4">
             <label className="flex items-center">
               <input type="checkbox" checked={showPet} onChange={(e) => setShowPet(e.target.checked)} />
               <span className="ml-2">Mostrar insignia Pet Friendly</span>

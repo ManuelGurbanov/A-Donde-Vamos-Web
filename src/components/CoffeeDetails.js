@@ -575,7 +575,7 @@ const parseTime = (timeString) => {
           
           <p>{statusMessage}</p>
           
-          <p className='w-full p-0 text-xl text-left'>{coffee.description}</p>
+          <p className='w-full p-0 text-xl text-left'>{coffee.description || "Café de Especialidad."} </p>
 
           {isAdmin && (
         <Link to={`/cafe/${coffee.slugName}/editar`}>
@@ -607,6 +607,7 @@ const parseTime = (timeString) => {
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoMaps}>
                     <img src={maps} className='m-auto w-7'></img>
                   </button>
+
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoIg}>
                     <img src={instagram} className='m-auto'></img>
                   </button>
