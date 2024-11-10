@@ -30,7 +30,7 @@ import addsquare from '../img/add-square.png';
 import Slider from 'react-slick';
 import { useOutletContext } from 'react-router-dom';
 
-import instagram from '../img/instagram.png';
+import instagramimg from '../img/instagram.png';
 import menu from '../img/menu.png';
 import share from '../img/share.webp';
 import arrowdown from '../img/arrow_down.png';
@@ -449,22 +449,17 @@ useEffect(() => {
         }
 
         // Calcular el tiempo que ha pasado desde el inicio del día anterior
-        const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes; // Minutos desde las 00:00 del día anterior hasta la hora actual
-
-        console.log(`Día anterior (${previousDayName}): apertura a ${previousDayOpeningTime} min, cierre a ${previousDayClosingTime} min`);
-        console.log(`Minutos desde inicio del día anterior: ${minutesSincePreviousDayStart}`);
-
-        // Verificar si estamos dentro del horario extendido del día anterior
+        const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes;
         if (minutesSincePreviousDayStart < previousDayClosingTime) {
             console.log("ABIERTO (según horario del día anterior)");
-            return 'ABIERTO';
+            return 'Abierto';
         }
     }
 
     // Paso 2: Si no estamos en el horario extendido, verificar el horario del día actual
     if (!todaySchedule || todaySchedule.cerrado) {
-        console.log("CERRADO (según horario de hoy)");
-        return 'CERRADO';
+     //   console.log("CERRADO (según horario de hoy)");
+        return 'CerradoO';
     }
 
     const openingTime = parseTime(todaySchedule.apertura); // Apertura de hoy en minutos
@@ -475,16 +470,16 @@ useEffect(() => {
         closingTime += 1440; // Ajustar a minutos del día siguiente
     }
 
-    console.log(`Día actual (${currentDayName}): apertura a ${openingTime} min, cierre a ${closingTime} min`);
+   // console.log(`Día actual (${currentDayName}): apertura a ${openingTime} min, cierre a ${closingTime} min`);
 
     // Verificar si la hora actual está dentro del rango de apertura de hoy
     if (currentTimeInMinutes >= openingTime && currentTimeInMinutes < closingTime) {
-        console.log("ABIERTO (según horario de hoy)");
-        return 'ABIERTO';
+        //console.log("ABIERTO (según horario de hoy)");
+        return 'Abierto';
     }
 
-    console.log("CERRADO (fuera del horario de hoy)");
-    return 'CERRADO';
+    //console.log("CERRADO (fuera del horario de hoy)");
+    return 'Cerrado';
 };
 
 
@@ -607,15 +602,15 @@ const parseTime = (timeString) => {
               )}
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
-                  <button className='flex flex-row w-1/3 gap-0 p-2 rounded-2xl bg-b1 h-10' onClick={handleGoMenu}>
-                    <img src={menu} className='mr-1'></img> <p className='text-md text-c'>Menú</p>
+                  <button className={`flex flex-row justify-between w-1/3 sm:w-1/6 gap-0 p-2 rounded-2xl bg-b1 h-10 ${!coffee.menuLink ? 'opacity-50 cursor-not-allowed bg-red-600' : ''}`} onClick={handleGoMenu} disabled={!coffee.menuLink}>
+                    <img src={menu} className='ml-3'></img> <p className='text-md text-c sm:mr-4 mr-2'>Menú</p>
                   </button>
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoMaps}>
                     <img src={maps} className='m-auto w-7'></img>
                   </button>
 
-                  <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoIg}>
-                    <img src={instagram} className='m-auto'></img>
+                  <button className={`w-1/6 h-10 p-2 rounded-2xl bg-b1 ${!coffee.instagram ? 'opacity-50 cursor-not-allowed bg-red-600' : ''}`} onClick={handleGoIg} disabled={!coffee.instagram}>
+                    <img src={instagramimg} className='m-auto'></img>
                   </button>
                   
                   <button className='w-1/6 p-2 rounded-2xl bg-b1 h-10' onClick={handleShareWhatsApp}>
@@ -656,29 +651,36 @@ const parseTime = (timeString) => {
             </button>
           </div>
           {/* Menú desplegable de horarios */}
-          {showSchedule && (
-            <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
-              <h3 className="mb-2 text-lg font-bold">Horarios</h3>
+{/* Menú desplegable de horarios */}
+{showSchedule && (
+  <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
+    <h3 className="mb-2 text-lg font-bold">Horarios</h3>
 
-              {['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'].map((dayName, index) => {
-                const customSchedule = coffee.schedules[dayName];
-                const isClosed = isClosedDay(index); 
-                return (
-                  <div key={dayName} className="mb-2">
-                    <p className="font-semibold">{dayName.charAt(0).toUpperCase() + dayName.slice(1)}</p>
-                    {isClosed || (customSchedule?.apertura == "") ? (
-                      <p className="text-red-600">CERRADO</p>
-                    ) : (
-                      <p>
-                        {formatTime(customSchedule?.apertura || 'Cerrado')} - { 
-                        formatTime(customSchedule?.cierre || 'Cerrado')}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+    {/* Arreglo sin tildes para acceder a los datos */}
+    {['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'].map((dayName, index) => {
+      const customSchedule = coffee.schedules[dayName];
+      const isClosed = isClosedDay(index); 
+
+      // Arreglo con tildes para la visualización
+      const dayNameWithTilde = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][index];
+
+      return (
+        <div key={dayName} className="mb-2">
+          <p className="font-semibold">{dayNameWithTilde}</p>
+          {isClosed || (customSchedule?.apertura === "") ? (
+            <p className="text-red-600">Cerrado</p>
+          ) : (
+            <p>
+              {formatTime(customSchedule?.apertura || 'Cerrado')} - { 
+              formatTime(customSchedule?.cierre || 'Cerrado')}
+            </p>
           )}
+        </div>
+      );
+    })}
+  </div>
+)}
+
 
         
           <div className='flex flex-row items-center gap-1 mb-2'>

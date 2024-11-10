@@ -20,7 +20,7 @@ const EditCoffeeForm = () => {
     domingo: { apertura: '', cierre: '', cerrado: false },
   });
   const [picsLinks, setPicsLinks] = useState(['', '', '', '', '']);
-
+  const [slugName, setSlugName] = useState('');
   useEffect(() => {
     const fetchCafeData = async () => {
       try {
@@ -142,6 +142,10 @@ const EditCoffeeForm = () => {
 
       <label className="block text-gray-700 font-semibold mb-2">Nombre:</label>
       <input type="text" name="name" value={formData.name || ''} onChange={handleChange}
+             className="w-full p-2 mb-4 border border-gray-300 rounded" />
+
+    <label className="block text-gray-700 font-semibold mb-2">Slug:</label>
+      <input type="text" name="slugName" value={formData.slugName || ''} onChange={handleChange}
              className="w-full p-2 mb-4 border border-gray-300 rounded" />
 
       <label className="block text-gray-700 font-semibold mb-2">Dirección:</label>

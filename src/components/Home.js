@@ -162,7 +162,7 @@ const Home = () => {
                 <button
                   key={index}
                   onClick={() => handleFilterChange(neigh)}
-                  className={`p-2 m-2 rounded ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+                  className={`p-1 m-1 rounded text-sm ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
                 >
                   {neigh}
                 </button>
