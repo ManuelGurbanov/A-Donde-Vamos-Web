@@ -603,7 +603,7 @@ const parseTime = (timeString) => {
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
                   <button className={`flex flex-row justify-between w-1/3 sm:w-1/6 gap-0 p-2 rounded-2xl bg-b1 h-10 ${!coffee.menuLink ? 'opacity-50 cursor-not-allowed bg-red-600' : ''}`} onClick={handleGoMenu} disabled={!coffee.menuLink}>
-                    <img src={menu} className='ml-3'></img> <p className='text-md text-c sm:mr-4 mr-2'>Menú</p>
+                    <img src={menu} className='md:ml-1'></img> <p className='text-md text-c sm:mr-4 mr-1'>Menú</p>
                   </button>
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoMaps}>
                     <img src={maps} className='m-auto w-7'></img>
@@ -630,10 +630,6 @@ const parseTime = (timeString) => {
           <p className="text-lg ml-1`">{coffee.adress} - {coffee.neigh} </p>
           </div>
 
-          {/* <div className='flex items-center justify-center w-screen'>
-          <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d13135.94265913935!2d-58.4441481!3d-34.604524!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccbb8f1e5feb5%3A0xee9eec4bc47799ae!2sBoiro%20caf%C3%A9!5e0!3m2!1sen!2sar!4v1729195502811!5m2!1sen!2sar" width="320" height="200" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div> */}
-
           <div className='flex flex-row items-center gap-1 mb-2'>
             <img src={clock} className='w-4 h-4 mt-2'></img>
             
@@ -642,7 +638,6 @@ const parseTime = (timeString) => {
               <span>{checkIfOpen(coffee.schedules)}</span>
             </p>
 
-            {/* Agrega el botón para abrir el menú de horarios */}
             <button 
               onClick={handleScheduleToggle}
               className='mt-2 ml-2 text-xs bg-transparent rounded-md text-c2'
@@ -650,18 +645,14 @@ const parseTime = (timeString) => {
               <img src={arrowdown} className='w-full m-auto'></img>
             </button>
           </div>
-          {/* Menú desplegable de horarios */}
-{/* Menú desplegable de horarios */}
 {showSchedule && (
   <div className="w-full p-4 mt-2 mb-4 bg-white border rounded-lg shadow-lg">
     <h3 className="mb-2 text-lg font-bold">Horarios</h3>
 
-    {/* Arreglo sin tildes para acceder a los datos */}
     {['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'].map((dayName, index) => {
       const customSchedule = coffee.schedules[dayName];
       const isClosed = isClosedDay(index); 
 
-      // Arreglo con tildes para la visualización
       const dayNameWithTilde = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][index];
 
       return (
@@ -689,16 +680,6 @@ const parseTime = (timeString) => {
           </div>
 
           <div className='flex flex-col items-center justify-start w-full mt-4'>
-            {/* <button onClick={handleCopyLink} className="px-4 py-2 mb-2 text-white bg-blue-600 rounded">
-              Copiar Enlace
-            </button> */}
-
-            {/* <button onClick={handleCopyLink} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl">
-              <img src={additem} className='flex-[1]'></img>
-              <p className='text-center text-lg flex-[9]'>
-              Compartir
-              </p>
-            </button> */}
 
             
             <button onClick={handleReviewClick} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl">
@@ -719,7 +700,6 @@ const parseTime = (timeString) => {
     reviews.map((review, index) => (
       <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-col ring-1 ring-c h-56">
         <div className="flex flex-col w-full h-full justify-between">
-          {/* Cabecera con nombre de usuario y calificación */}
           <div className="flex flex-col items-center mb-2 p-1">
           <span 
                   className="mr-2 font-bold text-c2 text-left w-full ml-2 cursor-pointer"
