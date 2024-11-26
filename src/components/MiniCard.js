@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const MiniCard = ({ cafe, slug }) => {
+const MiniCard = ({ cafe, slug, newName }) => {
 
   const truncateName = (name, maxChars) => {
     if (!name) return 'Nombre no disponible';
@@ -17,23 +17,21 @@ const MiniCard = ({ cafe, slug }) => {
       }
     }
   
-    return truncated.trim();  // Quitamos cualquier espacio extra al final
+    return truncated.trim();
   };
 
   return (
     <div className="p-0 w-24">
-      <Link to={`/cafe/${slug}`}>
+      <Link to={`/${slug}`}>
         <div className="overflow-hidden bg-b1 rounded-lg shadow-md flex flex-col items-center">
-          {/* Imagen de la cafetería */}
           <img
             src={cafe.picsLinks?.[0] || 'default-image.jpg'}
             alt={cafe.name}
             className="object-cover w-full h-[150px] rounded-t-lg"
           />
 
-          {/* Nombre de la cafetería */}
           <h2 className="mt-2 text-center text-xs font-bold text-c2 h-9 overflow-hidden text-ellipsis whitespace-nowrap truncate">
-            {truncateName(cafe.name,15) || 'Nombre no disponible'}
+            {cafe.name || newName || 'Nombre no disponible'}
           </h2>
         </div>
       </Link>

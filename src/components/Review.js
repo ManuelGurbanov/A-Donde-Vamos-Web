@@ -8,13 +8,15 @@ import StarRating from './StarRating';
 import screen2 from '../img/screen2.png';
 import fav from '../img/fav.png';
 
-const Review = ({ selectedCafe, onClose }) => {
+import { query, collection, where, getDocs } from 'firebase/firestore';
+
+const Review = ({ selectedCafe: propSelectedCafe, onClose }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { cafes } = useContext(CafeContext);
   const { currentUser } = useAuth(); // Asegúrate de que currentUser tiene los datos del usuario
 
-  const [cafe, setCafe] = useState(selectedCafe); // Se establece el café en el estado
+  const { state } = useLocation();
+  const [cafe, setCafe] = useState(propSelectedCafe || state?.selectedCafe || null);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(0);
   const [hasRated, setHasRated] = useState(false);
@@ -34,11 +36,11 @@ const Review = ({ selectedCafe, onClose }) => {
       fetchUserData(currentUser.uid);
     }
   
-    // Si `selectedCafe` está definido, establecemos la cafetería seleccionada automáticamente
-    if (selectedCafe) {
-      setCafe(selectedCafe);
-    }
-  }, [currentUser, selectedCafe]);
+  if (state?.selectedCafe) {
+    console.log('Cafe seleccionado:', cafe);
+    setCafe(state.selectedCafe);
+  }
+}, [currentUser, propSelectedCafe, state]);
   
 
   // Función para obtener el nombre de usuario desde Firestore
@@ -84,52 +86,70 @@ const Review = ({ selectedCafe, onClose }) => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-
+    console.log('Cafetería: a Reseñar', cafe);
+  
     if (!cafe) {
       setErrorMessage('No hay cafetería seleccionada.');
       return;
     }
-
+  
     if (!currentUser) {
       setErrorMessage('Por favor, inicia sesión para hacer una reseña.');
       return;
     }
 
-    if (!cafe.id) {
+    if (!cafe.slugName) {
       setErrorMessage('Error en los datos de la cafetería.');
+      console.log('Cafetería:', cafe);
       return;
     }
-
+  
+    // Formato de fecha
     const today = new Date();
     const formattedDate = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getFullYear()).slice(2)}`;
-
+  
     const reviewData = {
       userId: currentUser.uid,
-      user: username || 'Anonymous', // Usa el nombre de usuario obtenido
+      user: username || 'Anonymous',
       rating,
       text: review,
       likes: 0,
       dislikes: 0,
       votes: {},
-      date: formattedDate // Aquí se guarda la fecha
+      date: formattedDate
     };
-
+  
     try {
-      const cafeRef = doc(db, 'cafeterias', cafe.id);
-
-      await updateDoc(cafeRef, {
-        reviews: arrayUnion(reviewData),
-        totalRatings: (cafe.totalRatings || 0) + rating,
-        numRatings: (cafe.numRatings || 0) + 1
-      });
-
-      setSuccessMessage('Reseña enviada correctamente.');
-      setHasRated(true);
-      navigate('/'); // Navega a la página principal o donde desees después de enviar la reseña
+      // Buscar la cafetería por el slug
+      const coffeeQuery = query(
+        collection(db, 'cafeterias'),
+        where('slugName', '==', cafe.slugName)
+      );
+      const querySnapshot = await getDocs(coffeeQuery);
+  
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0];
+        const cafeRef = doc(db, 'cafeterias', docSnap.id);
+  
+        // Actualizar las reseñas y las estadísticas de calificación
+        await updateDoc(cafeRef, {
+          reviews: arrayUnion(reviewData),
+          totalRatings: (docSnap.data().totalRatings || 0) + rating,
+          numRatings: (docSnap.data().numRatings || 0) + 1
+        });
+  
+        setSuccessMessage('Reseña enviada correctamente.');
+        setHasRated(true);
+        navigate('/');
+      } else {
+        setErrorMessage('No se encontró la cafetería con ese slug.');
+      }
     } catch (error) {
       setErrorMessage('Error al enviar la reseña.');
+      console.error(error);
     }
   };
+  
 
   const filteredCafes = cafes
     .filter(cafe => {
@@ -210,7 +230,7 @@ const Review = ({ selectedCafe, onClose }) => {
             <hr className='mb-2 border-solid border-1 border-c2'></hr>
 
             <form onSubmit={handleReviewSubmit} className="flex flex-col items-center bg-b1">
-              <section className='flex flex-row items-start justify-around w-full sm:px-6'>
+              <section className='flex flex-row items-start justify-around w-full'>
 
                 <div className='flex flex-col w-full h-full gap-2'>
                   <h3 className=' text-c2'>Calificá</h3>

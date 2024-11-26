@@ -117,7 +117,7 @@ const textColor = status === 'abierto' ? 'text-green-500' : 'text-red-500';
 
   return (
     <div className="p-2">
-      <Link to={`/cafe/${slug}`}>
+      <Link to={`/${slug}`}>
         <div className="relative overflow-hidden bg-white rounded-lg shadow-md h-[143px] sm:h-[200px]">
           <img src={cafe.picsLinks?.[0] || 'default-image.jpg'} alt={cafe.name} className="object-cover w-full h-full" />
   

@@ -36,9 +36,18 @@ import share from '../img/share.webp';
 import arrowdown from '../img/arrow_down.png';
 import {Link} from 'react-router-dom';
 
+import Review from './Review';
+
 const CoffeeDetails = () => {
   const { slug } = useParams();
-  const { handleReviewClick } = useOutletContext();
+  const [showReview, setShowReview] = useState(false);
+  const handleReviewClick = (cafe) => {
+    setSelectedCafe(cafe);
+    setShowReview((prevShowReview) => !prevShowReview);
+  };
+  const handleCloseReview = () => {
+    setShowReview(false);
+  };
   const { id } = useParams();
   const [coffee, setCoffee] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -74,8 +83,7 @@ const CoffeeDetails = () => {
   const { currentUser, favorites } = useContext(AuthContext);
 
   const { setSelectedCafe } = useContext(CafeContext);
-  
-  // Nuevo estado para la verificación de horario
+
   const [statusMessage, setStatusMessage] = useState('');
   const handleGoMenu = () => {
     window.open(coffee.menuLink, '_blank');
@@ -95,13 +103,13 @@ const CoffeeDetails = () => {
   const fetchCoffeeBySlug = async () => {
     const coffeeQuery = query(
       collection(db, 'cafeterias'),
-      where('slugName', '==', slug) // Asegúrate de que slug está definido correctamente
+      where('slugName', '==', slug)
     );
     const querySnapshot = await getDocs(coffeeQuery);
     if (!querySnapshot.empty) {
       const data = querySnapshot.docs[0].data();
       setCoffee(data);
-      setReviews(data.reviews || []); // Guarda las reseñas desde aquí si es necesario
+      setReviews(data.reviews || []);
     }
   };
   fetchCoffeeBySlug();
@@ -120,13 +128,14 @@ useEffect(() => {
         const data = docSnap.data();
 
         if (isMounted) {
-          // Actualiza el estado solo si el componente está montado
-          setCoffee(data);
-          setReviews(data.reviews || []); // Asegúrate de que 'reviews' sea un array
+          const coffeeWithId = { ...data, id: docSnap.id };
+          console.log("COFFEE WITH ID:" + coffeeWithId);
+
+          setCoffee(coffeeWithId);
+          setReviews(data.reviews || []);
           setTotalRatings(data.totalRatings || 0);
           setNumRatings(data.numRatings || 0);
 
-          // Otros campos...
         }
 
         if (currentUser) {
@@ -155,7 +164,7 @@ useEffect(() => {
       console.error('Error fetching coffee details by name:', err);
     } finally {
       if (isMounted) setLoading(false);
-      console.log("LAS REVIEWS SON: ", reviews); // Mueve esto aquí
+      console.log("LAS REVIEWS SON: ", reviews);
     }
   };
 
@@ -186,7 +195,6 @@ useEffect(() => {
     checkFavoriteStatus();
   }, [currentUser, id]);
 
-  // Función para agregar una cafetería favorita
   const addFavorite = async (userId, coffeeId) => {
     try {
       const userRef = doc(db, 'users', userId);
@@ -204,7 +212,6 @@ useEffect(() => {
     }
   };
 
-  // Función para eliminar una cafetería favorita
   const removeFavorite = async (userId, coffeeId) => {
     try {
       const userRef = doc(db, 'users', userId);
@@ -240,25 +247,38 @@ useEffect(() => {
 
   const handleDeleteReview = async (index) => {
     const updatedReviews = [...reviews];
-    const deletedReview = updatedReviews.splice(index, 1)[0];
+    const deletedReview = updatedReviews.splice(index, 1)[0]
     const updatedTotalRatings = totalRatings - deletedReview.rating;
     const updatedNumRatings = numRatings - 1;
   
     try {
-      const docRef = doc(db, 'cafeterias', id);
-      await updateDoc(docRef, {
-        reviews: updatedReviews,
-        totalRatings: updatedTotalRatings,
-        numRatings: updatedNumRatings
-      });
-      setReviews(updatedReviews);
-      setTotalRatings(updatedTotalRatings);
-      setNumRatings(updatedNumRatings);
-      setHasRated(false);
+      const coffeeQuery = query(
+        collection(db, 'cafeterias'),
+        where('slugName', '==', coffee.slugName)
+      );
+      const querySnapshot = await getDocs(coffeeQuery);
+  
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0];
+        const docRef = doc(db, 'cafeterias', docSnap.id);
+        await updateDoc(docRef, {
+          reviews: updatedReviews,
+          totalRatings: updatedTotalRatings,
+          numRatings: updatedNumRatings
+        });
+
+        setReviews(updatedReviews);
+        setTotalRatings(updatedTotalRatings);
+        setNumRatings(updatedNumRatings);
+        setHasRated(false);
+      } else {
+        console.log('No se encontró la cafetería');
+      }
     } catch (err) {
-      console.error('Error deleting review:', err);
+      console.error('Error al eliminar la reseña:', err);
     }
   };
+  
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
@@ -298,16 +318,16 @@ useEffect(() => {
 
   const handleVote = async (index, type) => {
     if (!currentUser) return;
-    
+  
     const updatedReviews = [...reviews];
     const userId = currentUser.uid;
-
+  
     if (type === 'like') {
       if (updatedReviews[index].votes[userId] === 'like') {
         updatedReviews[index].likes -= 1;
         delete updatedReviews[index].votes[userId];
       } else {
-        if (updatedReviews[index].votes[userId] === 'dislike') {
+        if (updatedReviews[index].votes[userId] === 'dislike' && updatedReviews[index].dislikes > 0) {
           updatedReviews[index].dislikes -= 1;
         }
         updatedReviews[index].likes += 1;
@@ -325,15 +345,26 @@ useEffect(() => {
         updatedReviews[index].votes[userId] = 'dislike';
       }
     }
-
+  
     try {
-      const docRef = doc(db, 'cafeterias', id);
-      await updateDoc(docRef, { reviews: updatedReviews });
-      setReviews(updatedReviews);
+      const coffeeQuery = query(
+        collection(db, 'cafeterias'),
+        where('slugName', '==', slug)
+      );
+      const querySnapshot = await getDocs(coffeeQuery);
+  
+      if (!querySnapshot.empty) {
+        const cafeDoc = querySnapshot.docs[0];
+        const cafeRef = doc(db, 'cafeterias', cafeDoc.id);
+        await updateDoc(cafeRef, { reviews: updatedReviews });
+        setReviews(updatedReviews);
+      }
     } catch (err) {
       console.error('Error updating votes:', err);
     }
   };
+  
+  
 
   const starRating = (rating) => {
     const stars = [];
@@ -404,7 +435,7 @@ useEffect(() => {
 
   
   const handleScheduleToggle = () => {
-    setShowSchedule(!showSchedule); // Alterna el menú de horarios
+    setShowSchedule(!showSchedule);
   };
   
   const formatTime = (timeString) => {
@@ -412,7 +443,6 @@ useEffect(() => {
     return `${timeString.slice(0, 2)}:${timeString.slice(2)}`;
   };
   
-  // Función para verificar si el día está en los francos
   const isClosedDay = (day) => {
     const closedDays = coffee.francos?.split(',').map(Number);
     return closedDays?.includes(day);
@@ -426,10 +456,6 @@ useEffect(() => {
     const currentDate = new Date(); // Obtener la fecha y hora actual
     const currentDay = currentDate.getDay(); // Día actual (0 = Domingo, ..., 6 = Sábado)
     const currentTimeInMinutes = currentDate.getHours() * 60 + currentDate.getMinutes(); // Hora actual en minutos
-
-    console.log(`Día actual: ${currentDay}, Hora actual: ${currentDate.getHours()}:${currentDate.getMinutes()}`);
-    console.log(`Tiempo actual en minutos: ${currentTimeInMinutes}`);
-
     const dayNames = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']; // Mapeo de días
     const currentDayName = dayNames[currentDay];
     const previousDayName = dayNames[(currentDay - 1 + 7) % 7]; // Día anterior, ajustado para la rotación semanal
@@ -451,7 +477,6 @@ useEffect(() => {
         // Calcular el tiempo que ha pasado desde el inicio del día anterior
         const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes;
         if (minutesSincePreviousDayStart < previousDayClosingTime) {
-            console.log("ABIERTO (según horario del día anterior)");
             return 'Abierto';
         }
     }
@@ -515,6 +540,11 @@ const parseTime = (timeString) => {
 
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
+            {showReview && (
+        <div className="review-popup">
+          <Review onClose={handleCloseReview} selectedCafe={coffee} />
+        </div>
+      )}
     <div className="w-screen text-c2 sm:w-1/2">
       {coffee ? (
         <>
@@ -603,7 +633,7 @@ const parseTime = (timeString) => {
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
                   <button className={`flex flex-row justify-between w-1/3 sm:w-1/6 gap-0 p-2 rounded-2xl bg-b1 h-10 ${!coffee.menuLink ? 'opacity-50 cursor-not-allowed bg-red-600' : ''}`} onClick={handleGoMenu} disabled={!coffee.menuLink}>
-                    <img src={menu} className='md:ml-1'></img> <p className='text-md text-c sm:mr-4 mr-1'>Menú</p>
+                    <img src={menu} className='md:ml-1 sm:mr-2'></img> <p className='text-md text-c sm:mr-4 mr-1'>Menú</p>
                   </button>
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoMaps}>
                     <img src={maps} className='m-auto w-7'></img>
@@ -682,10 +712,13 @@ const parseTime = (timeString) => {
           <div className='flex flex-col items-center justify-start w-full mt-4'>
 
             
-            <button onClick={handleReviewClick} className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl">
-              <img src={addsquare} className='flex-[1]'></img>
-              <p className='text-center text-lg flex-[9]'>
-              Agregar una reseña
+          <button
+              onClick={() => handleReviewClick(coffee)}
+              className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl"
+            >
+              <img src={addsquare} className="flex-[1]" alt="Add review" />
+              <p className="text-center text-lg flex-[9]">
+                Agregar una reseña
               </p>
             </button>
 

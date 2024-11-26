@@ -23,8 +23,8 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/cafe/:slug" element={<CoffeeDetails />} />
-              <Route path="/cafe/:slug/editar" element={<EditCoffeeForm />} />
+              <Route path="/:slug" element={<CoffeeDetails />} />
+              <Route path="/:slug/editar" element={<EditCoffeeForm />} />
               <Route path="/profile/:uid" element={<Login />} />
               <Route path="/profile" element={<ProfileRedirect />} />
 

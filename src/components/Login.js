@@ -123,16 +123,20 @@ const Login = () => {
 
   const fetchUserReviews = async (uid) => {
     const reviewsByUser = [];
+    console.log(cafes);
+
     cafes.forEach(cafe => {
       if (cafe.reviews && Array.isArray(cafe.reviews)) {
         const userCafeReviews = cafe.reviews.filter(review => review.userId === uid);
         if (userCafeReviews.length > 0) {
           reviewsByUser.push({
             cafeId: cafe.slugName,
-            cafeName: cafe.name,
+            newName: cafe.name,
             picsLinks: cafe.picsLinks,
             reviews: userCafeReviews,
+
           });
+          console.log(reviewsByUser);
         }
       }
     });
@@ -197,15 +201,15 @@ const Login = () => {
                 <img
                   src={auth.currentUser.photoURL}
                   alt="Foto de perfil"
-                  className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2"
+                  className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover"
                 />
               ) : (
                 userData?.profilePicture && (
                   <img
-                    src={userData.profilePicture}
-                    alt="Foto de perfil"
-                    className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2"
-                  />
+                  src={userData.profilePicture}
+                  alt="Foto de perfil"
+                  className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover"
+                />
                 )
               )}
 
@@ -239,7 +243,7 @@ const Login = () => {
                               <img
                                 src={userData.profilePicture}
                                 alt="Foto de perfil"
-                                className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 mt-4"
+                                className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 mt-4 object-cover"
                               />
                             </>}
           
@@ -294,9 +298,11 @@ const Login = () => {
                   {userReviews.map(cafe => (
                     <div key={cafe.cafeId} className="mb-4">
                       {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
+                        console.log("Cafe es: " + cafe.newName),
+
                         <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
                           <div className='w-24'>
-                            <MiniCard cafe={{ id: cafe.cafeId, name: cafe.cafeName, picsLinks: cafe.picsLinks }} />
+                          <MiniCard key={cafe.cafeId} cafe={cafe} slug={cafe.cafeId} newName={cafe.newName} />
                           </div>
                           <div>
                             <div className="flex items-center mb-2 flex-col p-1 w-full">
