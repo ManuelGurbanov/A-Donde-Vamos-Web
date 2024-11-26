@@ -153,7 +153,7 @@ const Home = () => {
 {!loading && (
   <div>
     <div className='m-auto sm:w-3/4'>
-      {showWelcome && (
+      {/* {showWelcome && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/4">
             <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Bienvenido, elegí tus barrios de preferencia:</h1>
@@ -178,7 +178,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
             <div className="p-4">
               <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
