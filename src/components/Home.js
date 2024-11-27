@@ -155,7 +155,7 @@ const Home = () => {
 {!loading && (
   <div>
     <div className='m-auto sm:w-3/4'>
-    <AdSenseComponent/>
+    {/* <AdSenseComponent/> */}
       {/* {showWelcome && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/4">
