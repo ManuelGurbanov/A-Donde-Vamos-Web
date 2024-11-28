@@ -73,9 +73,6 @@ const Home = () => {
   const sortedByDate = [...cafes].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
   const newCafes = sortedByDate.slice(0, 5);
 
-  const nearbyCafes = selectedNeighs.length > 0
-    ? cafes.filter(cafe => selectedNeighs.includes(cafe.neigh))
-    : cafes;
 
   const sliderSettings = {
     arrows: true,
@@ -98,6 +95,30 @@ const Home = () => {
     pauseOnHover: false,
     beforeChange: (current, next) => setCurrentSlidePopular(next),
   };
+
+// Generar listas únicas para cada slider
+const uniquePopularCafes = sortedByRatings.slice(0, 5);
+
+const remainingCafesAfterPopular = cafes.filter(
+  (cafe) => !uniquePopularCafes.includes(cafe)
+);
+
+const uniqueFavoritesCafes = remainingCafesAfterPopular.slice(0, 5);
+
+const remainingCafesAfterFavorites = remainingCafesAfterPopular.filter(
+  (cafe) => !uniqueFavoritesCafes.includes(cafe)
+);
+
+const uniqueNewCafes = remainingCafesAfterFavorites.slice(0, 5);
+
+const remainingCafesAfterNew = remainingCafesAfterFavorites.filter(
+  (cafe) => !uniqueNewCafes.includes(cafe)
+);
+
+const nearbyCafes = selectedNeighs.length > 0
+  ? remainingCafesAfterNew.filter(cafe => selectedNeighs.includes(cafe.neigh))
+  : remainingCafesAfterNew;
+
 
   const handleNext = (cafesArray, setCurrentSlide, currentSlide) => {
     setCurrentSlide((prevSlide) => (prevSlide + 1) % cafesArray.length);
@@ -191,7 +212,7 @@ const Home = () => {
                     renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
                   ) : (
                     <Slider {...sliderSettingsMove}>
-                      {popularCafes.map((cafe, index) => (
+                      {uniquePopularCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
                     </Slider>
@@ -201,10 +222,10 @@ const Home = () => {
                 <div>
                   <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Favoritas</h2>
                   {isLargeScreen ? (
-                    renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
+                    renderCarousel(uniqueFavoritesCafes, currentSlidePopular, setCurrentSlidePopular)
                   ) : (
                     <Slider {...sliderSettings}>
-                      {cafes.map((cafe, index) => (
+                      {uniqueFavoritesCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
                     </Slider>
@@ -230,7 +251,7 @@ const Home = () => {
                     renderCarousel(newCafes, currentSlideNew, setCurrentSlideNew)
                   ) : (
                     <Slider {...sliderSettings}>
-                      {newCafes.map((cafe, index) => (
+                      {uniqueNewCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
                     </Slider>
