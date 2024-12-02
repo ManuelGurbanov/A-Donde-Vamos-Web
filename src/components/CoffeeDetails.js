@@ -484,7 +484,7 @@ useEffect(() => {
     // Paso 2: Si no estamos en el horario extendido, verificar el horario del día actual
     if (!todaySchedule || todaySchedule.cerrado) {
      //   console.log("CERRADO (según horario de hoy)");
-        return 'CerradoO';
+        return 'Cerrado';
     }
 
     const openingTime = parseTime(todaySchedule.apertura); // Apertura de hoy en minutos

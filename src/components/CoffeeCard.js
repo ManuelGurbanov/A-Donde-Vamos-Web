@@ -49,13 +49,13 @@ const CoffeeCard = ({ cafe }) => {
         const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes;
 
         if (minutesSincePreviousDayStart < previousDayClosingTime) {
-            return 'abierto';
+            return 'Abierto';
         }
     }
 
     // Si no estamos en el horario extendido, verificar el horario del día actual
     if (!todaySchedule || todaySchedule.cerrado) {
-        return 'cerrado';
+        return 'Cerrado';
     }
 
     const openingTime = parseTime(todaySchedule.apertura);
@@ -68,10 +68,10 @@ const CoffeeCard = ({ cafe }) => {
 
     // Verificar si la hora actual está dentro del rango de apertura de hoy
     if (currentTimeInMinutes >= openingTime && currentTimeInMinutes < closingTime) {
-        return 'abierto';
+        return 'Abierto';
     }
 
-    return 'cerrado';
+    return 'Cerrado';
 };
 
 
@@ -126,12 +126,12 @@ const textColor = status === 'abierto' ? 'text-green-500' : 'text-red-500';
             <div className="relative w-full h-full">
               <h2 className="absolute top-[-5px] left-2 text-xl font-bold text-c2 text-nowrap text-ellipsis">{cafe.name || 'Nombre no disponible'}</h2>
   
-              <p className="absolute text-xs left-2 top-5 font-regular text-c2">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
+              <p className="absolute text-xs left-2 top-5 font-regular text-c2 text-nowrap overflow-hidden">{cafe.adress || 'Dirección no disponible'}, {cafe.neigh || 'Barrio no disponible'}</p>
   
               <div className="absolute flex items-center mt-1 space-x-1 left-2 top-8">
                 {starRating(calculateAverageRating())}
                 <span className="text-[8px] font-medium text-c2">
-                  {typeof cafe.numRatings === 'undefined'
+                  {typeof (cafe.numRatings === 'undefined' || cafe.numRatings < 0)
                     ? "Sin valoraciones"
                     : cafe.numRatings === 1
                     ? `${cafe.numRatings} valoración`
@@ -140,7 +140,7 @@ const textColor = status === 'abierto' ? 'text-green-500' : 'text-red-500';
               </div>
 
 
-              <p className={`absolute top-12 left-2 text-xs ${checkIfOpen(cafe.schedules) === 'abierto' ? 'text-c2' : 'text-red-500'} font-bold italic`}>
+              <p className={`absolute top-12 left-2 text-xs ${checkIfOpen(cafe.schedules) === 'Abierto' ? 'text-c2' : 'text-red-500'} font-bold italic`}>
                 {checkIfOpen(cafe.schedules)}
               </p>
 

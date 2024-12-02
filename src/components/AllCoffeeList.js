@@ -176,13 +176,62 @@ const AllCoffeeList = () => {
               <div className="grid grid-cols-3 justify-center font-semibold gap-3 text-b1">
                 <button
                   onClick={() => toggleFilter('cafeNotable')}
-                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 ${filters.cafeNotable ? 'bg-c2' : 'bg-gray-200 '}`}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.cafeNotable ? 'bg-c2' : 'bg-gray-200 '}`}
                 >
                   Café Notable
                 </button>
+                <button
+                  onClick={() => toggleFilter('coworking')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.coworking ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Coworking
+                </button>
+                <button
+                  onClick={() => toggleFilter('outside')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.outside ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Mesas Afuera
+                </button>
+                <button
+                  onClick={() => toggleFilter('patio')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.patio ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Patio
+                </button>
+                <button
+                  onClick={() => toggleFilter('pet')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.pet ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Pet Friendly
+                </button>
+                <button
+                  onClick={() => toggleFilter('terraza')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.terraza ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Terraza
+                </button>
+                <button
+                  onClick={() => toggleFilter('vegan')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.vegan ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Opciones Veganas
+                </button>
+
+                <button
+                  onClick={() => toggleFilter('tac')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-4 flex justify-center items-center ${filters.tac ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Opciones sin Tac
+                </button>
+                <button
+                  onClick={() => toggleFilter('takeaway')}
+                  className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-2 flex justify-center items-center ${filters.takeaway ? 'bg-c2' : 'bg-gray-200 '}`}
+                >
+                  Take Away
+                </button>
               </div>
-            </div>
-            <div className="flex flex-col items-center justify-center w-full p-4">
+              </div>
+              <div className="flex flex-col items-center justify-center w-full p-4">
               <button
                 onClick={clearFilters}
                 className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
@@ -196,8 +245,9 @@ const AllCoffeeList = () => {
                 Guardar
               </button>
             </div>
+            </div>
+
           </div>
-        </div>
       )}
     </>
   );

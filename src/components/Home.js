@@ -175,7 +175,7 @@ const nearbyCafes = selectedNeighs.length > 0
 {/* Mostrar el contenido solo si loading es false y fadeOut es false */}
 {!loading && (
   <div>
-    <div className='m-auto sm:w-3/4'>
+    <div className='m-auto sm:w-screen sm:p-6'>
     {/* <AdSenseComponent/> */}
       {/* {showWelcome && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
