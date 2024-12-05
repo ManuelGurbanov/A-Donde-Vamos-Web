@@ -33,16 +33,6 @@ const Notifications = () => {
     fetchNotifications();
   }, [currentUser]);
 
-  if (!currentUser) {
-    return (
-      <div className="flex flex-col items-center justify-start w-full">
-        <Top text={"Notificaciones"} />
-        <o className="mt-4 text-lg text-center text-black">Inicia Sesión para ver tus notificaciones.</o>
-        {/* <Notif tittle="Cargando..." subt="Espera un momento mientras cargamos tus notificaciones." /> */}
-      </div>
-    );
-  }
-
   return (
     <>
       <Top text={"Notificaciones"} />
@@ -52,11 +42,11 @@ const Notifications = () => {
             <Notif 
               key={index}
               tittle={notif.message}
-              subt={notif.link ? <a href={notif.link} className="underline text-c">{notif.submessage}</a> : ''}
+              subt={notif.link !== "" ? <a href={notif.link} className="underline text-c">{notif.submessage}</a> : <p href={notif.link} className="text-c">{notif.submessage}</p>}
             />
           ))
         ) : (
-          <h1 c1assName="text-xl text-center text-gray-500">No tienes notificaciones</h1>
+          <h1 c1assName="text-3xl text-center text-c">No tienes notificaciones</h1>
         )}
       </div>
     </>

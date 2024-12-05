@@ -222,7 +222,7 @@ const nearbyCafes = selectedNeighs.length > 0
                 <div>
                   <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Favoritas</h2>
                   {isLargeScreen ? (
-                    renderCarousel(uniqueFavoritesCafes, currentSlidePopular, setCurrentSlidePopular)
+                    renderCarousel(uniqueFavoritesCafes, currentSlideFavorites, setCurrentSlideFavorites)
                   ) : (
                     <Slider {...sliderSettings}>
                       {uniqueFavoritesCafes.map((cafe, index) => (
