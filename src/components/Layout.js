@@ -1,7 +1,7 @@
 // Layout.js
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { auth } from '../firebase/firebase'; // Asegúrate de importar auth de Firebase
+import { auth } from '../firebase/firebase'; 
 import { onAuthStateChanged } from 'firebase/auth';
 import screen1 from '../img/screen1.webp';
 import screen2 from '../img/screen2.png';
@@ -16,6 +16,7 @@ import navBg from '../img/nav_bg.png';
 import addsquare from '../img/add-square-white.png';
 import Review from './Review';
 import LoginForm from './LoginForm';
+import Top from './Top'; // Importar el componente Top
 
 const Layout = () => {
   const navigate = useNavigate();
@@ -23,6 +24,29 @@ const Layout = () => {
   const [showReview, setShowReview] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  const [topText, setTopText] = useState(''); // Estado para el texto de Top
+
+  // Cambiar el texto de Top según la ruta
+  useEffect(() => {
+    switch (location.pathname) {
+      case '/home':
+        setTopText('¿A Dónde Vamos?');
+        break;
+      case '/coffee-all':
+        setTopText('Cafeterías');
+        break;
+      case '/notifications':
+        setTopText('Notificaciones');
+        break;
+      case '/profile':
+        setTopText('Perfil');
+        break;
+      default:
+        setTopText(''); // En caso de que no haya un texto asignado
+        break;
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -65,6 +89,9 @@ const Layout = () => {
 
   return (
     <div className="layout-container">
+      {/* Mostrar el Top con el texto correspondiente */}
+      <Top text={topText} />
+
       <img className='fixed bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
 
       <div className="overflow-y-scroll content-container">
@@ -85,7 +112,7 @@ const Layout = () => {
               onClose={handleCloseLoginForm} 
               onSuccessfulLogin={handleSuccessfulLogin} 
               onSuccessfulRegister={handleSuccessfulRegister} 
-            /> {/* Llamamos el formulario */}
+            />
           </div>
         </div>
       )}
@@ -132,18 +159,17 @@ const Layout = () => {
             </div>
           </Link>
           <button onClick={handleLoginClick} className="navbar-link">
-  <div className="navbar-icon-container">
-    <img
-      src={location.pathname.startsWith('/profile') ? screen4_selected : screen4}
-      alt="Pantalla 4"
-      className={`navbar-icon ${location.pathname.startsWith('/profile') ? 'icon-selected' : ''}`}
-    />
-    <span className={`navbar-text text-c ${location.pathname.startsWith('/profile') ? '' : 'text-transparent'}`}>
-      Perfil
-    </span>
-  </div>
-</button>
-
+            <div className="navbar-icon-container">
+              <img
+                src={location.pathname.startsWith('/profile') ? screen4_selected : screen4}
+                alt="Pantalla 4"
+                className={`navbar-icon ${location.pathname.startsWith('/profile') ? 'icon-selected' : ''}`}
+              />
+              <span className={`navbar-text text-c ${location.pathname.startsWith('/profile') ? '' : 'text-transparent'}`}>
+                Perfil
+              </span>
+            </div>
+          </button>
         </div>
       </div>
     </div>

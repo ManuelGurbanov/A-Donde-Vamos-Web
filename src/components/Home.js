@@ -27,26 +27,29 @@ const Home = () => {
   const [currentSlideNew, setCurrentSlideNew] = useState(0);
 
   useEffect(() => {
-    const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
-    if (storedNeighs && storedNeighs.length > 0) {
-      setSelectedNeighs(storedNeighs);
-    } else {
-      setShowWelcome(true);
+    if (!cafes || cafes.length === 0) {
+      const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
+      if (storedNeighs && storedNeighs.length > 0) {
+        setSelectedNeighs(storedNeighs);
+      } else {
+        setShowWelcome(true);
+      }
     }
-  }, []);
-
+  }, [cafes]);
+  
   useEffect(() => {
-    if (loading) {
+    if (loading && (!cafes || cafes.length === 0)) {
       setFadeOut(false);
-    } else {
+    } else if (!loading) {
       setFadeOut(true);
       const fadeOutTimeout = setTimeout(() => {
         setFadeOut(false);
       }, 1000);
-
+  
       return () => clearTimeout(fadeOutTimeout);
     }
-  }, [loading]);
+  }, [loading, cafes]);
+  
 
   const handleSavePreferences = () => {
     localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
@@ -94,7 +97,6 @@ const Home = () => {
     beforeChange: (current, next) => setCurrentSlidePopular(next),
   };
 
-// Generar listas únicas para cada slider
 const uniquePopularCafes = sortedByRatings.slice(0, 5);
 
 const remainingCafesAfterPopular = cafes.filter(
@@ -159,7 +161,6 @@ const nearbyCafes = selectedNeighs.length > 0
 
   return (
     <>
-      <Top />
 
       {/* Controla la visibilidad y eventos del loadingDiv */}
       <div 

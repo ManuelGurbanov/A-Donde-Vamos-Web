@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { auth, provider, db } from '../firebase/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import Top from './Top';
 import { CafeContext } from './CafeContext';
 import { doc, getDoc } from 'firebase/firestore'; 
 import MiniCard from './MiniCard';
@@ -194,7 +193,6 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center mb-6">
           {(state === 0 || state === 1) && (auth.currentUser && auth.currentUser.uid === uid) && (
             <>
-            <Top text={"Mi Perfil"} />
             <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
             <div className="w-full flex items-center">
               {auth.currentUser && auth.currentUser.uid === uid ? (
@@ -239,7 +237,6 @@ const Login = () => {
           {state === 1 && (auth.currentUser.uid !== uid) && (
                             userData?.profilePicture) && 
                             <>
-                              <Top text={userData.username} />
                               <img
                                 src={userData.profilePicture}
                                 alt="Foto de perfil"
@@ -365,7 +362,6 @@ const Login = () => {
 
             {state === 2 && (
               <>
-              <Top text={"Sobre la App"} />
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
                 <p className='text-c text-sm font-semibold italic sm:text-lg'>Esta app fue creada con el fin de ayudar a los amantes del café a encontrar lugares nuevos para disfrutar de una buena taza de café. Si tenés alguna sugerencia o comentario, no dudes en contactarnos.</p>
               </div>
@@ -374,7 +370,6 @@ const Login = () => {
 
             {state === 3 && (
               <>
-              <Top text={"Colaborá"} />
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
 
                 <p className='text-c text-sm font-semibold italic sm:text-lg'>Si te gustaría colaborar con nosotros, no dudes en contactarnos. Estamos buscando gente que nos ayude a mejorar la app y a agregar nuevas funcionalidades.</p>
@@ -384,7 +379,6 @@ const Login = () => {
 
             {state === 4 && (
               <>
-              <Top text={"Ajustes"} />
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
                 <EditProfile/>
               </div>

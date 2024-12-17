@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
-import { auth } from '../firebase/firebase'; // Asegúrate de que esta ruta es correcta
+import { auth } from '../firebase/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 export const CafeContext = createContext();
@@ -14,32 +14,32 @@ export const CafeProvider = ({ children }) => {
 
   const [selectedCafe, setSelectedCafe] = useState(null);
   const [selectedNeighs, setSelectedNeighs] = useState([]);
-
-  // Estado para la autenticación
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [cafesLoaded, setCafesLoaded] = useState(false);
 
-  // Estado para verificar si las cafeterías ya fueron cargadas
-  const [cafesLoaded, setCafesLoaded] = useState(false); // nuevo estado
-
-  // Fetch cafeterías from Firebase
   useEffect(() => {
     const fetchCafes = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'cafeterias'));
-        const cafesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setCafes(cafesList);
-        if (cafesList.length > 0) {
+      if (!cafesLoaded) {
+        try {
+          console.log("LLAMANDO A BASE DE DATOS");
+          const querySnapshot = await getDocs(collection(db, 'cafeterias'));
+          const cafesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setCafes(cafesList);
           setLoading(false);
           setCafesLoaded(true);
+        } catch (err) {
+          setError(err.message);
+          setLoading(false);
         }
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
+      } else {
+        console.log("NO HACE FALTA LLAMAR");
       }
     };
-
+  
     fetchCafes();
-  }, []);
+  }, [cafesLoaded]);
+  
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -54,7 +54,9 @@ export const CafeProvider = ({ children }) => {
     if (storedNeighs && storedNeighs.length > 0) {
       setSelectedNeighs(storedNeighs);
     }
-  }, []);
+
+    localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
+  }, [selectedNeighs]);
 
   const agregarAFavoritos = (cafe) => {
     setFavoritos((prevFavoritos) => {
@@ -76,59 +78,52 @@ export const CafeProvider = ({ children }) => {
     });
   };
 
-
   const checkIfOpen = (cafe) => {
     const now = new Date();
     const currentDay = now.toLocaleString('es-ES', { weekday: 'long' }).toLowerCase();
-    const currentTime = now.getHours() * 60 + now.getMinutes(); 
+    const currentTime = now.getHours() * 60 + now.getMinutes();
 
-    const schedule = cafe.schedules.dias;
+    const schedule = cafe.schedules?.dias;
     if (!schedule || !schedule[currentDay]) {
-        return { open: false, message: "Cerrado - Sin horario definido." };
+      return { open: false, message: "Cerrado - Sin horario definido." };
     }
 
     const { apertura, cierre } = schedule[currentDay];
-
-    const openingTime = (apertura.getHours() * 60) + apertura.getMinutes();
-    const closingTime = (cierre.getHours() * 60) + cierre.getMinutes();
-
+    const openingTime = apertura.getHours() * 60 + apertura.getMinutes();
+    const closingTime = cierre.getHours() * 60 + cierre.getMinutes();
     const isClosedOvernight = closingTime < openingTime;
 
-    const isOpen = (currentTime >= openingTime && (currentTime < closingTime || isClosedOvernight));
+    const isOpen = currentTime >= openingTime && (currentTime < closingTime || isClosedOvernight);
 
     if (!isOpen) {
-        for (let i = 1; i <= 7; i++) {
-            const nextDayIndex = (now.getDay() + i) % 7;
-            const nextDay = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][nextDayIndex];
+      for (let i = 1; i <= 7; i++) {
+        const nextDayIndex = (now.getDay() + i) % 7;
+        const nextDay = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][nextDayIndex];
 
-            if (schedule[nextDay] && schedule[nextDay].apertura) {
-                const nextOpeningTime = (schedule[nextDay].apertura.getHours() * 60) + schedule[nextDay].apertura.getMinutes();
-                const nextOpeningMessage = `${nextDay.charAt(0).toUpperCase() + nextDay.slice(1)} a las ${schedule[nextDay].apertura.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                return { open: false, message: `Cerrado - Abre ${nextOpeningMessage}` };
-            }
+        if (schedule[nextDay]?.apertura) {
+          const nextOpeningTime = schedule[nextDay].apertura.getHours() * 60 + schedule[nextDay].apertura.getMinutes();
+          const nextOpeningMessage = `${nextDay.charAt(0).toUpperCase() + nextDay.slice(1)} a las ${schedule[nextDay].apertura.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+          return { open: false, message: `Cerrado - Abre ${nextOpeningMessage}` };
         }
+      }
     }
 
     return { open: true, message: "Abierto" };
-};
-
-  useEffect(() => {
-    localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
-  }, [selectedNeighs]);
+  };
 
   return (
-    <CafeContext.Provider value={{ 
-      cafes, 
-      loading, 
-      error, 
-      favoritos, 
-      agregarAFavoritos, 
-      selectedCafe, 
-      setSelectedCafe, 
-      selectedNeighs, 
+    <CafeContext.Provider value={{
+      cafes,
+      loading,
+      error,
+      favoritos,
+      agregarAFavoritos,
+      selectedCafe,
+      setSelectedCafe,
+      selectedNeighs,
       handleNeighSelection,
       isAuthenticated,
-      checkIfOpen 
+      checkIfOpen
     }}>
       {children}
     </CafeContext.Provider>

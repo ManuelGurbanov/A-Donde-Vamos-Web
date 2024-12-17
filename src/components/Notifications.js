@@ -35,7 +35,6 @@ const Notifications = () => {
 
   return (
     <>
-      <Top text={"Notificaciones"} />
       <div className="flex flex-col items-center justify-start w-full sm:w-1/2 sm:m-auto">
         {notifications.length > 0 ? (
           notifications.map((notif, index) => (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { CafeContext } from './CafeContext';
 import CoffeeCard from './CoffeeCard';
-import Top from './Top';
+//import Top from './Top';
 import screen2 from '../img/screen2.png';
 import filtersIcon from '../img/filters.webp';
 
@@ -111,7 +111,7 @@ const AllCoffeeList = () => {
 
   return (
     <>
-      <Top />
+      {/* <Top /> */}
       <div className="p-4 m-auto sm:w-3/4">
         <div className="flex mb-1 w-full justify-between font-bold text-c">
           <button
