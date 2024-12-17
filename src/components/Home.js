@@ -36,15 +36,13 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    // Cuando loading cambia, maneja fadeOut
     if (loading) {
-      setFadeOut(false); // No hacer fadeOut cuando se está cargando
+      setFadeOut(false);
     } else {
-      // Si ha terminado de cargar, iniciamos fadeOut
       setFadeOut(true);
       const fadeOutTimeout = setTimeout(() => {
-        setFadeOut(false); // Reiniciar fadeOut para futuras cargas
-      }, 1000); // Duración del fade-out
+        setFadeOut(false);
+      }, 1000);
 
       return () => clearTimeout(fadeOutTimeout);
     }
@@ -63,7 +61,7 @@ const Home = () => {
     }
   };
 
-  const uniqueNeighs = [...new Set(cafes.map(cafe => cafe.neigh))];
+  const uniqueNeighs = [...new Set(cafes.map(cafe => cafe.neigh))].sort((a, b) => a.localeCompare(b));
 
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
@@ -177,32 +175,37 @@ const nearbyCafes = selectedNeighs.length > 0
   <div>
     <div className='m-auto sm:w-screen sm:p-6'>
     {/* <AdSenseComponent/> */}
-      {/* {showWelcome && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/4">
-            <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Bienvenido, elegí tus barrios de preferencia:</h1>
-            <div className="text-center">
-              {uniqueNeighs.map((neigh, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleFilterChange(neigh)}
-                  className={`p-1 m-1 rounded text-sm ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
-                >
-                  {neigh}
-                </button>
-              ))}
-            </div>
-            <div className='flex flex-col items-center justify-center w-full p-4'>
-              <button
-                onClick={() => handleSavePreferences()}
-                className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
+    {showWelcome && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/2">
+      <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
+        Bienvenido, elegí tus barrios de preferencia:
+      </h1>
+      <div className="overflow-y-scroll">
+        <div className="grid grid-cols-6 gap-2 w-max">
+          {uniqueNeighs.map((neigh, index) => (
+            <button
+              key={index}
+              onClick={() => handleFilterChange(neigh)}
+              className={`p-1 m-1 rounded text-sm ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+            >
+              {neigh}
+            </button>
+          ))}
         </div>
-      )} */}
+      </div>
+      <div className="flex flex-col items-center justify-center w-full p-4">
+        <button
+          onClick={() => handleSavePreferences()}
+          className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
             <div className="p-4">
               <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
@@ -233,7 +236,7 @@ const nearbyCafes = selectedNeighs.length > 0
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cafeterías Cercanas</h2>
+                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cafeterías Cerca Tuyo</h2>
                   {isLargeScreen ? (
                     renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)
                   ) : (

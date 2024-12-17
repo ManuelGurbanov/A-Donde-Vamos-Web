@@ -61,16 +61,24 @@ const LoginForm = ({ onClose, onSuccessfulLogin }) => {
   };
 
   const handleGoRegister = () => {
+    onClose();
     navigate('/register'); // Redirige al formulario de registro
   };
 
   return (
     <>
-    <div className='w-screen h-screen z-30 bg-black absolute top-0 bottom-0 bg-opacity-70'></div>
-    <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 w-full max-w-lg mx-auto shadow-lg z-50">
-    <button onClick={onClose} className="mt-4 text-right text-red-600 font-extrabold absolute right-7 top-0">
-        Ahora no
+    <button 
+        onClick={onClose} 
+        className="absolute top-4 left-4 text-red-600 font-extrabold z-40">
+        <img
+        className="w-12 h-12"
+        src="/exit.webp">
+        </img>
     </button>
+
+    <div className='w-screen h-screen z-30 bg-black absolute top-0 bottom-0 bg-opacity-70' onClick={onClose}></div>
+    <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 w-full max-w-lg mx-auto shadow-lg z-50">
+
       <div className="mb-4 text-left">
         <h2 className="text-2xl font-bold text-c mb-2">Iniciar sesión</h2>
       </div>

@@ -26,39 +26,45 @@ const RatingDistribution = ({ reviews }) => {
   const starRating = (rating) => {
     const stars = [];
     const totalStars = 5;
-    
+
     const fullStarsCount = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
     const emptyStarsCount = totalStars - fullStarsCount - (hasHalfStar ? 1 : 0);
-    
+
     for (let i = 0; i < fullStarsCount; i++) {
       stars.push(<img key={`full-${i}`} src={fullStarDark} alt="Full Star" className="inline-block w-3 h-3" />);
     }
-    
+
     if (hasHalfStar) {
       stars.push(<img key="half" src={halfStarDark} alt="Half Star" className="inline-block w-3 h-3" />);
     }
-    
+
     for (let i = 0; i < emptyStarsCount; i++) {
       stars.push(<img key={`empty-${i}`} src={emptyStarDark} alt="Empty Star" className="inline-block w-3 h-3" />);
     }
-    
+
     return stars;
   };
-  
-  const calculateAverageRating = () => {
-    if (averageRating === 0) return 0;
-    return (averageRating / totalRatings).toFixed(1);
+
+  const determineRank = (reviewsCount) => {
+    if (reviewsCount < 10) return { rank: 'Aficionado ☕', next: 10 - reviewsCount };
+    if (reviewsCount < 20) return { rank: 'Curioso ✨', next: 20 - reviewsCount };
+    if (reviewsCount < 30) return { rank: 'Apasionado 📸', next: 30 - reviewsCount };
+    if (reviewsCount < 40) return { rank: 'Obsesivo 🤓', next: 40 - reviewsCount };
+    if (reviewsCount < 50) return { rank: 'Maestro 🎓', next: 50 - reviewsCount };
+    if (reviewsCount < 75) return { rank: 'Conocedor 🏅', next: 75 - reviewsCount };
+    return { rank: '¡Rango Máximo! 🎉', next: 0 };
   };
 
+  const { rank, next } = determineRank(totalReviews);
+
   return (
+    <>
     <div className="p-1 rounded-lg flex w-3/4 sm:w-1/4">
       <div className="flex w-2/3 gap-0 items-end justify-center">
-
-      <div className='flex flex-col justify-end items-end w-full h-full'>
-      <img src={fullStarDark} alt="Estrella" className="w-5 h-5"/>
-      </div>
-
+        <div className="flex flex-col justify-end items-end w-full h-full">
+          <img src={fullStarDark} alt="Estrella" className="w-5 h-5" />
+        </div>
 
         {ratingsCount.map((count, index) => (
           <div key={index} className="flex flex-col items-center w-6 overflow-hidden m-0 mr-1">
@@ -66,7 +72,7 @@ const RatingDistribution = ({ reviews }) => {
               <div
                 className="w-full bg-c hover:bg-opacity-40"
                 style={{
-                  height: `${(totalReviews ? (count / totalReviews) * 100 : 0)}%`,
+                  height: `${totalReviews ? (count / totalReviews) * 100 : 0}%`,
                   transition: 'height 0.3s ease'
                 }}
               />
@@ -79,6 +85,11 @@ const RatingDistribution = ({ reviews }) => {
         <p>{starRating(averageRating)}</p>
       </div>
     </div>
+    <div className="mt-4 text-center">
+          <p className="text-lg font-bold">{rank}</p>
+          {next > 0 && <p className="text-sm text-gray-500"><b>{next}</b> reseñas para el siguiente rango</p>}
+    </div>
+    </>
   );
 };
 

@@ -140,7 +140,7 @@ const textColor = status === 'abierto' ? 'text-green-500' : 'text-red-500';
               </div>
 
 
-              <p className={`absolute top-12 left-2 text-xs ${checkIfOpen(cafe.schedules) === 'Abierto' ? 'text-c2' : 'text-red-500'} font-bold italic`}>
+              <p className={`absolute top-12 left-2 text-xs ${checkIfOpen(cafe.schedules) === 'Abierto' ? 'text-c2' : 'text-red-700'} font-bold italic`}>
                 {checkIfOpen(cafe.schedules)}
               </p>
 

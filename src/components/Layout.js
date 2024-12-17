@@ -21,19 +21,19 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showReview, setShowReview] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false); // Estado para mostrar el login form
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado para determinar si el usuario está autenticado
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user); // Establecer autenticación basado en la existencia del usuario
+      setIsAuthenticated(!!user);
     });
 
-    return () => unsubscribe(); // Limpia la suscripción al desmontar el componente
+    return () => unsubscribe();
   }, []);
 
   const handleReviewClick = () => {
-    setShowReview(prevShowReview => !prevShowReview); // Alterna el estado
+    setShowReview(prevShowReview => !prevShowReview);
   };
 
   const handleCloseReview = () => {
@@ -43,24 +43,24 @@ const Layout = () => {
   const handleLoginClick = () => {
     console.log('handleLoginClick');
     if (isAuthenticated) {
-      navigate('/profile'); // Si está autenticado, redirige a /home
+      navigate('/profile');
     } else {
-      setShowLoginForm(true); // Si no, muestra el formulario de login
+      setShowLoginForm(true);
     }
   };
 
   const handleCloseLoginForm = () => {
-    setShowLoginForm(false); // Función para cerrar el formulario de login
+    setShowLoginForm(false);
   };
 
   const handleSuccessfulLogin = () => {
-    setShowLoginForm(false); // Cierra el formulario
-    navigate('/home'); // Redirige a /home
+    setShowLoginForm(false);
+    navigate('/home');
   };
 
   const handleSuccessfulRegister = () => {
-    setShowLoginForm(false); // Cierra el formulario de login tras el registro
-    navigate('/home'); // Redirige a /home
+    setShowLoginForm(false);
+    navigate('/home');
   };
 
   return (
@@ -68,7 +68,7 @@ const Layout = () => {
       <img className='fixed bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
 
       <div className="overflow-y-scroll content-container">
-        <Outlet context={{ handleReviewClick }} /> {/* Pasa la función a los componentes hijos */}
+        <Outlet context={{ handleReviewClick }} />
       </div>
 
       {showReview && (
@@ -79,7 +79,7 @@ const Layout = () => {
 
       {showLoginForm && (
         <div className="login-form-popup">
-          <div className="login-form-overlay" onClick={handleCloseLoginForm}></div> {/* Fondo oscuro */}
+          <div className="login-form-overlay" onClick={handleCloseLoginForm}></div>
           <div className="login-form-container z-50">
             <LoginForm 
               onClose={handleCloseLoginForm} 

@@ -149,8 +149,8 @@ const AllCoffeeList = () => {
           className="flex mb-1 w-full justify-between items-center font-bold text-c"
           onClick={() => setShowFilters(true)}
         >
-          <p>Aplicar Filtros</p>
-          <img src={filtersIcon} alt="Filters Icon" className="w-3" />
+          <p class name="text-xl">Aplicar Filtros</p>
+          <img src="filters.webp" alt="Filters Icon" className="w-5" />
         </button>
 
         <div className="grid grid-cols-1 gap-4 mb-16 md:grid-cols-2 lg:grid-cols-3">
@@ -169,7 +169,16 @@ const AllCoffeeList = () => {
       </div>
 
       {showFilters && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <>
+        <button 
+        onClick={() => setShowFilters(false)}
+        className="absolute top-4 left-4 text-red-600 font-extrabold z-40">
+        <img
+        className="w-12 h-12"
+        src="/exit.webp">
+        </img>
+    </button>
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setShowFilters(false)}></div>
           <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 w-full max-w-lg mx-auto shadow-lg z-50">
             <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Aplicar Filtros</h1>
             <div className="text-center">
@@ -221,7 +230,7 @@ const AllCoffeeList = () => {
                   onClick={() => toggleFilter('tac')}
                   className={`w-[102px] h-[28px] m-2 rounded-2xl text-xs text-center text-b1 p-4 flex justify-center items-center ${filters.tac ? 'bg-c2' : 'bg-gray-200 '}`}
                 >
-                  Opciones sin Tac
+                  Opciones sin Gluten
                 </button>
                 <button
                   onClick={() => toggleFilter('takeaway')}
@@ -246,8 +255,7 @@ const AllCoffeeList = () => {
               </button>
             </div>
             </div>
-
-          </div>
+        </>
       )}
     </>
   );
