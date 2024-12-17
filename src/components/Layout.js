@@ -1,4 +1,3 @@
-// Layout.js
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/firebase'; 
@@ -26,24 +25,30 @@ const Layout = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   const [topText, setTopText] = useState(''); // Estado para el texto de Top
+  const [showTop, setShowTop] = useState(true); // Estado para controlar la visibilidad de Top
 
-  // Cambiar el texto de Top según la ruta
+  // Cambiar el texto de Top según la ruta y controlar si debe mostrarse o no
   useEffect(() => {
     switch (location.pathname) {
       case '/home':
         setTopText('¿A Dónde Vamos?');
+        setShowTop(true); // Mostrar Top
         break;
       case '/coffee-all':
         setTopText('Cafeterías');
+        setShowTop(true); // Mostrar Top
         break;
       case '/notifications':
         setTopText('Notificaciones');
+        setShowTop(true); // Mostrar Top
         break;
       case '/profile':
         setTopText('Perfil');
+        setShowTop(true); // Mostrar Top
         break;
       default:
-        setTopText(''); // En caso de que no haya un texto asignado
+        setTopText('');
+        setShowTop(false); // Ocultar Top si la ruta no es reconocida
         break;
     }
   }, [location.pathname]);
@@ -65,7 +70,6 @@ const Layout = () => {
   };
 
   const handleLoginClick = () => {
-    console.log('handleLoginClick');
     if (isAuthenticated) {
       navigate('/profile');
     } else {
@@ -89,8 +93,8 @@ const Layout = () => {
 
   return (
     <div className="layout-container">
-      {/* Mostrar el Top con el texto correspondiente */}
-      <Top text={topText} />
+      {/* Mostrar el Top solo si showTop es true */}
+      {showTop && <Top text={topText} />}
 
       <img className='fixed bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
 

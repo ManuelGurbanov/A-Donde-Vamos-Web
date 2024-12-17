@@ -19,26 +19,11 @@ import Top from './components/Top'; // Asegúrate de que Top esté importado cor
 function App() {
   const [topText, setTopText] = useState("Nombre del Café"); // Estado para el texto de Top
 
-  const  [element, setActualElement]  = useState(0);
-
-  const elements = [
-    <Home />,
-    <CoffeeDetails />,
-    <Login />,
-    <Register />,
-    <AddForm />,
-    <AllCoffeeList />,
-    <Layout />,
-    <Notifications />,
-    <ForgotPassword />,
-    <EditCoffeeForm />
-  ];
   return (
     <div className="app-container">
       <AuthProvider>
         <CafeProvider>
-          {elements[element]}
-          {/* <Routes>
+          <Routes>
             <Route path="/" element={<Layout setTopText={setTopText} />}>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
@@ -53,7 +38,7 @@ function App() {
               <Route path="/notifications" element={<Notifications/>} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
-          </Routes> */}
+          </Routes>
         </CafeProvider>
       </AuthProvider>
     </div>

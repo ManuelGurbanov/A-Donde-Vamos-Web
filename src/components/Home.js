@@ -116,7 +116,7 @@ const remainingCafesAfterNew = remainingCafesAfterFavorites.filter(
 );
 
 const nearbyCafes = selectedNeighs.length > 0
-  ? remainingCafesAfterNew.filter(cafe => selectedNeighs.includes(cafe.neigh))
+  ? cafes.filter(cafe => selectedNeighs.includes(cafe.neigh))
   : remainingCafesAfterNew;
 
 
@@ -215,7 +215,7 @@ const nearbyCafes = selectedNeighs.length > 0
                   {isLargeScreen ? (
                     renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
                   ) : (
-                    <Slider {...sliderSettingsMove}>
+                   <Slider {...sliderSettingsMove}>
                       {uniquePopularCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
@@ -228,7 +228,7 @@ const nearbyCafes = selectedNeighs.length > 0
                   {isLargeScreen ? (
                     renderCarousel(uniqueFavoritesCafes, currentSlideFavorites, setCurrentSlideFavorites)
                   ) : (
-                    <Slider {...sliderSettings}>
+                                       <Slider {...sliderSettings}>
                       {uniqueFavoritesCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
@@ -237,17 +237,20 @@ const nearbyCafes = selectedNeighs.length > 0
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cafeterías Cerca Tuyo</h2>
                   {isLargeScreen ? (
-                    renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)
+                    <>
+                    <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cafeterías Cerca Tuyo</h2>
+                    {renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)}
+                    </>
                   ) : (
-                    <Slider {...sliderSettings}>
+                    /*<Slider {...sliderSettings}>
                       {nearbyCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
-                    </Slider>
+                    </Slider>*/
+                    <></>
                   )}
-                </div>
+                </div> 
 
                 <div>
                   <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Cafeterías</h2>

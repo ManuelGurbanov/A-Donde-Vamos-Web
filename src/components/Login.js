@@ -295,8 +295,6 @@ const Login = () => {
                   {userReviews.map(cafe => (
                     <div key={cafe.cafeId} className="mb-4">
                       {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
-                        console.log("Cafe es: " + cafe.newName),
-
                         <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
                           <div className='w-24'>
                           <MiniCard key={cafe.cafeId} cafe={cafe} slug={cafe.cafeId} newName={cafe.newName} />

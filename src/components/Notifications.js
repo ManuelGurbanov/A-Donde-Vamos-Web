@@ -12,20 +12,33 @@ const Notifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       if (currentUser && currentUser.uid) {
-        try {
-          // Obtener notificaciones
-          const notificationsRef = collection(db, 'notifications');
-          const q = query(
-            notificationsRef,
-            orderBy('timestamp', 'desc')
-          );
+        // Verificar si ya hay notificaciones guardadas en sessionStorage
+        const storedNotifications = sessionStorage.getItem('notifications');
+        
+        // Si no hay notificaciones en sessionStorage, las obtenemos de Firebase
+        if (!storedNotifications) {
+          try {
+            // Obtener notificaciones de Firebase
+            const notificationsRef = collection(db, 'notifications');
+            const q = query(
+              notificationsRef,
+              orderBy('timestamp', 'desc')
+            );
 
-          const notificationsSnapshot = await getDocs(q);
-          const fetchedNotifications = notificationsSnapshot.docs.map(doc => doc.data());
+            const notificationsSnapshot = await getDocs(q);
+            const fetchedNotifications = notificationsSnapshot.docs.map(doc => doc.data());
 
-          setNotifications(fetchedNotifications);
-        } catch (error) {
-          console.error('Error fetching notifications:', error);
+            // Guardar las notificaciones en sessionStorage para la sesión actual
+            sessionStorage.setItem('notifications', JSON.stringify(fetchedNotifications));
+
+            // Establecer las notificaciones en el estado
+            setNotifications(fetchedNotifications);
+          } catch (error) {
+            console.error('Error fetching notifications:', error);
+          }
+        } else {
+          // Si ya están guardadas en sessionStorage, las usamos directamente
+          setNotifications(JSON.parse(storedNotifications));
         }
       }
     };
@@ -41,11 +54,11 @@ const Notifications = () => {
             <Notif 
               key={index}
               tittle={notif.message}
-              subt={notif.link !== "" ? <a href={notif.link} className="underline text-c">{notif.submessage}</a> : <p href={notif.link} className="text-c">{notif.submessage}</p>}
+              subt={notif.link !== "" ? <a href={notif.link} className="underline text-c">{notif.submessage}</a> : <p className="text-c">{notif.submessage}</p>}
             />
           ))
         ) : (
-          <h1 c1assName="text-3xl text-center text-c">No tienes notificaciones</h1>
+          <h1 className="text-xl text-center text-c mt-4">No tienes notificaciones</h1>
         )}
       </div>
     </>
