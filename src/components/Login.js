@@ -23,6 +23,8 @@ import settings from '../img/settings.png';
 import EditProfile from './EditProfile';
 import Top from './Top';
 
+import TeamMember from './TeamMember';
+
 const starRating = (rating) => {
   const stars = [];
   const totalStars = 5;
@@ -373,7 +375,18 @@ const Login = () => {
             {state === 2 && (
               <>
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
-                <p className='text-c text-sm font-semibold italic sm:text-lg'>Esta app fue creada con el fin de ayudar a los amantes del café a encontrar lugares nuevos para disfrutar de una buena taza de café. Si tenés alguna sugerencia o comentario, no dudes en contactarnos.</p>
+                <h1 className='text-c text-lg font-bold'>Equipo de Desarrollo:</h1>
+                  <div
+                  className='w-full h-full flex flex-col gap-4 items-center justify-center'
+                  >
+                      <TeamMember name="Manuel Gurbanov" role="Desarrollador"/>
+                      <TeamMember name="Nahuel Fernandez" role="Administrador de Proyecto"/>
+                      <TeamMember name="Helena Trindade" role="Diseño UX/UI"/>
+
+                      <button className='w-1/2 p-2 text-c bg-b1 rounded-2xl' onClick={() => setState(0)}>
+                        Volver
+                      </button>
+                  </div>
               </div>
               </>
             )}
@@ -383,6 +396,9 @@ const Login = () => {
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
 
                 <p className='text-c text-sm font-semibold italic sm:text-lg'>Si te gustaría colaborar con nosotros, no dudes en contactarnos. Estamos buscando gente que nos ayude a mejorar la app y a agregar nuevas funcionalidades.</p>
+                <button className='w-1/2 p-2 text-c bg-b1 rounded-2xl' onClick={() => setState(0)}>
+                        Volver
+                </button>
               </div>
               </>
             )}
@@ -390,7 +406,7 @@ const Login = () => {
             {state === 4 && (
               <>
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
-                <EditProfile/>
+                <EditProfile backFunction={setState}/>
               </div>
               </>
             )}

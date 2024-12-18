@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { auth } from '../firebase/firebase';
 import { db, storage } from '../firebase/firebase';
 import { updateProfile } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { CafeContext } from './CafeContext';
 
-import Top from './Top';
-
-const EditProfile = () => {
+const EditProfile = ({backFunction}) => {
+  const { uniqueNeighs, selectedNeighs, handleNeighSelection } = useContext(CafeContext);
   const [userData, setUserData] = useState({
     fullName: '',
     profilePicture: null,
@@ -17,10 +17,12 @@ const EditProfile = () => {
     showPet: false,
     showTac: false,
     showVegan: false,
+    preferredNeighborhoods: [], 
   });
   const [newProfilePicture, setNewProfilePicture] = useState(null);
   const [errorText, setErrorText] = useState('');
   const [successText, setSuccessText] = useState('');
+  const [showNeighborhoodSelector, setShowNeighborhoodSelector] = useState(false);
 
   const user = auth.currentUser;
 
@@ -30,7 +32,11 @@ const EditProfile = () => {
         const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setUserData(docSnap.data());
+          const userData = docSnap.data();
+          setUserData({
+            ...userData,
+            preferredNeighborhoods: userData.preferredNeighborhoods || []
+          });
         }
       }
     };
@@ -52,7 +58,14 @@ const EditProfile = () => {
     }));
   };
 
+  const handleBackWithoutSaving = () => {
+    setSuccessText(''); 
+    setErrorText('');    
+    backFunction(0);     
+  };
+
   const handleSave = async (e) => {
+    console.log('Guardando cambios en el perfil');
     e.preventDefault();
     setErrorText('');
     setSuccessText('');
@@ -72,60 +85,118 @@ const EditProfile = () => {
         profilePicture: profilePictureUrl,
       });
 
+      localStorage.setItem('preferredNeighborhoods', JSON.stringify(selectedNeighs));
+      console.log('Barrios preferidos guardados en localStorage', selectedNeighs);
+
       setSuccessText('Perfil actualizado exitosamente');
     } catch (error) {
       console.error('Error al actualizar el perfil', error);
       setErrorText('Error al actualizar el perfil.');
     }
+
+    backFunction(0);
   };
 
+
+  const [showAreYouSure, setShowAreYouSure] = useState(false);
+
   return (
-    <>
-      <div className="flex flex-col items-center justify-start min-h-screen">
-        <form onSubmit={handleSave} className="flex flex-col items-center w-full gap-1 p-4 rounded">
-          <label className='text-c2 font-bold text-left italic w-full'>Nombre</label>
+    <div className="flex flex-col items-center justify-start min-h-screen">
+      <form onSubmit={handleSave} className="flex flex-col items-center w-full gap-1 p-4 rounded">
+        {/* Nombre */}
+        <label className="text-c2 font-bold text-left italic w-full">Nombre</label>
+        <input
+          type="text"
+          name="fullName"
+          value={userData.fullName}
+          onChange={handleInputChange}
+          placeholder="Nombre Completo"
+          className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+          required
+        />
+        
+        {/* Foto de perfil */}
+        <label htmlFor="profilePicture" className="w-full p-2 mb-2 font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90">
+          {newProfilePicture ? newProfilePicture.name : 'Seleccionar Nueva Foto de Perfil'}
           <input
-            type="text"
-            name="fullName"
-            value={userData.fullName}
-            onChange={handleInputChange}
-            placeholder="Nombre Completo"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
-            required
+            id="profilePicture"
+            type="file"
+            onChange={handleProfilePictureChange}
+            className="hidden"
+            accept="image/*"
           />
-          <label htmlFor="profilePicture" className="w-full p-2 mb-2 font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90">
-            {newProfilePicture ? newProfilePicture.name : 'Seleccionar Nueva Foto de Perfil'}
-            <input
-              id="profilePicture"
-              type="file"
-              onChange={handleProfilePictureChange}
-              className="hidden"
-              accept="image/*"
-            />
-          </label>
-          {newProfilePicture && <p className="text-center text-green-600">¡Archivo seleccionado!</p>}
+        </label>
+        {newProfilePicture && <p className="text-center text-green-600">¡Archivo seleccionado!</p>}
+        
+        {/* Barrio Principal */}
+        <label className="text-c2 font-bold text-left italic w-full">Barrio en Perfil</label>
+        <input
+          type="text"
+          name="mainNeighborhood"
+          value={userData.mainNeighborhood}
+          onChange={handleInputChange}
+          placeholder="Barrio Principal"
+          className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
+        />
 
-          <label className='text-c2 font-bold text-left italic w-full'>Barrio Principal</label>
-          <input
-            type="text"
-            name="mainNeighborhood"
-            value={userData.mainNeighborhood}
-            onChange={handleInputChange}
-            placeholder="Barrio Principal"
-            className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
-          />
-          <label className='text-c2 font-bold text-left italic w-full'>Descripción</label>
-            <textarea
-            name="description"
-            value={userData.description}
-            onChange={handleInputChange}
-            placeholder="Descripción o Estado"
-            className="w-full p-2 mb-2 text-start text-black border rounded-2xl bg-b1 placeholder:text-brown h-48"
-            maxLength={140}
-            />
+        <button
+            type="button"
+            onClick={() => setShowNeighborhoodSelector(true)}
+            className="w-full p-2 mb-2 font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
+          >
+            Elegir Barrios para Recomendaciones
+          </button>
+        
+        {/* Descripción */}
+        <label className="text-c2 font-bold text-left italic w-full">Descripción</label>
+        <textarea
+          name="description"
+          value={userData.description}
+          onChange={handleInputChange}
+          placeholder="Descripción o Estado"
+          className="w-full p-2 mb-2 text-start text-black border rounded-2xl bg-b1 placeholder:text-brown h-48"
+          maxLength={140}
+        />
 
-          
-          <div className="mb-2">
+        {/* Selección de barrios preferidos */}
+        <div className="mb-2">
+
+          {showNeighborhoodSelector && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/2">
+                <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
+                  Recomendarme cafeterías en:
+                </h1>
+                <div className="overflow-y-scroll">
+                  {uniqueNeighs && uniqueNeighs.length > 0 && (
+                    <div className="grid grid-cols-6 gap-2 w-max">
+                      {uniqueNeighs.map((neigh, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleNeighSelection(neigh)} 
+                          className={`p-1 m-1 rounded text-sm ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+                        >
+                          {neigh}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col items-center justify-center w-full p-4">
+                  <button
+                    onClick={() => setShowNeighborhoodSelector(false)}
+                    className="w-full h-12 p-1 m-2 text-c rounded-lg bg-b1 hover:bg-c hover:text-b1"
+                  >
+                    Guardar Preferencias
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Insignias */}
+        <div className="mb-2">
             <input
               type="checkbox"
               name="showNeighborhood"
@@ -167,15 +238,28 @@ const EditProfile = () => {
             </label>
           </div>
 
-          <button type="submit" className="flex items-center justify-center w-1/2 p-2 text-c font-semibold transition-all duration-100 rounded-2xl bg-b1 hover:bg-b2">
-            Guardar Cambios
-          </button>
+        <button
+          type="submit"
+          className="flex items-center justify-center w-1/2 p-2 text-c font-semibold transition-all duration-100 rounded-2xl bg-b1 hover:bg-b2"
+        >
+          Guardar Cambios
+        </button>
+        <button className="p-2 bg-b2 text-c rounded-lg" onClick={() => setShowAreYouSure(true)}>Volver sin Guardar</button>
 
-          {errorText && <p className="mt-2 text-red-500">{errorText}</p>}
-          {successText && <p className="mt-2 text-green-500">{successText}</p>}
-        </form>
+        {/* {errorText && <p className="mt-2 text-red-500">{errorText}</p>}
+        {successText && <p className="mt-2 text-green-500">{successText}</p>} */}
+      </form>
+
+      <div className="absolute z-50 bg-b1 bg-opacity-100 rounded-lg p-4" style={{display: showAreYouSure ? 'block' : 'none'}}>
+        <p className="text-c text-center">¿Estás seguro de que deseas volver sin guardar los cambios?</p>
+        <div className="flex justify-center gap-4 mt-4">
+          <button className="p-2 bg-b2 text-c rounded-lg" onClick={() => setShowAreYouSure(false)}>Cancelar</button>
+          <button className="p-2 bg-red-500 text-c rounded-lg" onClick={handleBackWithoutSaving}>Volver sin Guardar</button>
+        </div>
       </div>
-    </>
+
+
+    </div>
   );
 };
 

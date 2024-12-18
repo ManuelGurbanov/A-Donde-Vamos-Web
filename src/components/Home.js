@@ -8,8 +8,7 @@ import Top from './Top';
 import { CafeContext } from './CafeContext';
 import loadingLogo from '../img/loading_logo.png';
 import './styles.css'; // Import the CSS file
-
-import AdSenseComponent from './AdSenseComponent';
+import BouncingDotsLoader from './BouncingDotsLoader';
 
 const Home = () => {
   const { cafes, loading, error } = useContext(CafeContext);
@@ -27,16 +26,18 @@ const Home = () => {
   const [currentSlideNew, setCurrentSlideNew] = useState(0);
 
   useEffect(() => {
-    if (!cafes || cafes.length === 0) {
-      const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
-      if (storedNeighs && storedNeighs.length > 0) {
-        setSelectedNeighs(storedNeighs);
-      } else {
-        setShowWelcome(true);
-      }
-    }
-  }, [cafes]);
+    const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighborhoods'));
   
+    if (storedNeighs && storedNeighs.length > 0) {
+      setSelectedNeighs(storedNeighs);
+      console.log("Barrios preferidos recuperados", storedNeighs);
+    } else {
+      setShowWelcome(true);
+    }
+  }, []);
+  
+  
+
   useEffect(() => {
     if (loading && (!cafes || cafes.length === 0)) {
       setFadeOut(false);
@@ -45,11 +46,10 @@ const Home = () => {
       const fadeOutTimeout = setTimeout(() => {
         setFadeOut(false);
       }, 1000);
-  
+
       return () => clearTimeout(fadeOutTimeout);
     }
   }, [loading, cafes]);
-  
 
   const handleSavePreferences = () => {
     localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
@@ -57,14 +57,16 @@ const Home = () => {
   };
 
   const handleFilterChange = (neigh) => {
-    if (selectedNeighs.includes(neigh)) {
-      setSelectedNeighs(selectedNeighs.filter(n => n !== neigh));
-    } else {
-      setSelectedNeighs([...selectedNeighs, neigh]);
-    }
+    setSelectedNeighs((prevSelected) =>
+      prevSelected.includes(neigh)
+        ? prevSelected.filter((n) => n !== neigh)
+        : [...prevSelected, neigh]
+    );
   };
 
-  const uniqueNeighs = [...new Set(cafes.map(cafe => cafe.neigh))].sort((a, b) => a.localeCompare(b));
+  const uniqueNeighs = [...new Set(cafes.map((cafe) => cafe.neigh))].sort((a, b) =>
+    a.localeCompare(b)
+  );
 
   if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
@@ -74,6 +76,16 @@ const Home = () => {
   const sortedByDate = [...cafes].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
   const newCafes = sortedByDate.slice(0, 5);
 
+  const remainingCafesAfterPopular = cafes.filter(
+    (cafe) => !popularCafes.includes(cafe)
+  );
+  const uniqueFavoritesCafes = remainingCafesAfterPopular.slice(0, 5);
+
+  const remainingCafesAfterFavorites = remainingCafesAfterPopular.filter(
+    (cafe) => !uniqueFavoritesCafes.includes(cafe)
+  );
+
+  const nearbyCafes = cafes.filter((cafe) => selectedNeighs.includes(cafe.neigh));
 
   const sliderSettings = {
     arrows: true,
@@ -85,91 +97,57 @@ const Home = () => {
   };
 
   const sliderSettingsMove = {
-    arrows: true,
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
+    ...sliderSettings,
     autoplay: true,
     autoplaySpeed: 2000,
     pauseOnHover: false,
-    beforeChange: (current, next) => setCurrentSlidePopular(next),
+    beforeChange: (_, next) => setCurrentSlidePopular(next),
   };
 
-const uniquePopularCafes = sortedByRatings.slice(0, 5);
-
-const remainingCafesAfterPopular = cafes.filter(
-  (cafe) => !uniquePopularCafes.includes(cafe)
-);
-
-const uniqueFavoritesCafes = remainingCafesAfterPopular.slice(0, 5);
-
-const remainingCafesAfterFavorites = remainingCafesAfterPopular.filter(
-  (cafe) => !uniqueFavoritesCafes.includes(cafe)
-);
-
-const uniqueNewCafes = remainingCafesAfterFavorites.slice(0, 5);
-
-const remainingCafesAfterNew = remainingCafesAfterFavorites.filter(
-  (cafe) => !uniqueNewCafes.includes(cafe)
-);
-
-const nearbyCafes = selectedNeighs.length > 0
-  ? cafes.filter(cafe => selectedNeighs.includes(cafe.neigh))
-  : remainingCafesAfterNew;
-
-
-  const handleNext = (cafesArray, setCurrentSlide, currentSlide) => {
+  const handleNext = (cafesArray, setCurrentSlide) => {
     setCurrentSlide((prevSlide) => (prevSlide + 1) % cafesArray.length);
   };
 
-  const handlePrev = (cafesArray, setCurrentSlide, currentSlide) => {
+  const handlePrev = (cafesArray, setCurrentSlide) => {
     setCurrentSlide((prevSlide) => (prevSlide - 1 + cafesArray.length) % cafesArray.length);
   };
 
   const renderCarousel = (cafesArray, currentSlide, setCurrentSlide) => {
     const currentCafe = cafesArray[currentSlide];
-
-    if (!currentCafe) {
-      return <div className="text-center text-red-600">No hay cafeterías disponibles.</div>;
-    }
-
-    return (
+    return currentCafe ? (
       <div className="relative flex items-center justify-center h-56 w-full">
-        <button 
-          onClick={() => handlePrev(cafesArray, setCurrentSlide, currentSlide)}
+        <button
+          onClick={() => handlePrev(cafesArray, setCurrentSlide)}
           className="px-4 py-2 text-white bg-gray-700 rounded-full hover:bg-gray-800 bg-opacity-20"
         >
           {'<'}
         </button>
-
         <div className="flex flex-col justify-center w-2/3 mx-4 h-80">
           <CoffeeCard cafe={currentCafe} />
         </div>
-
-        <button 
-          onClick={() => handleNext(cafesArray, setCurrentSlide, currentSlide)}
+        <button
+          onClick={() => handleNext(cafesArray, setCurrentSlide)}
           className="px-4 py-2 text-white bg-gray-700 rounded-full hover:bg-gray-800 bg-opacity-20"
         >
           {'>'}
         </button>
       </div>
+    ) : (
+      <div className="text-center text-red-600">No hay cafeterías disponibles.</div>
     );
   };
 
-
   return (
     <>
-
-      {/* Controla la visibilidad y eventos del loadingDiv */}
-      <div 
-  id="loadingDiv" 
-  className={`fixed top-0 left-0 z-30 flex items-center justify-center w-full h-full bg-b1 transition-opacity duration-1000 ${loading ? 'opacity-100' : 'opacity-0 pointer-events-none -z-50'}`}
-  style={{ pointerEvents: 'none' }} // Evitar la interacción con los clics
->
-  <img src={loadingLogo} className='w-2/3 p-5 m-auto sm:w-80' alt="Loading..." />
-</div>
+      <div
+        id="loadingDiv"
+        className={`fixed top-0 left-0 z-30 flex flex-col items-center justify-center w-full h-full bg-b1 transition-opacity duration-1000 ${
+          loading ? 'opacity-100' : 'opacity-0 pointer-events-none -z-50'
+        }`}
+      >
+        <img src={loadingLogo} className="w-2/3 p-5 sm:w-80" alt="Loading..." />
+        <BouncingDotsLoader className="mt-5" />
+      </div>
 
 {/* Mostrar el contenido solo si loading es false y fadeOut es false */}
 {!loading && (
@@ -180,7 +158,7 @@ const nearbyCafes = selectedNeighs.length > 0
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
     <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/2">
       <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
-        Bienvenido, elegí tus barrios de preferencia:
+        Recomendarme cafeterías en:
       </h1>
       <div className="overflow-y-scroll">
         <div className="grid grid-cols-6 gap-2 w-max">
@@ -216,7 +194,7 @@ const nearbyCafes = selectedNeighs.length > 0
                     renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
                   ) : (
                    <Slider {...sliderSettingsMove}>
-                      {uniquePopularCafes.map((cafe, index) => (
+                      {popularCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
                     </Slider>
@@ -228,7 +206,7 @@ const nearbyCafes = selectedNeighs.length > 0
                   {isLargeScreen ? (
                     renderCarousel(uniqueFavoritesCafes, currentSlideFavorites, setCurrentSlideFavorites)
                   ) : (
-                                       <Slider {...sliderSettings}>
+                    <Slider {...sliderSettings}>
                       {uniqueFavoritesCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
@@ -237,18 +215,19 @@ const nearbyCafes = selectedNeighs.length > 0
                 </div>
 
                 <div>
+                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
                   {isLargeScreen ? (
                     <>
-                    <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cafeterías Cerca Tuyo</h2>
                     {renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)}
                     </>
                   ) : (
-                    /*<Slider {...sliderSettings}>
+                    <>
+                    <Slider {...sliderSettings}>
                       {nearbyCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
-                    </Slider>*/
-                    <></>
+                    </Slider>
+                    </>
                   )}
                 </div> 
 
@@ -258,7 +237,7 @@ const nearbyCafes = selectedNeighs.length > 0
                     renderCarousel(newCafes, currentSlideNew, setCurrentSlideNew)
                   ) : (
                     <Slider {...sliderSettings}>
-                      {uniqueNewCafes.map((cafe, index) => (
+                      {newCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
                     </Slider>

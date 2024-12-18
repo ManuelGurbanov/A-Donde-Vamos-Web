@@ -17,6 +17,8 @@ export const CafeProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [cafesLoaded, setCafesLoaded] = useState(false);
 
+  const [uniqueNeighs, setUniqueNeighs] = useState([]);
+
   useEffect(() => {
     const fetchCafes = async () => {
       if (!cafesLoaded) {
@@ -27,6 +29,10 @@ export const CafeProvider = ({ children }) => {
           setCafes(cafesList);
           setLoading(false);
           setCafesLoaded(true);
+
+          const neighborhoods = [...new Set(cafesList.map(cafe => cafe.neigh))];
+          setUniqueNeighs(neighborhoods); // Guardamos los barrios únicos.
+          console.log("unique neighs", neighborhoods);
         } catch (err) {
           setError(err.message);
           setLoading(false);
@@ -52,11 +58,10 @@ export const CafeProvider = ({ children }) => {
   useEffect(() => {
     const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighs'));
     if (storedNeighs && storedNeighs.length > 0) {
-      setSelectedNeighs(storedNeighs);
+      setSelectedNeighs(storedNeighs); // Esto puede estar causando el bucle
     }
-
-    localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
-  }, [selectedNeighs]);
+  }, []); // Solo debe ejecutarse una vez al montar el componente
+  
 
   const agregarAFavoritos = (cafe) => {
     setFavoritos((prevFavoritos) => {
@@ -123,7 +128,8 @@ export const CafeProvider = ({ children }) => {
       selectedNeighs,
       handleNeighSelection,
       isAuthenticated,
-      checkIfOpen
+      checkIfOpen,
+      uniqueNeighs
     }}>
       {children}
     </CafeContext.Provider>

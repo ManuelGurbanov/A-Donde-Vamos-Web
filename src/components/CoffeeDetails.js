@@ -171,29 +171,13 @@ useEffect(() => {
   fetchCoffeeByName();
 
   return () => {
-    isMounted = false; // Cleanup
+    isMounted = false;
   };
 }, [name, currentUser]);
 
   
 
   
-
-  useEffect(() => {
-    const checkFavoriteStatus = async () => {
-      if (currentUser) {
-        const userRef = doc(db, 'users', currentUser.email);
-        const userDoc = await getDoc(userRef);
-        const data = userDoc.data();
-        const favorites = data?.favorites || [];
-        setIsFavorite(favorites.includes(id));
-        console.log('isFavorite:', isFavorite);
-        console.log('Current User:', currentUser);
-      }
-    };
-
-    checkFavoriteStatus();
-  }, [currentUser, id]);
 
   const addFavorite = async (userId, coffeeId) => {
     try {

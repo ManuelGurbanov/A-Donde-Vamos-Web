@@ -146,11 +146,19 @@ const textColor = status === 'abierto' ? 'text-green-500' : 'text-red-500';
 
             </div>
   
-            <div className="flex flex-col max-h-full gap-1">
-              {cafe.vegan && <img src={veganIcon} alt="Vegan Options" className="w-5 h-5" />}
-              {cafe.tac && <img src={tacIcon} alt="Take Away Cup" className="w-5 h-5" />}
-              {cafe.pet && <img src={petIcon} alt="Pet Friendly" className="w-5 h-5" />}
+            <div className="flex w-full flex-col h-full gap-1 items-end justify-end overflow-hidden">
+              {[
+                { condition: cafe.vegan, icon: veganIcon, alt: "Vegan Options" },
+                { condition: cafe.tac, icon: tacIcon, alt: "Take Away Cup" },
+                { condition: cafe.pet, icon: petIcon, alt: "Pet Friendly" },
+              ]
+                .filter(item => item.condition)
+                .slice(0, 2)
+                .map((item, index) => (
+                  <img key={index} src={item.icon} alt={item.alt} className="w-6 h-6 aspect-square" />
+                ))}
             </div>
+
           </div>
         </div>
       </Link>

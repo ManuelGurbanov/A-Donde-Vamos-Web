@@ -21,7 +21,7 @@ const MiniCard = ({ cafe, slug, newName }) => {
   };
 
   return (
-    <div className="p-0 w-24">
+    <div className="p-0 w-24 sm:w-full m-auto">
       <Link to={`/${slug}`}>
         <div className="overflow-hidden bg-b1 rounded-lg shadow-md flex flex-col items-center">
           <img
