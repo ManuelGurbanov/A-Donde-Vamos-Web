@@ -168,7 +168,7 @@ const nearbyCafes = selectedNeighs.length > 0
   className={`fixed top-0 left-0 z-30 flex items-center justify-center w-full h-full bg-b1 transition-opacity duration-1000 ${loading ? 'opacity-100' : 'opacity-0 pointer-events-none -z-50'}`}
   style={{ pointerEvents: 'none' }} // Evitar la interacción con los clics
 >
-  <img src={loadingLogo} className='w-full p-5 m-auto sm:w-80' alt="Loading..." />
+  <img src={loadingLogo} className='w-2/3 p-5 m-auto sm:w-80' alt="Loading..." />
 </div>
 
 {/* Mostrar el contenido solo si loading es false y fadeOut es false */}

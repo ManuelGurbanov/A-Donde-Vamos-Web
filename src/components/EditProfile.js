@@ -82,7 +82,7 @@ const EditProfile = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-start min-h-screen">
-        <form onSubmit={handleSave} className="flex flex-col items-center w-full gap-1 p-4 mt-8 rounded">
+        <form onSubmit={handleSave} className="flex flex-col items-center w-full gap-1 p-4 rounded">
           <label className='text-c2 font-bold text-left italic w-full'>Nombre</label>
           <input
             type="text"
@@ -167,7 +167,7 @@ const EditProfile = () => {
             </label>
           </div>
 
-          <button type="submit" className="flex items-center justify-center w-1/2 p-2 text-white transition-all duration-100 rounded-2xl bg-b1 hover:bg-b2">
+          <button type="submit" className="flex items-center justify-center w-1/2 p-2 text-c font-semibold transition-all duration-100 rounded-2xl bg-b1 hover:bg-b2">
             Guardar Cambios
           </button>
 

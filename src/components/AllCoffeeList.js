@@ -243,13 +243,13 @@ const AllCoffeeList = () => {
               <div className="flex flex-col items-center justify-center w-full p-4">
               <button
                 onClick={clearFilters}
-                className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
+                className="w-full h-12 p-1 m-2 text-c rounded-lg font-semibold bg-b1 hover:bg-c hover:text-b1"
               >
                 Borrar todos los Filtros
               </button>
               <button
                 onClick={handleSavePreferences}
-                className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
+                className="w-full h-12 p-1 m-2 text-c font-semibold rounded-lg bg-b1 hover:bg-c hover:text-b1"
               >
                 Guardar
               </button>

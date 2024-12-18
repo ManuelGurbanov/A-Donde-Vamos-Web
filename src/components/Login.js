@@ -21,6 +21,7 @@ import colaborate from '../img/colaborate.png';
 import settings from '../img/settings.png';
 
 import EditProfile from './EditProfile';
+import Top from './Top';
 
 const starRating = (rating) => {
   const stars = [];
@@ -58,13 +59,13 @@ const Login = () => {
   const [state, setState] = useState(0);
   
   const navigate = useNavigate();
-  const { uid } = useParams(); // Aquí se extrae el uid de la URL
+  const { uid } = useParams();
   const { cafes = [] } = useContext(CafeContext);
 
   useEffect(() => {
     if (!uid) {
       console.error("No se proporcionó uid en la URL.");
-      return; // Sal de la función si uid no está presente
+      return;
     }
     fetchUserData(uid);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -94,6 +95,8 @@ const Login = () => {
       if (userDoc.exists()) {
         const userDataFromFirestore = userDoc.data();
         setUserData(userDataFromFirestore);
+
+        sessionStorage.setItem('userData', JSON.stringify(userDataFromFirestore));
       }
     } catch (error) {
       console.error('Error al obtener datos del usuario:', error);
@@ -133,7 +136,6 @@ const Login = () => {
             newName: cafe.name,
             picsLinks: cafe.picsLinks,
             reviews: userCafeReviews,
-
           });
           console.log(reviewsByUser);
         }
@@ -152,6 +154,12 @@ const Login = () => {
   
       if (user.emailVerified) {
         setLoginMessage('Logueado correctamente');
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userDataFromFirestore = userDoc.data();
+          sessionStorage.setItem('userData', JSON.stringify(userDataFromFirestore));
+        }
       } else {
         await signOut(auth);
         setLoginMessage('Por favor, verifica tu correo antes de iniciar sesión.');
@@ -175,6 +183,7 @@ const Login = () => {
     try {
       await signOut(auth);
       setLoginMessage('Deslogueado correctamente');
+      sessionStorage.removeItem('userData');
       navigate('/home');
     } catch (error) {
       console.error('Error al cerrar sesión', error);
@@ -189,42 +198,45 @@ const Login = () => {
     setSelectedTab(tab);
   };
 
+  const savedUserData = JSON.parse(sessionStorage.getItem('userData'));
+
   return (
+    <>
+    <Top text={savedUserData?.username}/>
     <div className="flex flex-col items-center justify-center mb-6">
-          {(state === 0 || state === 1) && (auth.currentUser && auth.currentUser.uid === uid) && (
-            <>
-            <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
+      {(state === 0 || state === 1) && (auth.currentUser && auth.currentUser.uid === uid) && (
+        <>
+          <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
             <div className="w-full flex items-center">
               {auth.currentUser && auth.currentUser.uid === uid ? (
                 <img
-                  src={auth.currentUser.photoURL}
+                  src={auth.currentUser.photoURL || savedUserData?.profilePicture}
                   alt="Foto de perfil"
                   className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover"
                 />
               ) : (
-                userData?.profilePicture && (
+                savedUserData?.profilePicture && (
                   <img
-                  src={userData.profilePicture}
-                  alt="Foto de perfil"
-                  className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover"
-                />
+                    src={savedUserData.profilePicture}
+                    alt="Foto de perfil"
+                    className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover"
+                  />
                 )
               )}
 
               <div className="ml-4 flex flex-col gap-1">
-                <h2 className="text-lg font-bold text-c2">{userData?.fullName || ''}</h2>
-                <h2 className="text-sm font-thin text-c2">{userData?.username || ''}</h2>
+                <h2 className="text-lg font-bold text-c2">{savedUserData?.fullName || ''}</h2>
+                <h2 className="text-sm font-thin text-c2">{savedUserData?.username || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">
-                  {userData?.mainNeighborhood || ''}, <strong className="font-bold italic">CABA</strong>
+                  {savedUserData?.mainNeighborhood || ''}, <strong className="font-bold italic">CABA</strong>
                 </h2>
-                  
-                  {auth.currentUser && auth.currentUser.uid === uid && (
-                    <button
-                      onClick={handleLogout}
-                      className="w-full p-1 mb-2 text-white transition-all duration-100 bg-red-500 rounded hover:bg-red-600 text-[8px] sm:text-base sm:p-2"
-                    >
-                      Cerrar Sesión
-                    </button>
+                {auth.currentUser && auth.currentUser.uid === uid && (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full p-1 mb-2 text-white transition-all duration-100 bg-red-500 rounded hover:bg-red-600 text-[8px] sm:text-base sm:p-2"
+                  >
+                    Cerrar Sesión
+                  </button>
                   )}
 
                   </div>
@@ -385,6 +397,7 @@ const Login = () => {
 
 
     </div>
+    </>
   );
 };
 

@@ -179,7 +179,7 @@ const Review = ({ selectedCafe: propSelectedCafe, onClose }) => {
           Cancelar
         </button>
 
-        <h2 className="mt-6 mb-4 text-lg font-bold text-center">Reseñar una cafetería</h2>
+        <h2 className="mt-6 mb-4 text-lg font-bold text-center">Reseñar una Cafetería</h2>
 
         {!cafe ? (
           <div className="flex flex-col items-center">
