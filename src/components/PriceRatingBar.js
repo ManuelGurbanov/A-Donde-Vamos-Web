@@ -62,12 +62,12 @@ const RatingBar = ({ slug, category, options, dbField }) => {
 
   return (
     <div className="flex flex-col items-center mt-4">
-      <h2 className="text-lg font-bold mb-2">{`¿Cómo calificarías ${category}?`}</h2>
+      <h2 className="text-lg font-bold h-8 w-full text-center">{`¿Cómo calificarías ${category}?`}</h2>
       <div className="flex w-full justify-center">
         {options.map((option) => (
           <button
             key={option}
-            className={`flex-1 py-2 px-4 text-sm font-medium border ${
+            className={`flex-1 py-1 px-1 text-sm font-medium border ${
               hasVoted ? 'cursor-not-allowed opacity-70 bg-c' : 'bg-b1 hover:scale-105 transition-all ease-in-out'
             }`}
             onClick={() => handleVote(option)}
@@ -75,7 +75,7 @@ const RatingBar = ({ slug, category, options, dbField }) => {
           >
             <div className="flex flex-col items-center">
               <span
-              className={`
+              className={` w-12 h-10 flex items-center justify-center text-xs
               ${hasVoted ? 'text-b1' : 'text-c' }`}>
                 {option.charAt(0).toUpperCase() + option.slice(1)}
               </span>

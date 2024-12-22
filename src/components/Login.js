@@ -129,7 +129,7 @@ const Login = () => {
 
   const fetchUserReviews = async (uid) => {
     const reviewsByUser = [];
-    console.log(cafes);
+    //console.log(cafes);
 
     cafes.forEach(cafe => {
       if (cafe.reviews && Array.isArray(cafe.reviews)) {
@@ -141,7 +141,7 @@ const Login = () => {
             picsLinks: cafe.picsLinks,
             reviews: userCafeReviews,
           });
-          console.log(reviewsByUser);
+          //console.log(reviewsByUser);
         }
       }
     });

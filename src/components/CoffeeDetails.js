@@ -605,20 +605,18 @@ const parseTime = (timeString) => {
                             {coffee.pet && (
                               <div className='flex flex-col gap-0'>
                                 <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
-                                <h1 className='text-center text-xs opacity-0 hover:opacity-50'>Pet Friendly</h1>
                               </div>
                             )}
                             {coffee.vegan && (
                                 <div className='flex flex-col gap-0'>
                                   <img src={veganIcon} alt="Vegan" className="w-12 h-12 mr-2" />
-                                  <h1 className='text-center text-xs opacity-0 hover:opacity-50'>Opciones Veganas</h1>
                                 </div>
                             )}
                             {coffee.tac && (
-                              <img src={tacIcon} alt="TAC Accepted" className="w-12 h-12 mr-2" />
+                              <img src={tacIcon} alt="TAC" className="w-12 h-12 mr-2" />
                             )}
                             {coffee.outside && (
-                              <img src={outsideIcon} alt="Outdoor Seating" className="w-12 h-12 mr-2" />
+                              <img src={outsideIcon} alt="Mesas Adue" className="w-12 h-12 mr-2" />
                             )}
                           </div>
               )}

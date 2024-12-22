@@ -138,14 +138,6 @@ const EditProfile = ({backFunction}) => {
           placeholder="Barrio Favorito"
           className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
         />
-
-        <button
-            type="button"
-            onClick={() => setShowNeighborhoodSelector(true)}
-            className="w-full p-2 mb-2 font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
-          >
-            Elegir Barrios para Recomendaciones
-          </button>
         
         {/* Descripción */}
         <label className="text-c2 font-bold text-left italic w-full">Descripción</label>

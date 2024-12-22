@@ -39,7 +39,10 @@ const Home = () => {
       setSelectedNeighs(storedNeighs);
       console.log("Barrios preferidos recuperados", storedNeighs);
     } else {
+      if (!storedNeighs) {
       setShowWelcome(true);
+      console.log("Barrios preferidos no encontrados");
+      }
     }
   }, []);
   
@@ -315,6 +318,16 @@ const Home = () => {
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
                     </Slider>
+
+                    <div className='flex justify-center items-center w-full'>
+                      <button
+                        type="button"
+                        onClick={() => setShowWelcome(true)}
+                        className="w-5/6 p-1 py-2 mb-2 font-bold text-center text-xs border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
+                      >
+                        Cambiar Barrios para Recomendaciones
+                      </button>
+                    </div>
                     </>
                   )}
                 </div> 
