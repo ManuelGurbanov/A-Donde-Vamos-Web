@@ -23,7 +23,7 @@ const EditProfile = ({backFunction}) => {
   const [errorText, setErrorText] = useState('');
   const [successText, setSuccessText] = useState('');
   const [showNeighborhoodSelector, setShowNeighborhoodSelector] = useState(false);
-
+  const [previewImage, setPreviewImage] = useState(null);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -115,7 +115,6 @@ const EditProfile = ({backFunction}) => {
           required
         />
         
-        {/* Foto de perfil */}
         <label htmlFor="profilePicture" className="w-full p-2 mb-2 font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90">
           {newProfilePicture ? newProfilePicture.name : 'Seleccionar Nueva Foto de Perfil'}
           <input
@@ -127,15 +126,16 @@ const EditProfile = ({backFunction}) => {
           />
         </label>
         {newProfilePicture && <p className="text-center text-green-600">¡Archivo seleccionado!</p>}
+        {previewImage && <img src={previewImage} alt="Previsualización" className="w-32 h-32 rounded-full mt-2" />}
         
-        {/* Barrio Principal */}
+        {/* Barrio Principal, cambiar a selector */}
         <label className="text-c2 font-bold text-left italic w-full">Barrio en Perfil</label>
         <input
           type="text"
           name="mainNeighborhood"
           value={userData.mainNeighborhood}
           onChange={handleInputChange}
-          placeholder="Barrio Principal"
+          placeholder="Barrio Favorito"
           className="w-full p-2 mb-2 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
         />
 
@@ -161,38 +161,43 @@ const EditProfile = ({backFunction}) => {
         {/* Selección de barrios preferidos */}
         <div className="mb-2">
 
-          {showNeighborhoodSelector && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/2">
-                <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
-                  Recomendarme cafeterías en:
-                </h1>
-                <div className="overflow-y-scroll">
-                  {uniqueNeighs && uniqueNeighs.length > 0 && (
-                    <div className="grid grid-cols-6 gap-2 w-max">
-                      {uniqueNeighs.map((neigh, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleNeighSelection(neigh)} 
-                          className={`p-1 m-1 rounded text-sm ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
-                        >
-                          {neigh}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col items-center justify-center w-full p-4">
-                  <button
-                    onClick={() => setShowNeighborhoodSelector(false)}
-                    className="w-full h-12 p-1 m-2 text-c rounded-lg bg-b1 hover:bg-c hover:text-b1"
-                  >
-                    Guardar Preferencias
-                  </button>
-                </div>
+        {showNeighborhoodSelector && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/2">
+              <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
+                Recomendarme cafeterías en:
+              </h1>
+              {/* Hacer scroll vertical */}
+              <div className="overflow-y-auto max-h-96">
+                {uniqueNeighs && uniqueNeighs.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    {uniqueNeighs.map((neigh, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleNeighSelection(neigh)}ç
+                        className={`p-1 m-1 rounded text-sm ${
+                          selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'
+                        }`}
+                      >
+                        {neigh}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col items-center justify-center w-full p-4">
+                <button
+                  onClick={() => setShowNeighborhoodSelector(false)} // Cierra el modal explícitamente
+                  className="w-full h-12 p-1 m-2 text-c rounded-lg bg-b1 hover:bg-c hover:text-b1"
+                >
+                  Guardar Preferencias
+                </button>
               </div>
             </div>
-          )}
+          </div>
+)}
+
+
         </div>
 
         {/* Insignias */}
@@ -225,7 +230,7 @@ const EditProfile = ({backFunction}) => {
                 checked={userData.showTac}
                 onChange={handleInputChange}
               />
-              <span className="ml-2">Mostrar insignia Tac</span>
+              <span className="ml-2">Mostrar insignia SIN GLUTEN</span>
             </label>
             <label className="flex items-center">
               <input
@@ -244,7 +249,7 @@ const EditProfile = ({backFunction}) => {
         >
           Guardar Cambios
         </button>
-        <button className="p-2 bg-b2 text-c rounded-lg" onClick={() => setShowAreYouSure(true)}>Volver sin Guardar</button>
+        <button className="flex items-center justify-center w-1/2 p-2 text-c font-semibold transition-all duration-100 rounded-2xl bg-b1 hover:bg-b2" onClick={() => setShowAreYouSure(true)}>Volver sin Guardar</button>
 
         {/* {errorText && <p className="mt-2 text-red-500">{errorText}</p>}
         {successText && <p className="mt-2 text-green-500">{successText}</p>} */}

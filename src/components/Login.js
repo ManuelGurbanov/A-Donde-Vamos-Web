@@ -64,6 +64,7 @@ const Login = () => {
   const { uid } = useParams();
   const { cafes = [] } = useContext(CafeContext);
 
+
   useEffect(() => {
     if (!uid) {
       console.error("No se proporcionó uid en la URL.");
@@ -73,12 +74,13 @@ const Login = () => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setLoggedIn(true);
-
+  
         if (user.uid !== uid) {
           setState(1);
         }
       } else {
         setLoggedIn(false);
+        setState(1);
       }
       setLoginMessage('Logueado correctamente');
       await fetchUserData(uid);
@@ -202,11 +204,19 @@ const Login = () => {
 
   const savedUserData = JSON.parse(sessionStorage.getItem('userData'));
 
+  function isThisUser() {
+    if (!auth.currentUser) {return false;}
+    if (auth.currentUser.uid === uid) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   return (
     <>
     <Top text={savedUserData?.username}/>
     <div className="flex flex-col items-center justify-center mb-6">
-      {(state === 0 || state === 1) && (auth.currentUser && auth.currentUser.uid === uid) && (
+      {(state === 0 || state === 1) && (isThisUser) && (
         <>
           <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
             <div className="w-full flex items-center">
@@ -230,8 +240,17 @@ const Login = () => {
                 <h2 className="text-lg font-bold text-c2">{savedUserData?.fullName || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">{savedUserData?.username || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">
-                  {savedUserData?.mainNeighborhood || ''}, <strong className="font-bold italic">CABA</strong>
+                  {savedUserData?.mainNeighborhood ? (
+                    <>
+                      {savedUserData.mainNeighborhood}, <span className="font-bold">CABA</span>
+                    </>
+                  ) : (
+                    <span className="font-bold">CABA</span>
+                  )}
                 </h2>
+
+
+
                 {auth.currentUser && auth.currentUser.uid === uid && (
                   <button
                     onClick={handleLogout}
@@ -248,7 +267,7 @@ const Login = () => {
             )
              }
 
-          {state === 1 && (auth.currentUser.uid !== uid) && (
+          {/* {state === 1 && (auth.currentUser.uid !== uid) && (
                             userData?.profilePicture) && 
                             <>
                               <img
@@ -256,7 +275,7 @@ const Login = () => {
                                 alt="Foto de perfil"
                                 className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 mt-4 object-cover"
                               />
-                            </>}
+                            </>} */}
           
           {state === 1 && (
               <>
@@ -338,9 +357,7 @@ const Login = () => {
 
           {state === 0 && (
             <div className='flex flex-col gap-3 items-center w-full sm:w-1/4'>
-
-
-
+            
             <button className="flex items-center justify-center w-1/2 gap-2 px-4 py-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl" onClick={() => setState(1)}>
               <img src={screen4} className='flex-[1] w-6'></img>
               <p className='text-center text-sm flex-[9]'>
@@ -375,12 +392,12 @@ const Login = () => {
             {state === 2 && (
               <>
               <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
-                <h1 className='text-c text-lg font-bold'>Equipo de Desarrollo:</h1>
+                <h1 className='text-c2 text-lg font-semibold'>Equipo de <span className='italic text-c font-bold'>¿A Dónde Vamos?</span></h1>
                   <div
                   className='w-full h-full flex flex-col gap-4 items-center justify-center'
                   >
-                      <TeamMember name="Manuel Gurbanov" role="Desarrollador"/>
-                      <TeamMember name="Nahuel Fernandez" role="Administrador de Proyecto"/>
+                      <TeamMember name="Manuel Gurbanov" role="Desarrollador" linkedIn={"https://www.linkedin.com/in/manuel-gurbanov-5b6307242/"}/>
+                      <TeamMember name="Nahuel Fernandez" role="Administrador de Proyecto" linkedIn={"https://www.linkedin.com/in/nahuel-el%C3%ADas-fern%C3%A1ndez-4a9051255/"}/>
                       <TeamMember name="Helena Trindade" role="Diseño UX/UI"/>
 
                       <button className='w-1/2 p-2 text-c bg-b1 rounded-2xl' onClick={() => setState(0)}>

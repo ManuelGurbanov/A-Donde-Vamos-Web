@@ -135,7 +135,7 @@ const AllCoffeeList = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`${searchBy === 'neigh' ? 'Barrio' : 'Nombre de cafetería'}`}
+            placeholder={`${searchBy === 'neigh' ? 'Barrio' : 'Nombre'}`}
             className="w-full p-2 pl-10 text-black border rounded-lg placeholder-c bg-zinc-300"
           />
           <img
@@ -170,14 +170,6 @@ const AllCoffeeList = () => {
 
       {showFilters && (
         <>
-        <button 
-        onClick={() => setShowFilters(false)}
-        className="absolute top-4 left-4 text-red-600 font-extrabold z-40">
-        <img
-        className="w-12 h-12"
-        src="/exit.webp">
-        </img>
-    </button>
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setShowFilters(false)}></div>
           <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 w-full max-w-lg mx-auto shadow-lg z-50">
             <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">Aplicar Filtros</h1>

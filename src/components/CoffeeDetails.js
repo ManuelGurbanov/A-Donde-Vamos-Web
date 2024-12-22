@@ -37,7 +37,7 @@ import arrowdown from '../img/arrow_down.png';
 import {Link} from 'react-router-dom';
 
 import Review from './Review';
-
+import PriceRatingBar from './PriceRatingBar';
 const CoffeeDetails = () => {
   const { slug } = useParams();
   const [showReview, setShowReview] = useState(false);
@@ -113,6 +113,8 @@ const CoffeeDetails = () => {
     }
   };
   fetchCoffeeBySlug();
+
+  console.log(coffee);
 }, [slug]);
 
 useEffect(() => {
@@ -601,10 +603,16 @@ const parseTime = (timeString) => {
             { (coffee.pet || coffee.vegan || coffee.tac || coffee.outside) && (
                             <div className="flex items-center gap-4 mt-2 mb-6">
                             {coffee.pet && (
-                              <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
+                              <div className='flex flex-col gap-0'>
+                                <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
+                                <h1 className='text-center text-xs opacity-0 hover:opacity-50'>Pet Friendly</h1>
+                              </div>
                             )}
                             {coffee.vegan && (
-                              <img src={veganIcon} alt="Vegan Options" className="w-12 h-12 mr-2" />
+                                <div className='flex flex-col gap-0'>
+                                  <img src={veganIcon} alt="Vegan" className="w-12 h-12 mr-2" />
+                                  <h1 className='text-center text-xs opacity-0 hover:opacity-50'>Opciones Veganas</h1>
+                                </div>
                             )}
                             {coffee.tac && (
                               <img src={tacIcon} alt="TAC Accepted" className="w-12 h-12 mr-2" />
@@ -614,6 +622,8 @@ const parseTime = (timeString) => {
                             )}
                           </div>
               )}
+
+                 
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
                   <button className={`flex flex-row justify-between w-1/3 sm:w-1/6 gap-0 p-2 rounded-2xl bg-b1 h-10 ${!coffee.menuLink ? 'opacity-50 cursor-not-allowed bg-red-600' : ''}`} onClick={handleGoMenu} disabled={!coffee.menuLink}>
@@ -687,15 +697,47 @@ const parseTime = (timeString) => {
 )}
 
 
-        
-          <div className='flex flex-row items-center gap-1 mb-2'>
+        <div className='flex flex-col items-center gap-1 mb-2'>
+        <PriceRatingBar
+            slug={coffee.slugName}
+            category="el café"
+            options={['muy malo', 'malo', 'regular', 'bueno', 'muy bueno']}
+            dbField="coffeeRatings"
+          />
+          <PriceRatingBar
+            slug={coffee.slugName}
+            category="el precio"
+            options={['carísico', 'caro', 'regular', 'bueno', 'barato']}
+            dbField="priceRatings"
+          />
+          <PriceRatingBar
+            slug={coffee.slugName}
+            category="la pastelería"
+            options={['muy mala', 'mala', 'regular', 'buena', 'muy bueno']}
+            dbField="bakeryRatings"
+          />
+          <PriceRatingBar
+            slug={coffee.slugName}
+            category="el ambiente"
+            options={['muy malo', 'malo', 'regular', 'bueno', 'muy bueno']}
+            dbField="ambientRatings"
+          />
+          <PriceRatingBar
+            slug={coffee.slugName}
+            category="la atención"
+            options={['muy mala', 'mala', 'regular', 'buena', 'muy buena']}
+            dbield="workersRatings"
+          />
+        </div>
+
+
+
+          <div className='flex flex-row items-center gap-1 mb-2 mt-2'>
           <img src={heartadd} className='w-4 h-4 mt-2'></img>
           <p className="ml-1 text-lg">¿Qué te pareció {coffee.name}?</p>
           </div>
 
           <div className='flex flex-col items-center justify-start w-full mt-4'>
-
-            
           <button
               onClick={() => handleReviewClick(coffee)}
               className="flex items-center justify-center w-4/5 gap-2 px-4 py-2 mb-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl"

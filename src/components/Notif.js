@@ -8,10 +8,10 @@ const Notif = ({ tittle, subt }) => {
       <img src={like_notif} className='flex-shrink-0 w-7' alt="like icon" />
 
       <div className='flex flex-col flex-grow w-full ml-6'>
-        <h1 className="text-sm font-bold text-left text-c md:text-xl">
+        <h1 className="text-xs font-bold text-left text-c md:text-base">
           {tittle}
         </h1>
-        <h2 className="text-sm font-bold text-left text-c2 md:text-xl">
+        <h2 className="text-xs font-bold text-left text-c2 md:text-base">
           {subt}
         </h2>
       </div>      

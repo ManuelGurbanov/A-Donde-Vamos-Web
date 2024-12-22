@@ -67,15 +67,6 @@ const LoginForm = ({ onClose, onSuccessfulLogin }) => {
 
   return (
     <>
-    <button 
-        onClick={onClose} 
-        className="absolute top-4 left-4 text-red-600 font-extrabold z-40">
-        <img
-        className="w-12 h-12"
-        src="/exit.webp">
-        </img>
-    </button>
-
     <div className='w-screen h-screen z-30 bg-black absolute top-0 bottom-0 bg-opacity-70' onClick={onClose}></div>
     <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 w-full max-w-lg mx-auto shadow-lg z-50">
 
