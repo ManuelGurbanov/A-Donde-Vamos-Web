@@ -21,21 +21,22 @@ const EditCoffeeForm = () => {
   });
   const [picsLinks, setPicsLinks] = useState(['', '', '', '', '']);
   const [slugName, setSlugName] = useState('');
+
   useEffect(() => {
     const fetchCafeData = async () => {
       try {
         const cafesRef = collection(db, 'cafeterias');
         const q = query(cafesRef, where('slugName', '==', slug));
         const querySnapshot = await getDocs(q);
-
+  
         if (!querySnapshot.empty) {
           const cafeDoc = querySnapshot.docs[0];
           const cafe = cafeDoc.data();
           setCafeData({ ...cafe, id: cafeDoc.id });
-          setFormData(cafe);
+          setFormData({ ...cafe, recommended: cafe.recommended || false }); // Inicializa recommended si no existe
           setReviews(cafe.reviews || []);
-          setPicsLinks(cafe.picsLinks || ['', '', '', '', '']); // Configuración de fotos inicial
-
+          setPicsLinks(cafe.picsLinks || ['', '', '', '', '']);
+  
           if (cafe.schedules) {
             setSchedules(cafe.schedules);
           }
@@ -46,9 +47,10 @@ const EditCoffeeForm = () => {
         console.error('Error al obtener los datos de la cafetería:', error);
       }
     };
-
+  
     fetchCafeData();
   }, [slug, db]);
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -90,7 +92,7 @@ const EditCoffeeForm = () => {
       const cafeRef = doc(db, 'cafeterias', cafeData.id);
       await updateDoc(cafeRef, { ...formData, schedules, picsLinks });
       alert('Cafetería actualizada exitosamente.');
-      navigate(`/cafe/${slug}`);
+      navigate(`/${slug}`);
     } catch (error) {
       console.error('Error al actualizar la cafetería:', error);
       alert('Error al actualizar la cafetería. Inténtalo de nuevo.');
@@ -139,6 +141,19 @@ const EditCoffeeForm = () => {
         Eliminar Cafetería
       </button>
       <h1 className="text-2xl font-bold mb-4 text-gray-800">Editar Cafetería</h1>
+
+      <div className="mb-6">
+    <label className="flex items-center space-x-2">
+      <input
+        type="checkbox"
+        name="recommended"
+        checked={formData.recommended || false}
+        onChange={handleChange}
+        className="form-checkbox text-indigo-600"
+      />
+      <span className="text-gray-700 font-semibold">Cafetería Recomendada</span>
+    </label>
+  </div>
 
       <label className="block text-gray-700 font-semibold mb-2">Nombre:</label>
       <input type="text" name="name" value={formData.name || ''} onChange={handleChange}

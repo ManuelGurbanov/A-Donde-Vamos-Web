@@ -96,7 +96,7 @@ const Layout = () => {
       {/* Mostrar el Top solo si showTop es true */}
       {showTop && <Top text={topText} />}
 
-      <img className='fixed bottom-0 z-10 w-screen sm:hidden max-w-[430px]' src={navBg} alt="Background" />
+      <img className='fixed bottom-0 z-10 w-screen sm:hidden' src={navBg} alt="Background" />
 
       <div className="overflow-y-scroll content-container">
         <Outlet context={{ handleReviewClick }} />

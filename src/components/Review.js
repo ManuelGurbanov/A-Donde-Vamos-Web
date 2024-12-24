@@ -170,14 +170,8 @@ const Review = ({ selectedCafe: propSelectedCafe, onClose }) => {
 
   return (
     <>
-      <div className='absolute top-0 bottom-0 left-0 right-0 w-screen h-screen bg-black bg-opacity-80'></div>
+      <div onClick={handleCancel} className='absolute top-0 bottom-0 left-0 right-0 w-screen h-screen bg-black bg-opacity-80'></div>
       <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-b1 text-c h-[90vh] w-full sm:w-1/2 shadow-lg overflow-y-auto rounded-lg m-auto overflow-x-hidden">
-        <button
-          className='absolute text-sm bg-transparent left-4 text-c top-4 text-opacity-60'
-          onClick={handleCancel}
-        >
-          Cancelar
-        </button>
 
         <h2 className="mt-6 mb-4 text-lg font-bold text-center">Reseñar una Cafetería</h2>
 

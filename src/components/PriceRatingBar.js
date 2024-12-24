@@ -61,7 +61,7 @@ const RatingBar = ({ slug, category, options, dbField }) => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-4">
+    <div className="flex flex-col items-center mt-4 ">
       <h2 className="text-lg font-bold h-8 w-full text-center">{`¿Cómo calificarías ${category}?`}</h2>
       <div className="flex w-full justify-center">
         {options.map((option) => (
@@ -73,7 +73,7 @@ const RatingBar = ({ slug, category, options, dbField }) => {
             onClick={() => handleVote(option)}
             disabled={hasVoted}
           >
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center"> 
               <span
               className={` w-12 h-10 flex items-center justify-center text-xs
               ${hasVoted ? 'text-b1' : 'text-c' }`}>

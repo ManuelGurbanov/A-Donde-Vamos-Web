@@ -600,38 +600,71 @@ const parseTime = (timeString) => {
         </Link>
       )}
 
-            { (coffee.pet || coffee.vegan || coffee.tac || coffee.outside) && (
-                            <div className="flex items-center gap-4 mt-2 mb-6">
-                            {coffee.pet && (
-                              <div className='flex flex-col gap-0'>
-                                <img src={petIcon} alt="Pet Friendly" className="w-12 h-12 mr-2" />
-                              </div>
-                            )}
-                            {coffee.vegan && (
-                                <div className='flex flex-col gap-0'>
-                                  <img src={veganIcon} alt="Vegan" className="w-12 h-12 mr-2" />
-                                </div>
-                            )}
-                            {coffee.tac && (
-                              <img src={tacIcon} alt="TAC" className="w-12 h-12 mr-2" />
-                            )}
-                            {coffee.outside && (
-                              <img src={outsideIcon} alt="Mesas Adue" className="w-12 h-12 mr-2" />
-                            )}
-                          </div>
-              )}
+      {(coffee.pet || coffee.vegan || coffee.tac || coffee.outside) && (
+        <div className="flex items-center gap-4 mt-2 mb-6">
+          {coffee.pet && (
+            <div className="flex flex-col items-center gap-1 group relative">
+              <img
+                src={petIcon}
+                alt="Pet Friendly"
+                className="w-12 h-12 mr-2"
+              />
+              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
+                Pet Friendly
+              </span>
+            </div>
+          )}
+          {coffee.vegan && (
+            <div className="flex flex-col items-center gap-1 group relative">
+              <img
+                src={veganIcon}
+                alt="Vegan"
+                className="w-12 h-12 mr-2"
+              />
+              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
+                Apto Vegano
+              </span>
+            </div>
+          )}
+          {coffee.tac && (
+            <div className="flex flex-col items-center gap-1 group relative">
+              <img
+                src={tacIcon}
+                alt="TAC"
+                className="w-12 h-12 mr-2"
+              />
+              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
+                TAC
+              </span>
+            </div>
+          )}
+          {coffee.outside && (
+            <div className="flex flex-col items-center gap-1 group relative">
+              <img
+                src={outsideIcon}
+                alt="Mesas Afuera"
+                className="w-12 h-12 mr-2"
+              />
+              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
+                Mesas Afuera
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
 
                  
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
-                  <button className={`flex flex-row justify-between w-1/3 sm:w-1/6 gap-0 p-2 rounded-2xl bg-b1 h-10 ${!coffee.menuLink ? 'opacity-50 cursor-not-allowed bg-red-600' : ''}`} onClick={handleGoMenu} disabled={!coffee.menuLink}>
+                  <button className={`flex flex-row justify-between w-1/3 sm:w-1/6 gap-0 p-2 rounded-2xl bg-b1 h-10 ${!coffee.menuLink ? 'opacity-50 cursor-not-allowed bg-brown' : ''}`} onClick={handleGoMenu} disabled={!coffee.menuLink}>
                     <img src={menu} className='md:ml-1 sm:mr-2'></img> <p className='text-md text-c sm:mr-4 mr-1'>Menú</p>
                   </button>
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoMaps}>
                     <img src={maps} className='m-auto w-7'></img>
                   </button>
 
-                  <button className={`w-1/6 h-10 p-2 rounded-2xl bg-b1 ${!coffee.instagram ? 'opacity-50 cursor-not-allowed bg-red-600' : ''}`} onClick={handleGoIg} disabled={!coffee.instagram}>
+                  <button className={`w-1/6 h-10 p-2 rounded-2xl bg-b1 ${!coffee.instagram ? 'opacity-50 cursor-not-allowed bg-brown' : ''}`} onClick={handleGoIg} disabled={!coffee.instagram}>
                     <img src={instagramimg} className='m-auto'></img>
                   </button>
                   
@@ -705,7 +738,7 @@ const parseTime = (timeString) => {
           <PriceRatingBar
             slug={coffee.slugName}
             category="el precio"
-            options={['carísico', 'caro', 'regular', 'bueno', 'barato']}
+            options={['muy caro', 'caro', 'regular', 'bueno', 'barato']}
             dbField="priceRatings"
           />
           <PriceRatingBar
@@ -755,7 +788,7 @@ const parseTime = (timeString) => {
   <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
   {reviews.length > 0 ? (
     reviews.map((review, index) => (
-      <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-col ring-1 ring-c h-56">
+      <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-white bg-opacity-100 text-c flex flex-col ring-1 ring-c h-56">
         <div className="flex flex-col w-full h-full justify-between">
           <div className="flex flex-col items-center mb-2 p-1">
           <span 
@@ -777,25 +810,44 @@ const parseTime = (timeString) => {
           <div className="flex items-center px-2">
             <button
               onClick={() => handleVote(index, 'like')}
-              className="mr-2 text-c2"
+              className="mr-2 flex flex-row gap-2"
             >
-              👍 {review.likes}
+              <img
+                src={
+                  review.votes[currentUser?.uid] === 'like'
+                    ? 'like_full.webp'
+                    : 'like.webp'
+                }
+                alt="Like"
+                className="w-4 h-4 mt-1"
+              />
+              {review.likes}
             </button>
             <button
               onClick={() => handleVote(index, 'dislike')}
-              className="mr-2 text-c2"
+              className="mr-2 flex flex-row gap-2"
             >
-              👎 {review.dislikes}
-            </button>
-            {currentUser?.uid === review.userId && (
-              <button
-                onClick={() => handleDeleteReview(index)}
-                className="bg-red-600 px-2 py-1 text-white rounded"
-              >
-                Eliminar
-              </button>
-            )}
-          </div>
+              <img
+                src={
+                  review.votes[currentUser?.uid] === 'dislike'
+                    ? 'dislike_full.webp'
+                    : 'dislike.webp'
+                }
+                alt="Dislike"
+                className="w-4 h-4 mt-1"
+              />
+    {review.dislikes}
+  </button>
+  {currentUser?.uid === review.userId && (
+    <button
+      onClick={() => handleDeleteReview(index)}
+      className="bg-red-600 px-2 py-1 text-white rounded"
+    >
+      Eliminar
+    </button>
+  )}
+</div>
+
         </div>
       </div>
     ))

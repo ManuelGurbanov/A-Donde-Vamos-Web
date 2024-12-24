@@ -328,16 +328,16 @@ const Login = () => {
                   {userReviews.map(cafe => (
                     <div key={cafe.cafeId} className="mb-4">
                       {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
-                        <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-b1 bg-opacity-75 text-c flex flex-row ring-1 ring-c">
-                          <div className='w-24'>
+                        <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-white bg-opacity-100 text-c flex flex-row ring-1 ring-c">
+                          <div className='w-36 mr-5'>
                           <MiniCard key={cafe.cafeId} cafe={cafe} slug={cafe.cafeId} newName={cafe.newName} />
                           </div>
-                          <div>
+                          <div className='w-3/4'>
                             <div className="flex items-center mb-2 flex-col p-1 w-full">
                               <span className="mr-2 font-bold text-c2 text-left w-full ml-4">{review.user}</span>
                               <div className='flex gap-1 justify-between ml-2 w-full'>
                                 <span>{starRating(review.rating)}</span>
-                                <span className='text-c2 text-opacity-70 text-xl'>{review.date}</span>
+                                <span className='text-c2 text-opacity-70 text-xl mr-5'>{review.date}</span>
                               </div>
                             </div>
                             <p className="mb-2 text-c2 px-2">{review.text}</p>

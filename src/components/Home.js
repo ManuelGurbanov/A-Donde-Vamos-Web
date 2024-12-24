@@ -97,6 +97,8 @@ const Home = () => {
   );
   const uniqueFavoritesCafes = remainingCafesAfterPopular.slice(0, 5);
 
+  const recomendedCafes = cafes.filter((cafe) => cafe.recomended);
+
   const remainingCafesAfterFavorites = remainingCafesAfterPopular.filter(
     (cafe) => !uniqueFavoritesCafes.includes(cafe)
   );
@@ -250,8 +252,8 @@ const Home = () => {
       </div>
 
       {isLoading ? (
-        <div className="w-full text-center absolute top-24 z-50 bg-b1 rounded-lg px-6">
-          <p>Cargando resultados...</p>
+        <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
+          <p className='p-4'>Cargando resultados...</p>
         </div>
       ) : filteredUsers.length > 0 ? (
         <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
@@ -265,8 +267,8 @@ const Home = () => {
         </div>
       ) : (
         searchQuery.trim() && (
-          <div className="w-full text-center absolute top-24 z-50 bg-b1 rounded-lg px-6">
-            <p>No se encontraron resultados.</p>
+          <div className="w--4/5 sm:w-1/2 text-center absolute top-24 z-50 bg-b1 rounded-lg px-6">
+            <p className='p-4'>No se encontraron resultados.</p>
           </div>
         )
       )}
@@ -295,10 +297,10 @@ const Home = () => {
                 <div>
                   <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Recomendaciones</h2>
                   {isLargeScreen ? (
-                    renderCarousel(uniqueFavoritesCafes, currentSlideFavorites, setCurrentSlideFavorites)
+                    renderCarousel(recomendedCafes, currentSlideFavorites, setCurrentSlideFavorites)
                   ) : (
                     <Slider {...sliderSettings}>
-                      {uniqueFavoritesCafes.map((cafe, index) => (
+                      {recomendedCafes.map((cafe, index) => (
                         <CoffeeCard key={index} cafe={cafe} />
                       ))}
                     </Slider>
