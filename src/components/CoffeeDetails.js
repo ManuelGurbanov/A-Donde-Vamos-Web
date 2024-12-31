@@ -102,84 +102,121 @@ const CoffeeDetails = () => {
 
   //#endregion
 
+  const checkIfOpen = (schedules) => {
+    const currentDate = new Date(); // Obtener la fecha y hora actual
+    const currentDay = currentDate.getDay(); // Día actual (0 = Domingo, ..., 6 = Sábado)
+    const currentTimeInMinutes = currentDate.getHours() * 60 + currentDate.getMinutes(); // Hora actual en minutos
+    const dayNames = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']; // Mapeo de días
+    const currentDayName = dayNames[currentDay];
+    const previousDayName = dayNames[(currentDay - 1 + 7) % 7]; // Día anterior, ajustado para la rotación semanal
+    
+    // Obtener el horario del día actual y del día anterior
+    const todaySchedule = schedules[currentDayName];
+    const previousDaySchedule = schedules[previousDayName];
 
- useEffect(() => {
-  const fetchCoffeeBySlug = async () => {
-    const coffeeQuery = query(
-      collection(db, 'cafeterias'),
-      where('slugName', '==', slug)
-    );
-    const querySnapshot = await getDocs(coffeeQuery);
-    if (!querySnapshot.empty) {
-      const data = querySnapshot.docs[0].data();
-      setCoffee(data);
-      setReviews(data.reviews || []);
+    // Paso 1: Verificar si el día anterior tenía un horario extendido (cierre después de medianoche)
+    if (previousDaySchedule && !previousDaySchedule.cerrado) {
+        const previousDayOpeningTime = parseTime(previousDaySchedule.apertura); // Apertura del día anterior en minutos
+        let previousDayClosingTime = parseTime(previousDaySchedule.cierre); // Cierre del día anterior en minutos
+
+        // Si el cierre es después de medianoche, ajustar a un valor mayor que 1440
+        if (previousDayClosingTime < previousDayOpeningTime) {
+            previousDayClosingTime += 1440; // Se extiende al siguiente día
+        }
+
+        // Calcular el tiempo que ha pasado desde el inicio del día anterior
+        const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes;
+        if (minutesSincePreviousDayStart < previousDayClosingTime) {
+            return 'Abierto';
+        }
     }
-  };
-  fetchCoffeeBySlug();
 
-  console.log(coffee);
-}, [slug]);
+    // Paso 2: Si no estamos en el horario extendido, verificar el horario del día actual
+    if (!todaySchedule || todaySchedule.cerrado) {
+     //   console.log("CERRADO (según horario de hoy)");
+        return 'Cerrado';
+    }
 
-useEffect(() => {
-  let isMounted = true;
+    const openingTime = parseTime(todaySchedule.apertura); // Apertura de hoy en minutos
+    let closingTime = parseTime(todaySchedule.cierre); // Cierre de hoy en minutos
 
-  const fetchCoffeeByName = async () => {
-    try {
-      const coffeeQuery = query(collection(db, 'cafeterias'), where('slugName', '==', name)); // Revisa que name se define correctamente
-      const querySnapshot = await getDocs(coffeeQuery);
-      
-      if (!querySnapshot.empty) {
-        const docSnap = querySnapshot.docs[0];
-        const data = docSnap.data();
+    // Si el cierre es después de medianoche, ajustar el tiempo de cierre
+    if (closingTime < openingTime) {
+        closingTime += 1440; // Ajustar a minutos del día siguiente
+    }
 
-        if (isMounted) {
+   // console.log(`Día actual (${currentDayName}): apertura a ${openingTime} min, cierre a ${closingTime} min`);
+
+    // Verificar si la hora actual está dentro del rango de apertura de hoy
+    if (currentTimeInMinutes >= openingTime && currentTimeInMinutes < closingTime) {
+        //console.log("ABIERTO (según horario de hoy)");
+        return 'Abierto';
+    }
+
+    //console.log("CERRADO (fuera del horario de hoy)");
+    return 'Cerrado';
+};
+
+  useEffect(() => {
+    let isMounted = true;
+  
+    const fetchCoffee = async () => {
+      try {
+        // Fetch coffee data
+        const coffeeQuery = query(
+          collection(db, 'cafeterias'),
+          where('slugName', '==', slug || name) // Usar slug o name según disponibilidad
+        );
+        const querySnapshot = await getDocs(coffeeQuery);
+  
+        if (!querySnapshot.empty) {
+          const docSnap = querySnapshot.docs[0];
+          const data = docSnap.data();
           const coffeeWithId = { ...data, id: docSnap.id };
-          console.log("COFFEE WITH ID:" + coffeeWithId);
-
-          setCoffee(coffeeWithId);
-          setReviews(data.reviews || []);
-          setTotalRatings(data.totalRatings || 0);
-          setNumRatings(data.numRatings || 0);
-
-        }
-
-        if (currentUser) {
-          const userHasRated = data.reviews?.some(review => review.userId === currentUser.uid);
-          setHasRated(userHasRated);
-          
-          const userDocRef = doc(db, 'users', currentUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
-
-          if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
-            if (isMounted) {
-              const userFavorites = userData.favorites || [];
-              setIsFavorite(userFavorites.includes(docSnap.id));
+  
+          if (isMounted) {
+            setCoffee(coffeeWithId); // Establece el café
+            setReviews(data.reviews || []);
+            setTotalRatings(data.totalRatings || 0);
+            setNumRatings(data.numRatings || 0);
+  
+            if (currentUser) {
+              // Fetch user favorites
+              const userRef = doc(db, 'users', currentUser.uid);
+              const userDocSnap = await getDoc(userRef);
+  
+              if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                const favorites = userData?.favorites || [];
+  
+                if (coffeeWithId.slugName) {
+                  console.log('SLUGNAME DISPONIBLE:', coffeeWithId.slugName);
+                  setIsFavorite(favorites.includes(coffeeWithId.slugName));
+                }
+              }
             }
-          } else {
-            console.log('No such user document!');
+  
+            checkIfOpen(data);
           }
+        } else {
+          console.log('No se encontró el café con ese slug o nombre.');
         }
-
-        checkIfOpen(data);
-      } else {
-        console.log('No such coffee document with that name!');
+      } catch (err) {
+        console.error('Error al cargar los detalles del café:', err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-    } catch (err) {
-      console.error('Error fetching coffee details by name:', err);
-    } finally {
-      if (isMounted) setLoading(false);
-      console.log("LAS REVIEWS SON: ", reviews);
-    }
-  };
+    };
+  
+    fetchCoffee();
+  
+    return () => {
+      isMounted = false;
+    };
+  }, [slug, name, currentUser]);
+  
+  
 
-  fetchCoffeeByName();
-
-  return () => {
-    isMounted = false;
-  };
-}, [name, currentUser]);
 
 const [showExplanation, setShowExplanation] = useState(false);
 const [activeLogo, setActiveLogo] = useState(null);
@@ -206,6 +243,8 @@ const logos = [
     explanation: 'Cafeterías con mesas al aire libre.'
   }
 ];
+
+
 
   const addFavorite = async (userId, coffeeId) => {
     try {
@@ -464,60 +503,6 @@ const logos = [
   const daysOfWeek = ['domingo', 'lunes', 'martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 
-  const checkIfOpen = (schedules) => {
-    const currentDate = new Date(); // Obtener la fecha y hora actual
-    const currentDay = currentDate.getDay(); // Día actual (0 = Domingo, ..., 6 = Sábado)
-    const currentTimeInMinutes = currentDate.getHours() * 60 + currentDate.getMinutes(); // Hora actual en minutos
-    const dayNames = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']; // Mapeo de días
-    const currentDayName = dayNames[currentDay];
-    const previousDayName = dayNames[(currentDay - 1 + 7) % 7]; // Día anterior, ajustado para la rotación semanal
-    
-    // Obtener el horario del día actual y del día anterior
-    const todaySchedule = schedules[currentDayName];
-    const previousDaySchedule = schedules[previousDayName];
-
-    // Paso 1: Verificar si el día anterior tenía un horario extendido (cierre después de medianoche)
-    if (previousDaySchedule && !previousDaySchedule.cerrado) {
-        const previousDayOpeningTime = parseTime(previousDaySchedule.apertura); // Apertura del día anterior en minutos
-        let previousDayClosingTime = parseTime(previousDaySchedule.cierre); // Cierre del día anterior en minutos
-
-        // Si el cierre es después de medianoche, ajustar a un valor mayor que 1440
-        if (previousDayClosingTime < previousDayOpeningTime) {
-            previousDayClosingTime += 1440; // Se extiende al siguiente día
-        }
-
-        // Calcular el tiempo que ha pasado desde el inicio del día anterior
-        const minutesSincePreviousDayStart = 1440 + currentTimeInMinutes;
-        if (minutesSincePreviousDayStart < previousDayClosingTime) {
-            return 'Abierto';
-        }
-    }
-
-    // Paso 2: Si no estamos en el horario extendido, verificar el horario del día actual
-    if (!todaySchedule || todaySchedule.cerrado) {
-     //   console.log("CERRADO (según horario de hoy)");
-        return 'Cerrado';
-    }
-
-    const openingTime = parseTime(todaySchedule.apertura); // Apertura de hoy en minutos
-    let closingTime = parseTime(todaySchedule.cierre); // Cierre de hoy en minutos
-
-    // Si el cierre es después de medianoche, ajustar el tiempo de cierre
-    if (closingTime < openingTime) {
-        closingTime += 1440; // Ajustar a minutos del día siguiente
-    }
-
-   // console.log(`Día actual (${currentDayName}): apertura a ${openingTime} min, cierre a ${closingTime} min`);
-
-    // Verificar si la hora actual está dentro del rango de apertura de hoy
-    if (currentTimeInMinutes >= openingTime && currentTimeInMinutes < closingTime) {
-        //console.log("ABIERTO (según horario de hoy)");
-        return 'Abierto';
-    }
-
-    //console.log("CERRADO (fuera del horario de hoy)");
-    return 'Cerrado';
-};
 
 
 // Función para convertir la hora en formato "HHMM" a minutos
@@ -611,7 +596,9 @@ const parseTime = (timeString) => {
               {starRating(calculateAverageRating())}
             </p>
             <p className="mb-1 mt-1 text-xl">
-            {numRatings === 1 ? `${numRatings} valoración` : `${numRatings} valoraciones`}
+            {numRatings === 1 
+              ? `${Math.max(numRatings, 0)} valoración` 
+              : `${Math.max(numRatings, 0)} valoraciones`}
           </p>
           </div>
 
@@ -626,56 +613,55 @@ const parseTime = (timeString) => {
         </Link>
       )}
 
-{(coffee.pet || coffee.vegan || coffee.tac || coffee.outside) && (
-      <div className="flex items-center gap-4 mt-2 mb-6">
-        {coffee.pet && (
-          <div
-            className="flex flex-col items-center gap-1 group relative cursor-pointer"
-            onClick={() => {
-              setActiveLogo(logos.find((logo) => logo.name === 'Pet Friendly'));
-              setShowExplanation(true);
-            }}
-          >
-            <img src={petIcon} alt="Pet Friendly" className="w-12" />
-          </div>
-        )}
-        {coffee.vegan && (
-          <div
-            className="flex flex-col items-center gap-1 group relative cursor-pointer"
-            onClick={() => {
-              setActiveLogo(logos.find((logo) => logo.name === 'Vegano'));
-              setShowExplanation(true);
-            }}
-          >
-            <img src={veganIcon} alt="Vegan" className="w-12" />
-          </div>
-        )}
-        {coffee.tac && (
-          <div
-            className="flex flex-col items-center gap-1 group relative cursor-pointer"
-            onClick={() => {
-              setActiveLogo(logos.find((logo) => logo.name === 'Sin Gluten'));
-              setShowExplanation(true);
-            }}
-          >
-            <img src={tacIcon} alt="TAC" className="w-12" />
-          </div>
-        )}
-        {coffee.outside && (
-          <div
-            className="flex flex-col items-center gap-1 group relative cursor-pointer"
-            onClick={() => {
-              setActiveLogo(
-                logos.find((logo) => logo.name === 'Mesas Afuera')
-              );
-              setShowExplanation(true);
-            }}
-          >
-            <img src={outsideIcon} alt="Mesas Afuera" className="w-12" />
-          </div>
-        )}
+{(coffee.pet || coffee.vegan || coffee.tac || coffee.outside) ? (
+  <div className="flex items-center gap-4 mt-2 mb-2">
+    {coffee.pet && (
+      <div
+        className="flex flex-col items-center gap-1 group relative cursor-pointer"
+        onClick={() => {
+          setActiveLogo(logos.find((logo) => logo.name === 'Pet Friendly'));
+          setShowExplanation(true);
+        }}
+      >
+        <img src={petIcon} alt="Pet Friendly" className="w-12" />
       </div>
     )}
+    {coffee.vegan && (
+      <div
+        className="flex flex-col items-center gap-1 group relative cursor-pointer"
+        onClick={() => {
+          setActiveLogo(logos.find((logo) => logo.name === 'Vegano'));
+          setShowExplanation(true);
+        }}
+      >
+        <img src={veganIcon} alt="Vegan" className="w-12" />
+      </div>
+    )}
+    {coffee.tac && (
+      <div
+        className="flex flex-col items-center gap-1 group relative cursor-pointer"
+        onClick={() => {
+          setActiveLogo(logos.find((logo) => logo.name === 'Sin Gluten'));
+          setShowExplanation(true);
+        }}
+      >
+        <img src={tacIcon} alt="TAC" className="w-12" />
+      </div>
+    )}
+    {coffee.outside && (
+      <div
+        className="flex flex-col items-center gap-1 group relative cursor-pointer"
+        onClick={() => {
+          setActiveLogo(logos.find((logo) => logo.name === 'Mesas Afuera'));
+          setShowExplanation(true);
+        }}
+      >
+        <img src={outsideIcon} alt="Mesas Afuera" className="w-12" />
+      </div>
+    )}
+  </div>
+) : <div className='mb-1'></div>}
+
 
     {showExplanation && activeLogo && (
       <LogoExplication
