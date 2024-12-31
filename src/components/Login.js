@@ -6,9 +6,9 @@ import { CafeContext } from './CafeContext';
 import { doc, getDoc } from 'firebase/firestore'; 
 import MiniCard from './MiniCard';
 
-import petIcon from '../img/pet.png';
-import tacIcon from '../img/tac.png';
-import veganIcon from '../img/vegan.png';
+import petIcon from '../img/pet.webp';
+import tacIcon from '../img/sinGluten.webp';
+import veganIcon from '../img/vegan.webp';
 
 import fullStarDark from '../img/fullStarRed.webp';
 import halfStarDark from '../img/halfStarRed.webp';
@@ -329,10 +329,10 @@ const Login = () => {
                     <div key={cafe.cafeId} className="mb-4">
                       {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
                         <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-white bg-opacity-100 text-c flex flex-row ring-1 ring-c">
-                          <div className='w-36 mr-5'>
+                          <div className='w-36 mr-1'>
                           <MiniCard key={cafe.cafeId} cafe={cafe} slug={cafe.cafeId} newName={cafe.newName} />
                           </div>
-                          <div className='w-3/4'>
+                          <div className='w-full'>
                             <div className="flex items-center mb-2 flex-col p-1 w-full">
                               <span className="mr-2 font-bold text-c2 text-left w-full ml-4">{review.user}</span>
                               <div className='flex gap-1 justify-between ml-2 w-full'>

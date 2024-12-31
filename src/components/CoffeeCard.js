@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import outsideIcon from '../img/outside.webp';
-import petIcon from '../img/pet.png';
-import tacIcon from '../img/tac.png';
-import veganIcon from '../img/vegan.png';
+import petIcon from '../img/pet.webp';
+import tacIcon from '../img/sinGluten.webp';
+import veganIcon from '../img/vegan.webp';
 
 import fullStarWhite from '../img/fullStar.png';
 import halfStarWhite from '../img/halfStar.png';

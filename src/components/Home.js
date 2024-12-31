@@ -48,9 +48,9 @@ const Home = () => {
   
   useEffect(() => {
     if (searchQuery.trim()) {
-      fetchUsers(searchQuery);  // Llama a fetchUsers cuando searchQuery cambia
+      fetchUsers(searchQuery);
     } else {
-      setFilteredUsers([]);  // Limpia los resultados si no hay texto de búsqueda
+      setFilteredUsers([]); 
     }
   }, [searchQuery]);
 
@@ -163,19 +163,20 @@ const Home = () => {
       const usersRef = collection(db, 'users');
       const querySnapshot = await getDocs(usersRef);
   
-      // Mostrar todos los usuarios en la consola
       const allUsers = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
       console.log('Todos los usuarios:', allUsers);
+
   
-      // Filtrar por username usando el texto de búsqueda
       const filtered = allUsers.filter((user) =>
-        user.username.toLowerCase().includes(queryText.toLowerCase())
+        user.username?.toLowerCase().includes(queryText.toLowerCase())
       );
   
       setFilteredUsers(filtered);
+      console.log('Texto de búsqueda:', queryText);
+      console.log('Usuarios filtrados:', filtered);
     } catch (error) {
       console.error('Error fetching users:', error);
       setFilteredUsers([]);

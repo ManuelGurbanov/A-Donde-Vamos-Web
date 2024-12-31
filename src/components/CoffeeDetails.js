@@ -4,9 +4,11 @@ import { db } from '../firebase/firebase';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import outsideIcon from '../img/outside.webp';
-import petIcon from '../img/pet.png';
-import tacIcon from '../img/tac.png';
-import veganIcon from '../img/vegan.png';
+import petIcon from '../img/pet.webp';
+import tacIcon from '../img/sinGluten.webp';
+import veganIcon from '../img/vegan.webp';
+
+import LogoExplication from './LogoExplication';
 
 import { AuthContext } from '../contexts/AuthContext'; // Asegúrate de que la ruta sea correcta
 
@@ -39,6 +41,7 @@ import {Link} from 'react-router-dom';
 import Review from './Review';
 import PriceRatingBar from './PriceRatingBar';
 const CoffeeDetails = () => {
+  //#region Variables
   const { slug } = useParams();
   const [showReview, setShowReview] = useState(false);
   const handleReviewClick = (cafe) => {
@@ -97,6 +100,7 @@ const CoffeeDetails = () => {
     window.open(coffee.googleLink, '_blank');
   };
 
+  //#endregion
 
 
  useEffect(() => {
@@ -177,9 +181,31 @@ useEffect(() => {
   };
 }, [name, currentUser]);
 
-  
+const [showExplanation, setShowExplanation] = useState(false);
+const [activeLogo, setActiveLogo] = useState(null);
 
-  
+const logos = [
+  {
+    name: 'Sin Gluten',
+    img: tacIcon,
+    explanation: 'Cafetería con opciones sin gluten.'
+  },
+  {
+    name: 'Pet Friendly',
+    img: petIcon,
+    explanation: 'La cafetería permite el ingreso con mascotas.'
+  },
+  {
+    name: 'Vegano',
+    img: veganIcon,
+    explanation: 'Cafetería con opciones veganas.'
+  },
+  {
+    name: 'Mesas Afuera',
+    img: outsideIcon,
+    explanation: 'Cafeterías con mesas al aire libre.'
+  }
+];
 
   const addFavorite = async (userId, coffeeId) => {
     try {
@@ -600,58 +626,65 @@ const parseTime = (timeString) => {
         </Link>
       )}
 
-      {(coffee.pet || coffee.vegan || coffee.tac || coffee.outside) && (
-        <div className="flex items-center gap-4 mt-2 mb-6">
-          {coffee.pet && (
-            <div className="flex flex-col items-center gap-1 group relative">
-              <img
-                src={petIcon}
-                alt="Pet Friendly"
-                className="w-12 h-12 mr-2"
-              />
-              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
-                Pet Friendly
-              </span>
-            </div>
-          )}
-          {coffee.vegan && (
-            <div className="flex flex-col items-center gap-1 group relative">
-              <img
-                src={veganIcon}
-                alt="Vegan"
-                className="w-12 h-12 mr-2"
-              />
-              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
-                Apto Vegano
-              </span>
-            </div>
-          )}
-          {coffee.tac && (
-            <div className="flex flex-col items-center gap-1 group relative">
-              <img
-                src={tacIcon}
-                alt="TAC"
-                className="w-12 h-12 mr-2"
-              />
-              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
-                TAC
-              </span>
-            </div>
-          )}
-          {coffee.outside && (
-            <div className="flex flex-col items-center gap-1 group relative">
-              <img
-                src={outsideIcon}
-                alt="Mesas Afuera"
-                className="w-12 h-12 mr-2"
-              />
-              <span className="text-sm text-c opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-12 w-24">
-                Mesas Afuera
-              </span>
-            </div>
-          )}
-        </div>
-      )}
+{(coffee.pet || coffee.vegan || coffee.tac || coffee.outside) && (
+      <div className="flex items-center gap-4 mt-2 mb-6">
+        {coffee.pet && (
+          <div
+            className="flex flex-col items-center gap-1 group relative cursor-pointer"
+            onClick={() => {
+              setActiveLogo(logos.find((logo) => logo.name === 'Pet Friendly'));
+              setShowExplanation(true);
+            }}
+          >
+            <img src={petIcon} alt="Pet Friendly" className="w-12" />
+          </div>
+        )}
+        {coffee.vegan && (
+          <div
+            className="flex flex-col items-center gap-1 group relative cursor-pointer"
+            onClick={() => {
+              setActiveLogo(logos.find((logo) => logo.name === 'Vegano'));
+              setShowExplanation(true);
+            }}
+          >
+            <img src={veganIcon} alt="Vegan" className="w-12" />
+          </div>
+        )}
+        {coffee.tac && (
+          <div
+            className="flex flex-col items-center gap-1 group relative cursor-pointer"
+            onClick={() => {
+              setActiveLogo(logos.find((logo) => logo.name === 'Sin Gluten'));
+              setShowExplanation(true);
+            }}
+          >
+            <img src={tacIcon} alt="TAC" className="w-12" />
+          </div>
+        )}
+        {coffee.outside && (
+          <div
+            className="flex flex-col items-center gap-1 group relative cursor-pointer"
+            onClick={() => {
+              setActiveLogo(
+                logos.find((logo) => logo.name === 'Mesas Afuera')
+              );
+              setShowExplanation(true);
+            }}
+          >
+            <img src={outsideIcon} alt="Mesas Afuera" className="w-12" />
+          </div>
+        )}
+      </div>
+    )}
+
+    {showExplanation && activeLogo && (
+      <LogoExplication
+        logoImg={activeLogo.img}
+        logoName={activeLogo.name}
+        LogoExplication={activeLogo.explanation}
+        setLogoExplication={setShowExplanation}
+      />
+    )}
 
 
                  
