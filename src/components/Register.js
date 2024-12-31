@@ -24,6 +24,9 @@ const Register = () => {
   const [errorText, setErrorText] = useState('');
   const [verificationEmailSent, setVerificationEmailSent] = useState(false); 
 
+  const [previewImage, setPreviewImage] = useState(null);
+
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -86,8 +89,12 @@ const Register = () => {
     const file = e.target.files[0];
     if (file) {
       setProfilePicture(file);
+
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewImage(objectUrl);
     }
   };
+  
 
   return (
     <>
@@ -149,6 +156,9 @@ const Register = () => {
             />
           </label>
           {profilePicture && <p className="text-center text-green-600">¡Archivo seleccionado!</p>}
+          {previewImage && (
+            <img src={previewImage} alt="Previsualización" className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover" />
+          )}
 
           <input
             type="text"

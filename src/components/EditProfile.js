@@ -47,8 +47,12 @@ const EditProfile = ({backFunction}) => {
     const file = e.target.files[0];
     if (file) {
       setNewProfilePicture(file);
+  
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewImage(objectUrl);
     }
   };
+  
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -126,7 +130,7 @@ const EditProfile = ({backFunction}) => {
           />
         </label>
         {newProfilePicture && <p className="text-center text-green-600">¡Archivo seleccionado!</p>}
-        {previewImage && <img src={previewImage} alt="Previsualización" className="w-32 h-32 rounded-full mt-2" />}
+        {newProfilePicture && <img src={previewImage} alt="Previsualización" className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover" />}
         
         {/* Barrio Principal, cambiar a selector */}
         <label className="text-c2 font-bold text-left italic w-full">Barrio en Perfil</label>

@@ -242,8 +242,9 @@ const Home = () => {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Nombre de Usuario"
+          placeholder="Nombre"
           className="w-full p-2 pl-10 text-black rounded-lg placeholder-c bg-zinc-300"
+          autoComplete="off"
         />
         <img
           src={searchLogo} 

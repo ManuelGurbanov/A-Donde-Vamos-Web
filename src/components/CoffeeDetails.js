@@ -608,7 +608,8 @@ const parseTime = (timeString) => {
           <p className='w-full p-0 text-xl text-left'>{coffee.description || "Café de Especialidad."} </p>
 
           {isAdmin && (
-        <Link to={`/cafe/${coffee.slugName}/editar`}>
+        <Link to={`/${coffee.slugName}/editar`}>
+          <p className="text-xs text-c2">{coffee.id} <span className='bg-c text-white px-1'>(es la id, para debug)</span></p>
           <button className="bg-blue-500 text-white p-2 rounded mt-2 mb-2">Editar</button>
         </Link>
       )}
