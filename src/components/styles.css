@@ -60,3 +60,18 @@
 .bouncing-loader > div:nth-child(3) {
   animation-delay: 0.4s;
 }
+
+@keyframes pulseUpDown {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    /* transform: translateY(-10px); */
+    opacity: 0.3;
+  }
+}
+
+.animate-loading-logo {
+  animation: pulseUpDown 1s infinite ease-in-out;
+}

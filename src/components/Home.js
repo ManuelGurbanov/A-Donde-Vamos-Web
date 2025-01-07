@@ -193,8 +193,8 @@ const Home = () => {
           loading ? 'opacity-100' : 'opacity-0 pointer-events-none -z-50'
         }`}
       >
-        <img src={loadingLogo} className="w-2/3 p-5 sm:w-80" alt="Loading..." />
-        <BouncingDotsLoader className="mt-5" />
+        <img src={loadingLogo} className="animate-loading-logo w-2/3 p-5 sm:w-80" alt="Loading..." />
+        {/* <BouncingDotsLoader className="mt-5" /> */}
       </div>
 
 {/* Mostrar el contenido solo si loading es false y fadeOut es false */}

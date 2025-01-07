@@ -51,7 +51,7 @@ const Review = ({ selectedCafe: propSelectedCafe, onClose }) => {
   
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUsername(userData.username || 'Anonymous'); // Aquí se obtiene el nombre de usuario
+        setUsername(userData.username); // Aquí se obtiene el nombre de usuario
       } else {
         console.error('No se encontró el usuario en Firestore');
       }
