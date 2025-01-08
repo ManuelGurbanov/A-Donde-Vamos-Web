@@ -1,20 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import fullStarDark from '../img/fullStar.png';
 import halfStarDark from '../img/halfStar.png';
 import emptyStarDark from '../img/emptyStar.png';
 
 const RatingDistribution = ({ reviews }) => {
-  // Array para contar las calificaciones: 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5
+  const [showAchievements, setShowAchievements] = useState(false);
+
   const ratingsCount = new Array(11).fill(0);
   let totalRatings = 0;
   let totalReviews = 0;
 
+  // Calcular estadísticas
   reviews.forEach(cafe => {
     cafe.reviews.forEach(review => {
-      const rating = review.rating; // Obtener la calificación
+      const rating = review.rating;
       if (rating >= 0 && rating <= 5) {
-        const index = rating * 2; // Multiplicamos por 2 para obtener el índice correspondiente
-        ratingsCount[Math.floor(index)]++; // Incrementa el conteo
+        const index = rating * 2;
+        ratingsCount[Math.floor(index)]++;
         totalRatings += rating;
         totalReviews++;
       }
@@ -22,6 +24,66 @@ const RatingDistribution = ({ reviews }) => {
   });
 
   const averageRating = totalReviews ? (totalRatings / totalReviews).toFixed(1) : 0;
+
+  const achievements = [
+    { 
+      icon: '🥇', 
+      name: 'Primera reseña', 
+      description: '¡Hiciste tu primera reseña! 🥺 ¿Todo un logro, no? 🙌', 
+      condition: () => totalReviews >= 1 
+    },
+    { 
+      icon: '☕', 
+      name: 'Aficionado', 
+      description: 'Sólo reseñaste 10 cafeterías. 🥱 Falta ritmo.', 
+      condition: () => totalReviews >= 10 
+    },
+    { 
+      icon: '📸', 
+      name: 'Influencer de cafeterías', 
+      description: 'Reseñaste 20 cafeterías. (Recomendadas por tu influencer de confianza, obvio).', 
+      condition: () => totalReviews >= 20 
+    },
+    { 
+      icon: '🤓', 
+      name: 'Obsesivo', 
+      description: 'Reseñaste 30 cafeterías. Reconocelo, a esta altura te molesta que la gente endulce el café.', 
+      condition: () => totalReviews >= 30 
+    },
+    { 
+      icon: '🎓', 
+      name: 'Maestro', 
+      description: 'Reseñaste 40 cafeterías. ¡Te recibiste de Master en Café de especialidad!', 
+      condition: () => totalReviews >= 40 
+    },
+    { 
+      icon: '💻', 
+      name: 'Workaholic', 
+      description: 'Primera reseña de una cafetería que permite hacer coworking.', 
+      condition: () => reviews.some(cafe => cafe.coworking) 
+    },
+    { 
+      icon: '☕', 
+      name: 'Cafés eran los de antes…', 
+      description: 'Primera reseña de un café / Bar Notable.', 
+      condition: () => reviews.some(cafe => cafe.cafeNotable) 
+    },
+    { 
+      icon: '🌱', 
+      name: 'A base de plantas', 
+      description: 'Primera reseña de una cafetería con opción vegana.', 
+      condition: () => reviews.some(cafe => cafe.vegan) 
+    },
+    { 
+      icon: '🐶', 
+      name: '¡Guau, Guau, Guau!', 
+      description: 'Primera reseña de una cafetería que es Pet Friendly.', 
+      condition: () => reviews.some(cafe => cafe.pet) 
+    },
+  ];
+
+  // Función para determinar si un logro está completo
+  const isAchievementComplete = (achievement) => achievement.condition();
 
   const starRating = (rating) => {
     const stars = [];
@@ -46,17 +108,6 @@ const RatingDistribution = ({ reviews }) => {
     return stars;
   };
 
-  const determineRank = (reviewsCount) => {
-    if (reviewsCount < 10) return { rank: 'Aficionado ☕', next: 10 - reviewsCount };
-    if (reviewsCount < 20) return { rank: 'Curioso ✨', next: 20 - reviewsCount };
-    if (reviewsCount < 30) return { rank: 'Apasionado 📸', next: 30 - reviewsCount };
-    if (reviewsCount < 40) return { rank: 'Obsesivo 🤓', next: 40 - reviewsCount };
-    if (reviewsCount < 50) return { rank: 'Maestro 🎓', next: 50 - reviewsCount };
-    if (reviewsCount < 75) return { rank: 'Conocedor 🏅', next: 75 - reviewsCount };
-    return { rank: '¡Rango Máximo! 🎉', next: 0 };
-  };
-
-  const { rank, next } = determineRank(totalReviews);
 
   return (
     <>
@@ -85,10 +136,31 @@ const RatingDistribution = ({ reviews }) => {
         <p>{starRating(averageRating)}</p>
       </div>
     </div>
-    <div className="mt-4 text-center">
-          <p className="text-lg font-bold">{rank}</p>
-          {next > 0 && <p className="text-sm text-gray-500"><b>{next}</b> reseñas para el siguiente rango</p>}
-    </div>
+    <button className='w-64 bg-c text-b1 rounded-lg mt-4 px-4 py-1' onClick={() => setShowAchievements(true)}>Ver Logros</button>
+    {/* Modal de Logros */}
+    {showAchievements && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={() => setShowAchievements(false)}>
+          <div className="bg-white rounded-lg p-6 w-3/4 sm:w-1/2 shadow-lg relative overflow-scroll h-2/3">
+            <h2 className="text-center text-xl font-bold">Logros</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              {achievements.map((achievement, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center p-2 rounded shadow ${
+                    isAchievementComplete(achievement) ? 'bg-green-100' : 'bg-gray-100 opacity-50'
+                  }`}
+                >
+                  <span className="text-3xl mr-3">{achievement.icon}</span>
+                  <div>
+                    <h3 className="font-bold">{achievement.name}</h3>
+                    <p className="text-sm text-gray-600">{achievement.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

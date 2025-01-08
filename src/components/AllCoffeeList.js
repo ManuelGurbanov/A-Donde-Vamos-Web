@@ -27,12 +27,16 @@ const AllCoffeeList = () => {
   const pageSize = 15;
   const loadMoreRef = useRef(null);
   
-  const normalizeText = (text) => 
+  const normalizeText = (text) =>
     text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    
+  
+  const neighborhoodGroups = [
+    ['microcentro', 'san nicolás', 'congreso', 'balvanera'],
+  ];
+  
   useEffect(() => {
     let filtered = cafes;
-
+  
     if (filters.cafeNotable) filtered = filtered.filter(cafe => cafe.cafeNotable);
     if (filters.coworking) filtered = filtered.filter(cafe => cafe.coworking);
     if (filters.outside) filtered = filtered.filter(cafe => cafe.outside);
@@ -42,21 +46,28 @@ const AllCoffeeList = () => {
     if (filters.vegan) filtered = filtered.filter(cafe => cafe.vegan);
     if (filters.tac) filtered = filtered.filter(cafe => cafe.tac);
     if (filters.takeaway) filtered = filtered.filter(cafe => cafe.takeaway);
-
+  
     if (searchQuery) {
       const normalizedQuery = normalizeText(searchQuery);
+      const matchedGroup = neighborhoodGroups.find(group =>
+        group.some(neigh => normalizeText(neigh).includes(normalizedQuery))
+      );
       filtered = filtered.filter(cafe => {
         const fieldToCompare = searchBy === 'neigh' ? cafe.neigh : cafe.name;
-        return normalizeText(fieldToCompare).includes(normalizedQuery);
+        const normalizedField = normalizeText(fieldToCompare);
+  
+        return matchedGroup
+          ? matchedGroup.some(neigh => normalizedField.includes(neigh))
+          : normalizedField.includes(normalizedQuery);
       });
     }
-
+  
     filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
     setFilteredCafeterias(filtered);
-    setVisibleCafeterias(filtered.slice(0, pageSize)); // Mostrar los primeros cafés filtrados
+    setVisibleCafeterias(filtered.slice(0, pageSize));
   }, [filters, searchQuery, searchBy, cafes]);
+  
 
-  // Función para cargar más cafeterías cuando se alcanza el final
   const loadMoreCafes = () => {
     setVisibleCafeterias(prev => [
       ...prev,
@@ -64,7 +75,6 @@ const AllCoffeeList = () => {
     ]);
   };
 
-  // Configurar IntersectionObserver para el scroll infinito
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -135,7 +145,7 @@ const AllCoffeeList = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`${searchBy === 'neigh' ? 'Barrio' : 'Nombre'}`}
+            placeholder={`${searchBy === 'neigh' ? 'Buscar Barrios' : 'Buscar Cafeterías'}`}
             className="w-full p-2 pl-10 text-black border rounded-lg placeholder-c bg-zinc-300"
           />
           <img

@@ -133,7 +133,7 @@ const EditProfile = ({backFunction}) => {
         {newProfilePicture && <img src={previewImage} alt="Previsualización" className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover" />}
         
         {/* Barrio Principal, cambiar a selector */}
-        <label className="text-c2 font-bold text-left italic w-full">Barrio en Perfil</label>
+        <label className="text-c2 font-bold text-left italic w-full">Barrio Favorito</label>
         <input
           type="text"
           name="mainNeighborhood"

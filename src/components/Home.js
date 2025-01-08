@@ -28,44 +28,22 @@ const Home = () => {
   const [currentSlideNearby, setCurrentSlideNearby] = useState(0);
   const [currentSlideNew, setCurrentSlideNew] = useState(0);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const storedNeighs = JSON.parse(localStorage.getItem('preferredNeighborhoods'));
-  
+
     if (storedNeighs && storedNeighs.length > 0) {
-      setSelectedNeighs(storedNeighs);
-      console.log("Barrios preferidos recuperados", storedNeighs);
+        setSelectedNeighs(storedNeighs);
+        console.log("Barrios preferidos recuperados", storedNeighs);
     } else {
-      if (!storedNeighs) {
-      setShowWelcome(true);
-      console.log("Barrios preferidos no encontrados");
-      }
+        if (!storedNeighs) {
+            setShowWelcome(true);
+            console.log("Barrios preferidos no encontrados");
+        }
     }
-  }, []);
+}, []);
   
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      fetchUsers(searchQuery);
-    } else {
-      setFilteredUsers([]); 
-    }
-  }, [searchQuery]);
 
-  useEffect(() => {
-    if (loading && (!cafes || cafes.length === 0)) {
-      setFadeOut(false);
-    } else if (!loading) {
-      setFadeOut(true);
-      const fadeOutTimeout = setTimeout(() => {
-        setFadeOut(false);
-      }, 1000);
-
-      return () => clearTimeout(fadeOutTimeout);
-    }
-  }, [loading, cafes]);
 
   const handleSavePreferences = () => {
     localStorage.setItem('preferredNeighs', JSON.stringify(selectedNeighs));
@@ -73,12 +51,19 @@ const Home = () => {
   };
 
   const handleFilterChange = (neigh) => {
-    setSelectedNeighs((prevSelected) =>
-      prevSelected.includes(neigh)
-        ? prevSelected.filter((n) => n !== neigh)
-        : [...prevSelected, neigh]
-    );
-  };
+    let updatedNeighs;
+
+    // Agregar o remover el barrio seleccionado
+    if (selectedNeighs.includes(neigh)) {
+        updatedNeighs = selectedNeighs.filter((n) => n !== neigh);
+    } else {
+        updatedNeighs = [...selectedNeighs, neigh];
+    }
+
+    setSelectedNeighs(updatedNeighs);
+    localStorage.setItem('preferredNeighborhoods', JSON.stringify(updatedNeighs));
+    console.log("Barrios preferidos actualizados", updatedNeighs);
+};
 
   const uniqueNeighs = [...new Set(cafes.map((cafe) => cafe.neigh))].sort((a, b) =>
     a.localeCompare(b)
@@ -155,35 +140,6 @@ const Home = () => {
     );
   };
 
-  const db = getFirestore(); // Inicializa Firestore
-
-  const fetchUsers = async (queryText) => {
-    setIsLoading(true);
-    try {
-      const usersRef = collection(db, 'users');
-      const querySnapshot = await getDocs(usersRef);
-  
-      const allUsers = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      console.log('Todos los usuarios:', allUsers);
-
-  
-      const filtered = allUsers.filter((user) =>
-        user.username?.toLowerCase().includes(queryText.toLowerCase())
-      );
-  
-      setFilteredUsers(filtered);
-      console.log('Texto de búsqueda:', queryText);
-      console.log('Usuarios filtrados:', filtered);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setFilteredUsers([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   
   return (
     <>
@@ -203,79 +159,35 @@ const Home = () => {
     <div className='m-auto sm:w-screen sm:p-6'>
     {/* <AdSenseComponent/> */}
     {showWelcome && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="w-3/4 p-4 bg-white rounded-lg sm:w-1/2">
-      <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
-        Recomendarme cafeterías en:
-      </h1>
-      <div className="overflow-y-scroll">
-        <div className="grid grid-cols-6 gap-2 w-max">
-          {uniqueNeighs.map((neigh, index) => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={() => setShowWelcome(false)}>
+        <div className="w-4/5 p-4 bg-white rounded-lg sm:w-1/2">
+          <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
+            Recomendarme cafeterías en:
+          </h1>
+          <div className="overflow-y-scroll h-64 max-h-[80vw] flex flex-col items-center justify-start rounded-lg">
+            {uniqueNeighs.map((neigh, index) => (
+              <button
+                key={index}
+                onClick={() => handleFilterChange(neigh)}
+                className={`p-2 m-2 rounded text-sm w-11/12 ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+              >
+                {neigh}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-col items-center justify-center w-full p-4">
             <button
-              key={index}
-              onClick={() => handleFilterChange(neigh)}
-              className={`p-1 m-1 rounded text-sm ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+              onClick={() => handleSavePreferences()}
+              className="w-full h-12 p-1 m-2 text-c rounded-lg bg-b1 hover:bg-c hover:text-b1"
             >
-              {neigh}
+              Guardar
             </button>
-          ))}
+          </div>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center w-full p-4">
-        <button
-          onClick={() => handleSavePreferences()}
-          className="w-full h-12 p-1 m-2 text-white rounded-lg bg-b1 hover:bg-b2"
-        >
-          Guardar
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+    )}
 
 <div>
-    <div className="relative w-full m-auto sm:w-1/2 mb-4 text-center px-4 flex flex-col items-center justify-center">
-      <h1 className='text-lg font-bold text-left text-c w-full mt-2'>Buscar Perfil</h1>
-        <hr className="w-full h-[2px] bg-c2 border-none bg-opacity-40 m-auto mb-2" />
-      <div className="relative w-full px-2">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Nombre"
-          className="w-full p-2 pl-10 text-black rounded-lg placeholder-c bg-zinc-300"
-          autoComplete="off"
-        />
-        <img
-          src={searchLogo} 
-          alt="icono usuario"
-          className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4"
-        />
-      </div>
-
-      {isLoading ? (
-        <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
-          <p className='p-4'>Cargando resultados...</p>
-        </div>
-      ) : filteredUsers.length > 0 ? (
-        <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
-            {filteredUsers.slice(0,3).map((user) => (
-              <Link to={`/profile/${user.id}`} className='w-full'>
-              <ul className='py-2 ring-2 ring-c rounded-xl mt-4 mb-4 px-5 bg-b1'>
-                {user.username}
-              </ul>
-              </Link>
-            ))}
-        </div>
-      ) : (
-        searchQuery.trim() && (
-          <div className="w--4/5 sm:w-1/2 text-center absolute top-24 z-50 bg-b1 rounded-lg px-6">
-            <p className='p-4'>No se encontraron resultados.</p>
-          </div>
-        )
-      )}
-    </div>
-
     </div>
 
 
@@ -283,6 +195,33 @@ const Home = () => {
 
             <div className="px-4 mb-32">
               <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
+                
+              <div>
+                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
+                  {isLargeScreen ? (
+                    <>
+                    {renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)}
+                    </>
+                  ) : (
+                    <>
+                    <Slider {...sliderSettings}>
+                      {nearbyCafes.map((cafe, index) => (
+                        <CoffeeCard key={index} cafe={cafe} />
+                      ))}
+                    </Slider>
+
+                    <div className='flex justify-center items-center w-full'>
+                      <button
+                        type="button"
+                        onClick={() => setShowWelcome(true)}
+                        className="w-5/6 p-1 py-2 mb-2 font-bold text-center text-xs border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
+                      >
+                        Cambiar Barrios para Recomendaciones
+                      </button>
+                    </div>
+                    </>
+                  )}
+                </div> 
                 <div className="mb-1">
                   <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>
                   {isLargeScreen ? (
@@ -309,32 +248,6 @@ const Home = () => {
                   )}
                 </div>
 
-                <div>
-                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
-                  {isLargeScreen ? (
-                    <>
-                    {renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)}
-                    </>
-                  ) : (
-                    <>
-                    <Slider {...sliderSettings}>
-                      {nearbyCafes.map((cafe, index) => (
-                        <CoffeeCard key={index} cafe={cafe} />
-                      ))}
-                    </Slider>
-
-                    <div className='flex justify-center items-center w-full'>
-                      <button
-                        type="button"
-                        onClick={() => setShowWelcome(true)}
-                        className="w-5/6 p-1 py-2 mb-2 font-bold text-center text-xs border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
-                      >
-                        Cambiar Barrios para Recomendaciones
-                      </button>
-                    </div>
-                    </>
-                  )}
-                </div> 
 
                 <div>
                   <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Cafeterías</h2>

@@ -6,6 +6,8 @@ import { CafeContext } from './CafeContext';
 import { doc, getDoc } from 'firebase/firestore'; 
 import MiniCard from './MiniCard';
 
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+
 import petIcon from '../img/pet.webp';
 import tacIcon from '../img/sinGluten.webp';
 import veganIcon from '../img/vegan.webp';
@@ -24,6 +26,11 @@ import EditProfile from './EditProfile';
 import Top from './Top';
 
 import TeamMember from './TeamMember';
+
+import loadingLogo from '../img/loading_logo.png';
+import searchLogo from '../img/screen2.png';
+
+import { Link } from 'react-router-dom';
 
 const starRating = (rating) => {
   const stars = [];
@@ -64,6 +71,10 @@ const Login = () => {
   const { uid } = useParams();
   const { cafes = [] } = useContext(CafeContext);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     if (!uid) {
@@ -90,6 +101,45 @@ const Login = () => {
   
     return () => unsubscribe();
   }, [uid]);
+
+  const db = getFirestore(); // Inicializa Firestore
+
+  const fetchUsers = async (queryText) => {
+    setIsLoading(true);
+    try {
+      const usersRef = collection(db, 'users');
+      const querySnapshot = await getDocs(usersRef);
+  
+      const allUsers = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log('Todos los usuarios:', allUsers);
+
+  
+      const filtered = allUsers.filter((user) =>
+        user.username?.toLowerCase().includes(queryText.toLowerCase())
+      );
+  
+      setFilteredUsers(filtered);
+      console.log('Texto de búsqueda:', queryText);
+      console.log('Usuarios filtrados:', filtered);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setFilteredUsers([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      fetchUsers(searchQuery);
+    } else {
+      setFilteredUsers([]); 
+    }
+  }, [searchQuery]);
+
 
   const fetchUserData = async (uid) => {
     try {
@@ -216,9 +266,51 @@ const Login = () => {
     <>
     <Top text={savedUserData?.username}/>
     <div className="flex flex-col items-center justify-center mb-6">
+    <div className="relative w-full m-auto sm:w-1/2 mb-4 text-center px-4 flex flex-col items-center justify-center">
+      <h1 className='text-lg font-bold text-left text-c w-full mt-2'>Buscar Perfil</h1>
+        <hr className="w-full h-[2px] bg-c2 border-none bg-opacity-40 m-auto mb-2" />
+      <div className="relative w-full px-2">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Nombre"
+          className="w-full p-2 pl-10 text-black rounded-lg placeholder-c bg-zinc-300"
+          autoComplete="off"
+        />
+        <img
+          src={searchLogo} 
+          alt="icono usuario"
+          className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4"
+        />
+      </div>
+
+      {isLoading ? (
+        <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
+          <p className='p-4'>Cargando resultados...</p>
+        </div>
+      ) : filteredUsers.length > 0 ? (
+        <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
+            {filteredUsers.slice(0,3).map((user) => (
+              <Link to={`/profile/${user.id}`} className='w-full'>
+              <ul className='py-2 ring-2 ring-c rounded-xl mt-4 mb-4 px-5 bg-b1' onClick={() => setSearchQuery(" ")}>
+                {user.username}
+              </ul>
+              </Link>
+            ))}
+        </div>
+      ) : (
+        searchQuery.trim() && (
+          <div className="w--4/5 sm:w-1/2 text-center absolute top-24 z-50 bg-b1 rounded-lg px-6">
+            <p className='p-4'>No se encontraron resultados.</p>
+          </div>
+        )
+      )}
+    </div>
+
       {(state === 0 || state === 1) && (isThisUser) && (
         <>
-          <div className="w-4/5 p-4 mt-12 rounded sm:w-1/4">
+          <div className="w-4/5 p-4 mt-2 rounded sm:w-1/4">
             <div className="w-full flex items-center">
               {auth.currentUser && auth.currentUser.uid === uid ? (
                 <img
@@ -240,12 +332,10 @@ const Login = () => {
                 <h2 className="text-lg font-bold text-c2">{savedUserData?.fullName || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">{savedUserData?.username || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">
-                  {savedUserData?.mainNeighborhood ? (
+                  {savedUserData?.mainNeighborhood && (
                     <>
                       {savedUserData.mainNeighborhood}, <span className="font-bold">CABA</span>
                     </>
-                  ) : (
-                    <span className="font-bold">CABA</span>
                   )}
                 </h2>
 
