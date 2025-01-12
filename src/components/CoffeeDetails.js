@@ -748,38 +748,36 @@ const parseTime = (timeString) => {
 )}
 
 
-        <div className='flex flex-col items-center gap-1 mb-2'>
-        <PriceRatingBar
-            slug={coffee.slugName}
-            category="el café"
-            options={['muy malo', 'malo', 'regular', 'bueno', 'muy bueno']}
-            dbField="coffeeRatings"
-          />
-          <PriceRatingBar
-            slug={coffee.slugName}
-            category="el precio"
-            options={['muy caro', 'caro', 'regular', 'bueno', 'barato']}
-            dbField="priceRatings"
-          />
-          <PriceRatingBar
-            slug={coffee.slugName}
-            category="la pastelería"
-            options={['muy mala', 'mala', 'regular', 'buena', 'muy bueno']}
-            dbField="bakeryRatings"
-          />
-          <PriceRatingBar
-            slug={coffee.slugName}
-            category="el ambiente"
-            options={['muy malo', 'malo', 'regular', 'bueno', 'muy bueno']}
-            dbField="ambientRatings"
-          />
-          <PriceRatingBar
-            slug={coffee.slugName}
-            category="la atención"
-            options={['muy mala', 'mala', 'regular', 'buena', 'muy buena']}
-            dbield="workersRatings"
-          />
-        </div>
+<hr className="w-full h-[2px] bg-c2 border-none bg-opacity-40 mb-2 mt-2" />
+
+<h1 className='w-full text-center font-bold mb-2'>Según los Usuarios</h1>
+
+<div className="grid grid-cols-2 gap-1 mb-1 w-full justify-center">
+  {[
+    { category: 'el café', dbField: 'coffeeRatings', options: ['muy malo', 'malo', 'regular', 'bueno', 'muy bueno'] },
+    { category: 'el precio', dbField: 'priceRatings', options: ['muy caro', 'caro', 'regular', 'bueno', 'barato'] },
+    { category: 'la pastelería', dbField: 'bakeryRatings', options: ['muy mala', 'mala', 'regular', 'buena', 'muy buena'] },
+    { category: 'el ambiente', dbField: 'ambientRatings', options: ['muy malo', 'malo', 'regular', 'bueno', 'muy bueno'] },
+    { category: 'la atención', dbField: 'workersRatings', options: ['muy mala', 'mala', 'regular', 'buena', 'muy buena'] },
+  ].map(({ category, dbField, options }) => (
+    <div key={dbField} className="w-full text-center flex flex-col items-center justify-center">
+      <h1 className="text-sm font-medium mb-1 w-full h-full">
+        {category.split(' ')[1].charAt(0).toUpperCase() + category.split(' ')[1].slice(1).toLowerCase()}
+      </h1>
+
+      <PriceRatingBar
+        slug={coffee.slugName}
+        category={category}
+        options={options}
+        dbField={dbField}
+      />
+    </div>
+  ))}
+</div>
+
+
+<hr className="w-full h-[2px] bg-c2 border-none bg-opacity-40 m-auto mb-2 mt-6" />
+
 
 
 

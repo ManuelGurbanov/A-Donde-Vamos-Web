@@ -2,13 +2,14 @@ import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/fire
 import { useState, useEffect } from 'react';
 import { db } from '../firebase/firebase';
 
-const RatingBar = ({ slug, category, options, dbField }) => {
+const RatingBar = ({ slug, category, options, dbField, imageSrc }) => {
   const [ratings, setRatings] = useState(
     options.reduce((acc, option) => ({ ...acc, [option]: 0 }), {})
   );
   const [totalVotes, setTotalVotes] = useState(0);
   const [hasVoted, setHasVoted] = useState(false);
   const [docId, setDocId] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -57,37 +58,61 @@ const RatingBar = ({ slug, category, options, dbField }) => {
   };
 
   const calculatePercentage = (votes) => {
-    return totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
+    const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
+    return isNaN(percentage) ? "0" : percentage;
   };
 
+  const getMostVotedOption = () => {
+    return Object.entries(ratings).reduce(
+      (max, [key, value]) => (value > max.value ? { option: key, value } : max),
+      { option: options[0], value: 0 }
+    ).option;
+  };
+
+  const mostVotedOption = getMostVotedOption();
+
   return (
-    <div className="flex flex-col items-center mt-4 ">
-      <h2 className="text-lg font-bold h-8 w-full text-center">{`¿Cómo calificarías ${category}?`}</h2>
-      <div className="flex w-full justify-center">
-        {options.map((option) => (
-          <button
-            key={option}
-            className={`flex-1 py-1 px-1 text-sm font-medium border ${
-              hasVoted ? 'cursor-not-allowed opacity-70 bg-c' : 'bg-b1 hover:scale-105 transition-all ease-in-out'
-            }`}
-            onClick={() => handleVote(option)}
-            disabled={hasVoted}
-          >
-            <div className="flex flex-col items-center"> 
-              <span
-              className={` w-12 h-10 flex items-center justify-center text-xs
-              ${hasVoted ? 'text-b1' : 'text-c' }`}>
-                {option.charAt(0).toUpperCase() + option.slice(1)}
-              </span>
-              {hasVoted && (
-                <span className="text-white font-bold">
-                  {calculatePercentage(ratings[option])}%
-                </span>
-              )}
+    <div className="flex flex-col items-center w-32">
+      {!isMenuOpen ? (
+        <button
+          className="flex items-center justify-center py-2 px-4 bg-b1 text-c font-bold rounded shadow hover:bg-c hover:text-b1 w-full h-full transition-all text-xs"
+          onClick={() => setIsMenuOpen(true)}
+        >
+          {/* <img src={imageSrc} alt="Most voted option" className="w-6 h-6 mr-2" /> */}
+          {mostVotedOption.charAt(0).toUpperCase() + mostVotedOption.slice(1)}
+        </button>
+      ) : (
+        <div className="absolute top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-4 rounded shadow-lg w-72">
+            <h2 className="text-lg font-bold mb-4">{`¿Cómo calificarías ${category}?`}</h2>
+            <div className="flex flex-col gap-2">
+              {options.map((option) => (
+                <button
+                  key={option}
+                  className={`flex items-center py-1 px-2 text-sm font-medium border rounded ${
+                    hasVoted ? 'cursor-not-allowed opacity-70' : 'bg-b1 hover:bg-c hover:text-b1'
+                  }`}
+                  onClick={() => handleVote(option)}
+                  disabled={hasVoted}
+                >
+                  <span>{option.charAt(0).toUpperCase() + option.slice(1)}</span>
+                  {hasVoted && (
+                    <span className="ml-auto text-blue-500 font-bold">
+                      {calculatePercentage(ratings[option])}%
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
-          </button>
-        ))}
-      </div>
+            <button
+              className="mt-4 py-2 px-4 bg-red-500 text-white font-bold rounded hover:bg-red-600 transition-all"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
