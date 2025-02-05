@@ -75,22 +75,34 @@ const Login = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-
   useEffect(() => {
     if (!uid) {
-      console.error("No se proporcionó uid en la URL.");
+      console.warn("No se proporcionó uid en la URL. Usando perfil anónimo.");
+      setUserData({
+        username: "Anónimo",
+        fullName: "Usuario Anónimo",
+        profilePicture: "/ruta/a/imagen_default.png",
+        mainNeighborhood: "Desconocido",
+      });
       return;
     }
+  
     fetchUserData(uid);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setLoggedIn(true);
-  
         if (user.uid !== uid) {
           setState(1);
         }
       } else {
+        console.warn("No hay usuario autenticado. Usando perfil anónimo.");
         setLoggedIn(false);
+        setUserData({
+          username: "Anónimo",
+          fullName: "Usuario Anónimo",
+          profilePicture: "/ruta/a/imagen_default.png",
+          mainNeighborhood: "Desconocido",
+        });
         setState(1);
       }
       setLoginMessage('Logueado correctamente');
@@ -101,6 +113,7 @@ const Login = () => {
   
     return () => unsubscribe();
   }, [uid]);
+  
 
   const db = getFirestore(); // Inicializa Firestore
 

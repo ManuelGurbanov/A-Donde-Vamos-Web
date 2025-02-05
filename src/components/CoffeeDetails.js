@@ -822,7 +822,7 @@ const parseTime = (timeString) => {
           </div>
 
           {/* Texto de la reseña */}
-          <p className="mb-2 text-c2 px-2 h-full">{review.text}</p>
+          <p className="mb-2 text-c2 px-2 h-full overflow-y-scroll">{review.text}</p>
 
           {/* Botones de interacción: like, dislike, eliminar */}
           <div className="flex items-center px-2">
