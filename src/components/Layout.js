@@ -70,13 +70,12 @@ const Layout = () => {
   };
 
   const handleLoginClick = () => {
-    navigate('/profile/mQWJQ93ggqdIs1Yhds7A4KYFp132');
-    /*if (isAuthenticated) {
+    //navigate('/profile/mQWJQ93ggqdIs1Yhds7A4KYFp132');
+    if (isAuthenticated) {
       navigate('/profile');
     } else {
       setShowLoginForm(true);
     }
-      */
   };
 
   const handleCloseLoginForm = () => {

@@ -81,6 +81,10 @@ const CoffeeDetails = () => {
   const [vegan, setVegan] = useState(false);
   const [name, setName] = useState('');
 
+  const [showDiscountMenu, setShowDiscountMenu] = useState(false);
+  const [discountCode, setDiscountCode] = useState(null);
+  const [isDiscountClaimed, setIsDiscountClaimed] = useState(false);
+
   const navigate = useNavigate();
 
   const { currentUser, favorites } = useContext(AuthContext);
@@ -157,63 +161,66 @@ const CoffeeDetails = () => {
     return 'Cerrado';
 };
 
-  useEffect(() => {
-    let isMounted = true;
-  
-    const fetchCoffee = async () => {
-      try {
-        // Fetch coffee data
-        const coffeeQuery = query(
-          collection(db, 'cafeterias'),
-          where('slugName', '==', slug || name) // Usar slug o name según disponibilidad
-        );
-        const querySnapshot = await getDocs(coffeeQuery);
-  
-        if (!querySnapshot.empty) {
-          const docSnap = querySnapshot.docs[0];
-          const data = docSnap.data();
-          const coffeeWithId = { ...data, id: docSnap.id };
-  
-          if (isMounted) {
-            setCoffee(coffeeWithId); // Establece el café
-            setReviews(data.reviews || []);
-            setTotalRatings(data.totalRatings || 0);
-            setNumRatings(data.numRatings || 0);
-  
-            if (currentUser) {
-              // Fetch user favorites
-              const userRef = doc(db, 'users', currentUser.uid);
-              const userDocSnap = await getDoc(userRef);
-  
-              if (userDocSnap.exists()) {
-                const userData = userDocSnap.data();
-                const favorites = userData?.favorites || [];
-  
-                if (coffeeWithId.slugName) {
-                  console.log('SLUGNAME DISPONIBLE:', coffeeWithId.slugName);
-                  setIsFavorite(favorites.includes(coffeeWithId.slugName));
-                }
+useEffect(() => {
+  let isMounted = true;
+
+  const fetchCoffee = async () => {
+    try {
+      // Fetch coffee data
+      const coffeeQuery = query(
+        collection(db, 'cafeterias'),
+        where('slugName', '==', slug || name) // Usar slug o name según disponibilidad
+      );
+      const querySnapshot = await getDocs(coffeeQuery);
+
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0];
+        const data = docSnap.data();
+        const coffeeWithId = { ...data, id: docSnap.id };
+
+        if (isMounted) {
+          setCoffee(coffeeWithId); // Establece el café
+          setReviews(data.reviews || []);
+          setTotalRatings(data.totalRatings || 0);
+          setNumRatings(data.numRatings || 0);
+
+          if (currentUser) {
+            // Fetch user favorites
+            const userRef = doc(db, 'users', currentUser.uid);
+            const userDocSnap = await getDoc(userRef);
+
+            if (userDocSnap.exists()) {
+              const userData = userDocSnap.data();
+              const favorites = userData?.favorites || [];
+
+              if (coffeeWithId.slugName) {
+                console.log('SLUGNAME DISPONIBLE:', coffeeWithId.slugName);
+                setIsFavorite(favorites.includes(coffeeWithId.slugName));
+                // Verifica si se debe ofrecer el descuento
+                checkAndOfferDiscount(coffeeWithId.slugName);
               }
             }
-  
-            checkIfOpen(data);
           }
-        } else {
-          console.log('No se encontró el café con ese slug o nombre.');
+
+          checkIfOpen(data);
         }
-      } catch (err) {
-        console.error('Error al cargar los detalles del café:', err);
-      } finally {
-        if (isMounted) setLoading(false);
+      } else {
+        console.log('No se encontró el café con ese slug o nombre.');
       }
-    };
-  
-    fetchCoffee();
-  
-    return () => {
-      isMounted = false;
-    };
-  }, [slug, name, currentUser]);
+    } catch (err) {
+      console.error('Error al cargar los detalles del café:', err);
+    } finally {
+      if (isMounted) setLoading(false);
+    }
+  };
+
+  fetchCoffee();
+
+  return () => {
+    isMounted = false;
+  };
+}, [slug, name, currentUser]);
+
   
   
 
@@ -533,8 +540,34 @@ const parseTime = (timeString) => {
 
   const isAdmin = adminEmails.includes(currentUser?.email);
 
+  const checkAndOfferDiscount = (slugName) => {
+    const discountUsed = localStorage.getItem(`discountUsed_${slugName}`);
+  
+    if (!discountUsed) {
+      setShowDiscountMenu(true);
+    }
+  };
+  
+  const handleAcceptDiscount = (slugName) => {
+    const discountCode = Math.floor(100000 + Math.random() * 900000).toString();
+  
+    localStorage.setItem(`discountUsed_${slugName}`, 'true');
+    localStorage.setItem(`discountCode_${slugName}`, discountCode);
 
+    setDiscountCode(discountCode);
+    setIsDiscountClaimed(true);
+  };
+  
+  
+  const handleRejectDiscount = () => {
+    setShowDiscountMenu(false);
+  };
 
+  const handleGetDiscountClick = () => {
+    setShowDiscountMenu(true);
+  };
+
+  
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
             {showReview && (
@@ -608,60 +641,111 @@ const parseTime = (timeString) => {
           <p className='w-full p-0 text-xl text-left'>{coffee.description || "Café de Especialidad."} </p>
 
           {isAdmin && (
-        <Link to={`/${coffee.slugName}/editar`}>
-          <p className="text-xs text-c2">{coffee.id} <span className='bg-c text-white px-1'>(es la id, para debug)</span></p>
-          <button className="bg-blue-500 text-white p-2 rounded mt-2 mb-2">Editar</button>
-        </Link>
-      )}
+            <Link to={`/${coffee.slugName}/editar`}>
+                <p className="text-xs text-c2">{coffee.id} <span className='bg-c text-white px-1'>(es la id, para debug)</span></p>
+                <button className="bg-blue-500 text-white p-2 rounded mt-2 mb-2">Editar</button>
+              </Link>
+          )}
 
-{(coffee.pet || coffee.vegan || coffee.tac || coffee.outside) ? (
-  <div className="flex items-center gap-4 mt-2 mb-2">
-    {coffee.pet && (
-      <div
-        className="flex flex-col items-center gap-1 group relative cursor-pointer"
-        onClick={() => {
-          setActiveLogo(logos.find((logo) => logo.name === 'Pet Friendly'));
-          setShowExplanation(true);
-        }}
-      >
-        <img src={petIcon} alt="Pet Friendly" className="w-12" />
-      </div>
-    )}
-    {coffee.vegan && (
-      <div
-        className="flex flex-col items-center gap-1 group relative cursor-pointer"
-        onClick={() => {
-          setActiveLogo(logos.find((logo) => logo.name === 'Vegano'));
-          setShowExplanation(true);
-        }}
-      >
-        <img src={veganIcon} alt="Vegan" className="w-12" />
-      </div>
-    )}
-    {coffee.tac && (
-      <div
-        className="flex flex-col items-center gap-1 group relative cursor-pointer"
-        onClick={() => {
-          setActiveLogo(logos.find((logo) => logo.name === 'Sin Gluten'));
-          setShowExplanation(true);
-        }}
-      >
-        <img src={tacIcon} alt="TAC" className="w-12" />
-      </div>
-    )}
-    {coffee.outside && (
-      <div
-        className="flex flex-col items-center gap-1 group relative cursor-pointer"
-        onClick={() => {
-          setActiveLogo(logos.find((logo) => logo.name === 'Mesas Afuera'));
-          setShowExplanation(true);
-        }}
-      >
-        <img src={outsideIcon} alt="Mesas Afuera" className="w-12" />
-      </div>
-    )}
-  </div>
-) : <div className='mb-1'></div>}
+          <button
+                onClick={handleGetDiscountClick}
+                className="bg-b1 text-c py-2 px-4 rounded-lg shadow-md hover:bg-c1-dark transition mt-4 mb-4"
+              >
+                Obtener descuento
+          </button>
+
+          {showDiscountMenu && (
+          <div className="discount-menu fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-b1 p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+              <p className="mb-4">¡Obtuviste un 20% de descuento en <span className='font-bold'>{coffee.name}</span> por ser usuario de la app! ¿Deseas canjearlo ahora?</p>
+
+              {discountCode && isDiscountClaimed && (
+                <>
+                <div className="font-bold bg-gray-100 p-2 rounded-lg mb-4">
+                  <p>{discountCode}</p>
+                </div>
+
+                <button
+                onClick={() => setShowDiscountMenu(false)}
+                className="bg-red-500 text-white py-2 px-4 rounded-lg w-full hover:bg-red-800 transition"
+                >
+                 Cerrar
+                </button>
+                </>
+              )}
+
+              {!isDiscountClaimed && (
+                <>
+                                <button
+                                onClick={() => handleAcceptDiscount(coffee?.slugName)}
+                                className="bg-c text-b1 py-2 px-4 rounded-lg mb-2 w-full hover:bg-c1-dark transition hover:bg-c2"
+                              >
+                                Sí, canjear
+                              </button>
+                              <button
+                                onClick={handleRejectDiscount}
+                                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg w-full hover:bg-gray-400 transition"
+                              >
+                                Ahora no
+                              </button>
+                </>
+                )}
+
+            </div>
+          </div>
+        )}
+
+
+
+
+          {(coffee.pet || coffee.vegan || coffee.tac || coffee.outside) ? (
+            <div className="flex items-center gap-4 mt-2 mb-2">
+              {coffee.pet && (
+                <div
+                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  onClick={() => {
+                    setActiveLogo(logos.find((logo) => logo.name === 'Pet Friendly'));
+                    setShowExplanation(true);
+                  }}
+                >
+                  <img src={petIcon} alt="Pet Friendly" className="w-12" />
+                </div>
+              )}
+              {coffee.vegan && (
+                <div
+                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  onClick={() => {
+                    setActiveLogo(logos.find((logo) => logo.name === 'Vegano'));
+                    setShowExplanation(true);
+                  }}
+                >
+                  <img src={veganIcon} alt="Vegan" className="w-12" />
+                </div>
+              )}
+              {coffee.tac && (
+                <div
+                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  onClick={() => {
+                    setActiveLogo(logos.find((logo) => logo.name === 'Sin Gluten'));
+                    setShowExplanation(true);
+                  }}
+                >
+                  <img src={tacIcon} alt="TAC" className="w-12" />
+                </div>
+              )}
+              {coffee.outside && (
+                <div
+                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  onClick={() => {
+                    setActiveLogo(logos.find((logo) => logo.name === 'Mesas Afuera'));
+                    setShowExplanation(true);
+                  }}
+                >
+                  <img src={outsideIcon} alt="Mesas Afuera" className="w-12" />
+                </div>
+              )}
+            </div>
+          ) : <div className='mb-1'></div>}
 
 
     {showExplanation && activeLogo && (
