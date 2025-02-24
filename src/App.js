@@ -14,10 +14,10 @@ import Layout from './components/Layout';
 import Notifications from './components/Notifications';
 import ForgotPassword from './components/ForgotPassword';
 import EditCoffeeForm from './components/EditCoffeeForm';
-import Top from './components/Top'; // Asegúrate de que Top esté importado correctamente
+import DiscountPage from './components/DiscountPage';
 
 function App() {
-  const [topText, setTopText] = useState("Nombre del Café"); // Estado para el texto de Top
+  const [topText, setTopText] = useState("Nombre del Café");
 
   return (
     <div className="app-container">
@@ -29,6 +29,7 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/:slug" element={<CoffeeDetails />} />
               <Route path="/:slug/editar" element={<EditCoffeeForm />} />
+              <Route path="/:slug/discount" element={<DiscountPage />} />
               <Route path="/profile/:uid" element={<Login />} />
               <Route path="/profile" element={<ProfileRedirect />} />
 

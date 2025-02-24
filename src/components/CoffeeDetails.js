@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where, setDoc, arrayUnion } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import outsideIcon from '../img/outside.webp';
 import petIcon from '../img/pet.webp';
@@ -40,6 +40,7 @@ import {Link} from 'react-router-dom';
 
 import Review from './Review';
 import PriceRatingBar from './PriceRatingBar';
+
 const CoffeeDetails = () => {
   //#region Variables
   const { slug } = useParams();
@@ -90,6 +91,8 @@ const CoffeeDetails = () => {
   const { currentUser, favorites } = useContext(AuthContext);
 
   const { setSelectedCafe } = useContext(CafeContext);
+
+  const [discountRequested, setDiscountRequested] = useState(false);
 
   const [statusMessage, setStatusMessage] = useState('');
   const handleGoMenu = () => {
@@ -220,6 +223,34 @@ useEffect(() => {
     isMounted = false;
   };
 }, [slug, name, currentUser]);
+
+useEffect(() => {
+  console.log('checkUserDiscount');
+  const checkUserDiscount = async () => {
+    try {
+      const discountRef = doc(db, "discounts", coffee?.slugName);
+      const discountSnap = await getDoc(discountRef);
+      if (discountSnap.exists()) {
+        const discountCodes = discountSnap.data().discountCodes || [];
+        const userDiscount = discountCodes.find(
+          (discount) => discount.email === currentUser.email
+        );
+        if (userDiscount) {
+          setDiscountCode(userDiscount.code);
+          setIsDiscountClaimed(userDiscount.isDiscountClaimed);
+          setDiscountRequested(true);
+          console.log("Descuento encontrado:", userDiscount);
+        }else{
+          console.log("Descuento no encontrado");
+        }
+      }
+    } catch (error) {
+      console.error("Error al chequear el descuento:", error);
+    }
+  };
+
+  checkUserDiscount();
+}, [coffee, currentUser]);
 
   
   
@@ -519,7 +550,8 @@ const parseTime = (timeString) => {
     return hours * 60 + minutes; // Devuelve el total en minutos
 };
 
-  
+
+
 
   const getCurrentDayName = () => {
     const daysOfWeek = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
@@ -547,16 +579,40 @@ const parseTime = (timeString) => {
       setShowDiscountMenu(true);
     }
   };
-  
-  const handleAcceptDiscount = (slugName) => {
-    const discountCode = Math.floor(100000 + Math.random() * 900000).toString();
-  
-    localStorage.setItem(`discountUsed_${slugName}`, 'true');
-    localStorage.setItem(`discountCode_${slugName}`, discountCode);
 
-    setDiscountCode(discountCode);
-    setIsDiscountClaimed(true);
+
+  
+  const handleAcceptDiscount = async (slugName) => {
+    const discountCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const discountRef = doc(db, "discounts", slugName);
+  
+    try {
+      const discountSnap = await getDoc(discountRef);
+      if (discountSnap.exists()) {
+        const existingDiscounts = discountSnap.data().discountCodes || [];
+        const emailExists = existingDiscounts.some(discount => discount.email === currentUser.email);
+        if (emailExists) {
+          console.log("Este usuario ya tiene un código de descuento.");
+          return;
+        }
+      }
+  
+      await setDoc(discountRef, {
+        discountCodes: arrayUnion({
+          code: discountCode,
+          isDiscountClaimed: false,
+          email: currentUser.email,
+        })
+      });
+  
+      setDiscountCode(discountCode);
+      setIsDiscountClaimed(true);
+  
+    } catch (error) {
+      console.error("Error al guardar el código de descuento: ", error);
+    }
   };
+  
   
   
   const handleRejectDiscount = () => {
@@ -648,52 +704,60 @@ const parseTime = (timeString) => {
           )}
 
           <button
-                onClick={handleGetDiscountClick}
-                className="bg-b1 text-c py-2 px-4 rounded-lg shadow-md hover:bg-c1-dark transition mt-4 mb-4"
-              >
-                Obtener descuento
-          </button>
+                  onClick={handleGetDiscountClick}
+                  className="bg-b1 text-c py-2 px-4 rounded-lg shadow-md hover:bg-c1-dark transition mt-4 mb-4"
+                  disabled={discountRequested || !currentUser}
+                >
+                  {!currentUser
+                    ? "Logueate para obtener descuento"
+                    : discountRequested
+                    ? "Descuento ya solicitado"
+                    : "Obtener descuento"}
+                </button>
 
           {showDiscountMenu && (
-          <div className="discount-menu fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-b1 p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
-              <p className="mb-4">¡Obtuviste un 20% de descuento en <span className='font-bold'>{coffee.name}</span> por ser usuario de la app! ¿Deseas canjearlo ahora?</p>
+            <div className="discount-menu fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-b1 p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+                <p className="mb-4">
+                  ¡Obtuviste un 20% de descuento en <span className='font-bold'>{coffee.name}</span> por ser usuario de la app! ¿Deseas canjearlo ahora?
+                </p>
 
-              {discountCode && isDiscountClaimed && (
-                <>
-                <div className="font-bold bg-gray-100 p-2 rounded-lg mb-4">
-                  <p>{discountCode}</p>
-                </div>
+                {discountCode && isDiscountClaimed && (
+                  <>
+                    <div className="font-bold bg-gray-100 p-2 rounded-lg mb-4">
+                      <p>{discountCode}</p> {/* Mostramos el código de descuento aquí */}
+                    </div>
 
-                <button
-                onClick={() => setShowDiscountMenu(false)}
-                className="bg-red-500 text-white py-2 px-4 rounded-lg w-full hover:bg-red-800 transition"
-                >
-                 Cerrar
-                </button>
-                </>
-              )}
-
-              {!isDiscountClaimed && (
-                <>
-                                <button
-                                onClick={() => handleAcceptDiscount(coffee?.slugName)}
-                                className="bg-c text-b1 py-2 px-4 rounded-lg mb-2 w-full hover:bg-c1-dark transition hover:bg-c2"
-                              >
-                                Sí, canjear
-                              </button>
-                              <button
-                                onClick={handleRejectDiscount}
-                                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg w-full hover:bg-gray-400 transition"
-                              >
-                                Ahora no
-                              </button>
-                </>
+                    <button
+                      onClick={() => setShowDiscountMenu(false)}
+                      className="bg-red-500 text-white py-2 px-4 rounded-lg w-full hover:bg-red-800 transition"
+                    >
+                      Cerrar
+                    </button>
+                  </>
                 )}
 
+                {!isDiscountClaimed && (
+                  <>
+                    <button
+                      onClick={() => handleAcceptDiscount(coffee?.slugName)}
+                      className="bg-c text-b1 py-2 px-4 rounded-lg mb-2 w-full hover:bg-c1-dark transition hover:bg-c2"
+                    >
+                      Sí, canjear
+                    </button>
+                    <button
+                      onClick={handleRejectDiscount}
+                      className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg w-full hover:bg-gray-400 transition"
+                    >
+                      Ahora no
+                    </button>
+                  </>
+                )}
+
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
 
 
 

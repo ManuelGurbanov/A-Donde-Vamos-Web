@@ -1,24 +1,24 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
-import { getStorage } from 'firebase/storage'; // Importar Storage
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD9ak8YpdGIYuSZIuOprjxH7UrY6l7WyqY",
-  authDomain: "a-donde-vamos-web.firebaseapp.com",
-  projectId: "a-donde-vamos-web",
-  storageBucket: "a-donde-vamos-web.appspot.com",
-  messagingSenderId: "428018365247",
-  appId: "1:428018365247:web:195247dc180133c54a198a",
-  measurementId: "G-V1ZDV9Y0HE"
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
-const storage = getStorage(app); // Inicializar Storage
+const storage = getStorage(app);
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -56,4 +56,4 @@ const useAuth = () => {
   return { user, signInWithGoogle, signOut };
 };
 
-export { auth, db, storage, provider };
+export { auth, db, storage, provider, setDoc, doc };
