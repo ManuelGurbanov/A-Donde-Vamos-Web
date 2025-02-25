@@ -50,8 +50,8 @@ const Notifications = () => {
     <>
       <div className="flex flex-col items-center justify-start w-full sm:w-1/2 sm:m-auto">
             <Notif 
-              tittle="¡Bienvenido a A Dónde Vamos! 🎉	"
-              subt="¡Gracias por unirte a nuestra comunidad! 🚀"
+              tittle="¡Bienvenido a A Dónde Vamos!"
+              subt="¡Gracias por unirte! 🚀"
             />
               <Notif 
               tittle="¡OBTENÉ DESCUENTOS!"

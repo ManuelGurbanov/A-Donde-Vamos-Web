@@ -19,6 +19,10 @@ import DiscountPage from './components/DiscountPage';
 function App() {
   const [topText, setTopText] = useState("Nombre del Café");
 
+  useEffect(() => {
+    console.log(process.env.REACT_APP_API_KEY)
+  }, []);
+
   return (
     <div className="app-container">
       <AuthProvider>
