@@ -53,7 +53,6 @@ const Home = () => {
   const handleFilterChange = (neigh) => {
     let updatedNeighs;
 
-    // Agregar o remover el barrio seleccionado
     if (selectedNeighs.includes(neigh)) {
         updatedNeighs = selectedNeighs.filter((n) => n !== neigh);
     } else {
@@ -118,7 +117,7 @@ const Home = () => {
   const renderCarousel = (cafesArray, currentSlide, setCurrentSlide) => {
     const currentCafe = cafesArray[currentSlide];
     return currentCafe ? (
-      <div className="relative flex items-center justify-center h-56 w-full">
+      <div className="relative flex items-center justify-center w-full h-56">
         <button
           onClick={() => handlePrev(cafesArray, setCurrentSlide)}
           className="px-4 py-2 text-white bg-gray-700 rounded-full hover:bg-gray-800 bg-opacity-20"
@@ -155,10 +154,10 @@ const Home = () => {
 {/* Mostrar el contenido solo si loading es false y fadeOut es false */}
 {!loading && (
   <div>
-    <div className='m-auto sm:w-screen sm:p-6'>
+    <div className='m-auto sm:w-screen sm:p-24 sm:py-7'>
     {/* <AdSenseComponent/> */}
     {showWelcome && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={() => setShowWelcome(false)}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div className="w-4/5 p-4 bg-white rounded-lg sm:w-1/2">
           <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
             Recomendarme cafeterías en:
@@ -177,7 +176,7 @@ const Home = () => {
           <div className="flex flex-col items-center justify-center w-full p-4">
             <button
               onClick={() => handleSavePreferences()}
-              className="w-full h-12 p-1 m-2 text-c rounded-lg bg-b1 hover:bg-c hover:text-b1"
+              className="w-full h-12 p-1 m-2 rounded-lg text-c bg-b1 hover:bg-c hover:text-b1"
             >
               Guardar
             </button>
@@ -209,11 +208,11 @@ const Home = () => {
                       ))}
                     </Slider>
 
-                    <div className='flex justify-center items-center w-full'>
+                    <div className='flex items-center justify-center w-full'>
                       <button
                         type="button"
                         onClick={() => setShowWelcome(true)}
-                        className="w-5/6 p-1 py-2 mb-2 font-bold text-center text-xs border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
+                        className="w-5/6 p-1 py-2 mb-2 text-xs font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
                       >
                         Cambiar Barrios para Recomendaciones
                       </button>

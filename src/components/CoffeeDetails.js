@@ -635,14 +635,14 @@ const parseTime = (timeString) => {
       {coffee ? (
         <>
         <div className=''>
-              <div className="w-full overflow-x-auto sm:h-80 p-0">
+              <div className="w-full p-0 overflow-x-auto sm:h-80">
         <Slider {...sliderSettings}>
           {coffee.picsLinks?.map((picLink, index) => (
             <div key={index} className="relative w-screen h-64 sm:h-72">
         <img
           src={picLink}
           alt={`Imagen ${index + 1}`}
-          className="object-cover h-full w-full"
+          className="object-cover w-full h-full"
           onError={() => handleImageError(index)}
         />  
 
@@ -684,7 +684,7 @@ const parseTime = (timeString) => {
             <p className="mb-1 text-xl">
               {starRating(calculateAverageRating())}
             </p>
-            <p className="mb-1 mt-1 text-xl">
+            <p className="mt-1 mb-1 text-xl">
             {numRatings === 1 
               ? `${Math.max(numRatings, 0)} valoración` 
               : `${Math.max(numRatings, 0)} valoraciones`}
@@ -698,56 +698,62 @@ const parseTime = (timeString) => {
 
           {isAdmin && (
             <Link to={`/${coffee.slugName}/editar`}>
-                <p className="text-xs text-c2">{coffee.id} <span className='bg-c text-white px-1'>(es la id, para debug)</span></p>
-                <button className="bg-blue-500 text-white p-2 rounded mt-2 mb-2">Editar</button>
+                <p className="text-xs text-c2">{coffee.id} <span className='px-1 text-white bg-c'>(es la id, para debug)</span></p>
+                <button className="p-2 mt-2 mb-2 text-white bg-blue-500 rounded">Editar</button>
               </Link>
           )}
 
           <button
                   onClick={handleGetDiscountClick}
-                  className="bg-b1 text-c py-2 px-4 rounded-lg shadow-md hover:bg-c1-dark transition mt-4 mb-4"
-                  disabled={discountRequested || !currentUser}
+                  className={'px-4 py-2 mt-4 mb-4 transition rounded-lg shadow-md bg-b1 text-c hover:bg-c1-dark' + (!currentUser ? ' opacity-50 cursor-not-allowed bg-transparent' : '')}
+                  disabled={!currentUser}
                 >
                   {!currentUser
-                    ? "Logueate para obtener descuento"
+                    ? "Inicia Sesión para obtener descuento."
                     : discountRequested
-                    ? "Descuento ya solicitado"
+                    ? "Ver mi Código de Descuento"
                     : "Obtener descuento"}
                 </button>
 
           {showDiscountMenu && (
-            <div className="discount-menu fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-b1 p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 discount-menu">
+              <div className="w-full max-w-sm p-6 text-center rounded-lg shadow-xl bg-b1">
                 <p className="mb-4">
-                  ¡Obtuviste un 20% de descuento en <span className='font-bold'>{coffee.name}</span> por ser usuario de la app! ¿Deseas canjearlo ahora?
+
+                  {discountCode ? (
+                    <p>¡Descuento canjeado con éxito!</p>
+                  ): (
+                    <p>¡Obtuviste un 20% de descuento en <span className='font-bold'>{coffee.name}</span> por ser usuario de la app! ¿Deseas canjearlo ahora?</p>
+                  )}
+  
                 </p>
 
-                {discountCode && isDiscountClaimed && (
+                {discountCode && (
                   <>
-                    <div className="font-bold bg-gray-100 p-2 rounded-lg mb-4">
-                      <p>{discountCode}</p> {/* Mostramos el código de descuento aquí */}
+                    <div className="p-2 mb-4 font-bold bg-gray-100 rounded-lg">
+                      <p>{discountCode}</p>
                     </div>
 
                     <button
                       onClick={() => setShowDiscountMenu(false)}
-                      className="bg-red-500 text-white py-2 px-4 rounded-lg w-full hover:bg-red-800 transition"
+                      className="w-full px-4 py-2 text-white transition bg-red-500 rounded-lg hover:bg-red-800"
                     >
                       Cerrar
                     </button>
                   </>
                 )}
 
-                {!isDiscountClaimed && (
+                {!isDiscountClaimed && !discountCode && (
                   <>
                     <button
                       onClick={() => handleAcceptDiscount(coffee?.slugName)}
-                      className="bg-c text-b1 py-2 px-4 rounded-lg mb-2 w-full hover:bg-c1-dark transition hover:bg-c2"
+                      className="w-full px-4 py-2 mb-2 transition rounded-lg bg-c text-b1 hover:bg-c1-dark hover:bg-c2"
                     >
                       Sí, canjear
                     </button>
                     <button
                       onClick={handleRejectDiscount}
-                      className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg w-full hover:bg-gray-400 transition"
+                      className="w-full px-4 py-2 text-gray-700 transition bg-gray-300 rounded-lg hover:bg-gray-400"
                     >
                       Ahora no
                     </button>
@@ -766,7 +772,7 @@ const parseTime = (timeString) => {
             <div className="flex items-center gap-4 mt-2 mb-2">
               {coffee.pet && (
                 <div
-                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  className="relative flex flex-col items-center gap-1 cursor-pointer group"
                   onClick={() => {
                     setActiveLogo(logos.find((logo) => logo.name === 'Pet Friendly'));
                     setShowExplanation(true);
@@ -777,7 +783,7 @@ const parseTime = (timeString) => {
               )}
               {coffee.vegan && (
                 <div
-                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  className="relative flex flex-col items-center gap-1 cursor-pointer group"
                   onClick={() => {
                     setActiveLogo(logos.find((logo) => logo.name === 'Vegano'));
                     setShowExplanation(true);
@@ -788,7 +794,7 @@ const parseTime = (timeString) => {
               )}
               {coffee.tac && (
                 <div
-                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  className="relative flex flex-col items-center gap-1 cursor-pointer group"
                   onClick={() => {
                     setActiveLogo(logos.find((logo) => logo.name === 'Sin Gluten'));
                     setShowExplanation(true);
@@ -799,7 +805,7 @@ const parseTime = (timeString) => {
               )}
               {coffee.outside && (
                 <div
-                  className="flex flex-col items-center gap-1 group relative cursor-pointer"
+                  className="relative flex flex-col items-center gap-1 cursor-pointer group"
                   onClick={() => {
                     setActiveLogo(logos.find((logo) => logo.name === 'Mesas Afuera'));
                     setShowExplanation(true);
@@ -826,7 +832,7 @@ const parseTime = (timeString) => {
 
             <div className='flex items-center justify-center gap-4 mb-2 text-center'>
                   <button className={`flex flex-row justify-between w-1/3 sm:w-1/6 gap-0 p-2 rounded-2xl bg-b1 h-10 ${!coffee.menuLink ? 'opacity-50 cursor-not-allowed bg-brown' : ''}`} onClick={handleGoMenu} disabled={!coffee.menuLink}>
-                    <img src={menu} className='md:ml-1 sm:mr-2'></img> <p className='text-md text-c sm:mr-4 mr-1'>Menú</p>
+                    <img src={menu} className='md:ml-1 sm:mr-2'></img> <p className='mr-1 text-md text-c sm:mr-4'>Menú</p>
                   </button>
                   <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleGoMaps}>
                     <img src={maps} className='m-auto w-7'></img>
@@ -836,7 +842,7 @@ const parseTime = (timeString) => {
                     <img src={instagramimg} className='m-auto'></img>
                   </button>
                   
-                  <button className='w-1/6 p-2 rounded-2xl bg-b1 h-10' onClick={handleShareWhatsApp}>
+                  <button className='w-1/6 h-10 p-2 rounded-2xl bg-b1' onClick={handleShareWhatsApp}>
                     <img src={share} className='w-6 m-auto'></img>
                   </button>
 
@@ -898,9 +904,9 @@ const parseTime = (timeString) => {
 
 <hr className="w-full h-[2px] bg-c2 border-none bg-opacity-40 mb-2 mt-2" />
 
-<h1 className='w-full text-center font-bold mb-2'>Según los Usuarios</h1>
+<h1 className='w-full mb-2 font-bold text-center'>Según los Usuarios</h1>
 
-<div className="grid grid-cols-2 gap-1 mb-1 w-full justify-center">
+<div className="grid justify-center w-full grid-cols-2 gap-1 mb-1">
   {[
     { category: 'el café', dbField: 'coffeeRatings', options: ['muy malo', 'malo', 'regular', 'bueno', 'muy bueno'] },
     { category: 'el precio', dbField: 'priceRatings', options: ['muy caro', 'caro', 'regular', 'bueno', 'barato'] },
@@ -908,8 +914,8 @@ const parseTime = (timeString) => {
     { category: 'el ambiente', dbField: 'ambientRatings', options: ['muy malo', 'malo', 'regular', 'bueno', 'muy bueno'] },
     { category: 'la atención', dbField: 'workersRatings', options: ['muy mala', 'mala', 'regular', 'buena', 'muy buena'] },
   ].map(({ category, dbField, options }) => (
-    <div key={dbField} className="w-full text-center flex flex-col items-center justify-center">
-      <h1 className="text-sm font-medium mb-1 w-full h-full">
+    <div key={dbField} className="flex flex-col items-center justify-center w-full text-center">
+      <h1 className="w-full h-full mb-1 text-sm font-medium">
         {category.split(' ')[1].charAt(0).toUpperCase() + category.split(' ')[1].slice(1).toLowerCase()}
       </h1>
 
@@ -929,7 +935,7 @@ const parseTime = (timeString) => {
 
 
 
-          <div className='flex flex-row items-center gap-1 mb-2 mt-2'>
+          <div className='flex flex-row items-center gap-1 mt-2 mb-2'>
           <img src={heartadd} className='w-4 h-4 mt-2'></img>
           <p className="ml-1 text-lg">¿Qué te pareció {coffee.name}?</p>
           </div>
@@ -954,29 +960,29 @@ const parseTime = (timeString) => {
   <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
   {reviews.length > 0 ? (
     reviews.map((review, index) => (
-      <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-white bg-opacity-100 text-c flex flex-col ring-1 ring-c h-56">
-        <div className="flex flex-col w-full h-full justify-between">
-          <div className="flex flex-col items-center mb-2 p-1">
+      <div key={index} className="flex flex-col w-full h-56 p-2 mb-4 bg-white bg-opacity-100 shadow-md rounded-xl text-c ring-1 ring-c">
+        <div className="flex flex-col justify-between w-full h-full">
+          <div className="flex flex-col items-center p-1 mb-2">
           <span 
-                  className="mr-2 font-bold text-c2 text-left w-full ml-2 cursor-pointer"
+                  className="w-full ml-2 mr-2 font-bold text-left cursor-pointer text-c2"
                   onClick={() => navigate(`/profile/${review.userId}`)}
                 >
                   {review.user}
                 </span>
-            <div className="w-full gap-5 items-center flex justify-between">
+            <div className="flex items-center justify-between w-full gap-5">
               <span>{starRating(review.rating)}</span>
-              <span className="text-c2 text-opacity-70 text-xl">{review.date}</span>
+              <span className="text-xl text-c2 text-opacity-70">{review.date}</span>
             </div>
           </div>
 
           {/* Texto de la reseña */}
-          <p className="mb-2 text-c2 px-2 h-full overflow-y-scroll">{review.text}</p>
+          <p className="h-full px-2 mb-2 overflow-y-scroll text-c2">{review.text}</p>
 
           {/* Botones de interacción: like, dislike, eliminar */}
           <div className="flex items-center px-2">
             <button
               onClick={() => handleVote(index, 'like')}
-              className="mr-2 flex flex-row gap-2"
+              className="flex flex-row gap-2 mr-2"
             >
               <img
                 src={
@@ -991,7 +997,7 @@ const parseTime = (timeString) => {
             </button>
             <button
               onClick={() => handleVote(index, 'dislike')}
-              className="mr-2 flex flex-row gap-2"
+              className="flex flex-row gap-2 mr-2"
             >
               <img
                 src={
@@ -1007,7 +1013,7 @@ const parseTime = (timeString) => {
   {currentUser?.uid === review.userId && (
     <button
       onClick={() => handleDeleteReview(index)}
-      className="bg-red-600 px-2 py-1 text-white rounded"
+      className="px-2 py-1 text-white bg-red-600 rounded"
     >
       Eliminar
     </button>

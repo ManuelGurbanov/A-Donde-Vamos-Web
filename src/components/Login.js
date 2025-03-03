@@ -279,8 +279,8 @@ const Login = () => {
     <>
     <Top text={savedUserData?.username}/>
     <div className="flex flex-col items-center justify-center mb-6">
-    <div className="relative w-full m-auto sm:w-1/2 mb-4 text-center px-4 flex flex-col items-center justify-center">
-      <h1 className='text-lg font-bold text-left text-c w-full mt-2'>Buscar Perfil</h1>
+    <div className="relative flex flex-col items-center justify-center w-full px-4 m-auto mb-4 text-center sm:w-1/2">
+      <h1 className='w-full mt-2 text-lg font-bold text-left text-c'>Buscar Perfil</h1>
         <hr className="w-full h-[2px] bg-c2 border-none bg-opacity-40 m-auto mb-2" />
       <div className="relative w-full px-2">
         <input
@@ -294,19 +294,19 @@ const Login = () => {
         <img
           src={searchLogo} 
           alt="icono usuario"
-          className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4"
+          className="absolute w-4 h-4 transform -translate-y-1/2 left-5 top-1/2"
         />
       </div>
 
       {isLoading ? (
-        <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
+        <div className="absolute z-50 w-4/5 px-6 m-auto mb-4 rounded-lg sm:w-1/2 bg-b1 top-24">
           <p className='p-4'>Cargando resultados...</p>
         </div>
       ) : filteredUsers.length > 0 ? (
-        <div className="w-4/5 sm:w-1/2 m-auto bg-b1 rounded-lg px-6 mb-4 absolute top-24 z-50">
+        <div className="absolute z-50 w-4/5 px-6 m-auto mb-4 rounded-lg sm:w-1/2 bg-b1 top-24">
             {filteredUsers.slice(0,3).map((user) => (
               <Link to={`/profile/${user.id}`} className='w-full'>
-              <ul className='py-2 ring-2 ring-c rounded-xl mt-4 mb-4 px-5 bg-b1' onClick={() => setSearchQuery(" ")}>
+              <ul className='px-5 py-2 mt-4 mb-4 ring-2 ring-c rounded-xl bg-b1' onClick={() => setSearchQuery(" ")}>
                 {user.username}
               </ul>
               </Link>
@@ -314,7 +314,7 @@ const Login = () => {
         </div>
       ) : (
         searchQuery.trim() && (
-          <div className="w--4/5 sm:w-1/2 text-center absolute top-24 z-50 bg-b1 rounded-lg px-6">
+          <div className="absolute z-50 px-6 text-center rounded-lg w--4/5 sm:w-1/2 top-24 bg-b1">
             <p className='p-4'>No se encontraron resultados.</p>
           </div>
         )
@@ -324,24 +324,24 @@ const Login = () => {
       {(state === 0 || state === 1) && (isThisUser) && (
         <>
           <div className="w-4/5 p-4 mt-2 rounded sm:w-1/4">
-            <div className="w-full flex items-center">
+            <div className="flex items-center w-full">
               {auth.currentUser && auth.currentUser.uid === uid ? (
                 <img
                   src={auth.currentUser.photoURL || savedUserData?.profilePicture}
                   alt="Foto de perfil"
-                  className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover"
+                  className="object-cover mb-4 border rounded-full w-28 h-28 ring-c2 ring-2"
                 />
               ) : (
                 savedUserData?.profilePicture && (
                   <img
                     src={savedUserData.profilePicture}
                     alt="Foto de perfil"
-                    className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover"
+                    className="object-cover mb-4 border rounded-full w-28 h-28 ring-c2 ring-2"
                   />
                 )
               )}
 
-              <div className="ml-4 flex flex-col gap-1">
+              <div className="flex flex-col gap-1 ml-4">
                 <h2 className="text-lg font-bold text-c2">{savedUserData?.fullName || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">{savedUserData?.username || ''}</h2>
                 <h2 className="text-sm font-thin text-c2">
@@ -376,14 +376,14 @@ const Login = () => {
                               <img
                                 src={userData.profilePicture}
                                 alt="Foto de perfil"
-                                className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 mt-4 object-cover"
+                                className="object-cover mt-4 mb-4 border rounded-full w-28 h-28 ring-c2 ring-2"
                               />
                             </>} */}
           
           {state === 1 && (
               <>
                           {/* Insignias */}
-            <div className="flex gap-4 w-full items-center justify-center">
+            <div className="flex items-center justify-center w-full gap-4">
               {userData?.showPet && <img className="w-12 h-12 mt-6" src={petIcon} alt="Pet Friendly" />}
               {userData?.showTac && <img className="w-12 h-12 mt-6" src={tacIcon} alt="Tac" />}
               {userData?.showVegan && <img className="w-12 h-12 mt-6" src={veganIcon} alt="Vegano" />}
@@ -391,14 +391,14 @@ const Login = () => {
 
             {/* Descripción o estado */}
             {userData?.description && (
-              <p className="text-c2 text-xs text-center mt-4 font-semibold sm:w-1/2 w-2/3 break-words whitespace-pre-wrap">
+              <p className="w-2/3 mt-4 text-xs font-semibold text-center break-words whitespace-pre-wrap text-c2 sm:w-1/2">
                 {userData.description}
               </p>
             )}
 
                         <RatingDistribution reviews={userReviews} />
                         {/* Pestañas de favoritos y recientes */}
-          <div className="w-4/5 flex text-c mt-4">
+          <div className="flex w-4/5 mt-4 text-c">
             <button
               onClick={() => handleTabChange('favorites')}
               className={`text-sm font-bold w-1/2 transition-opacity ${selectedTab === 'favorites' ? 'opacity-100' : 'opacity-50'}`}
@@ -414,10 +414,10 @@ const Login = () => {
           </div>
 
           <hr className="w-4/5 h-[2px] bg-c2 border-none my-4 bg-opacity-40" />
-          <div className="w-full p-4 mt-2 rounded sm:w-1/2 h-auto">
+          <div className="w-full h-auto p-4 mt-2 rounded sm:w-1/2">
             {selectedTab === 'favorites' ? (
               favoriteCafes.length > 0 ? (
-                <div className="grid grid-cols-3 sm:gap-8 gap-y-3 items-center justify-center">
+                <div className="grid items-center justify-center grid-cols-3 sm:gap-8 gap-y-3">
                   {favoriteCafes.map(cafe => (
                     <MiniCard key={cafe.id} cafe={cafe} slug={cafe.slugName} />
                   ))}
@@ -431,19 +431,19 @@ const Login = () => {
                   {userReviews.map(cafe => (
                     <div key={cafe.cafeId} className="mb-4">
                       {cafe.reviews.filter(review => review.text !== '').map((review, index) => (
-                        <div key={index} className="w-full p-2 mb-4 rounded-xl shadow-md bg-white bg-opacity-100 text-c flex flex-row ring-1 ring-c">
-                          <div className='w-36 mr-1'>
+                        <div key={index} className="flex flex-row w-full p-2 mb-4 bg-white bg-opacity-100 shadow-md rounded-xl text-c ring-1 ring-c">
+                          <div className='mr-1 w-36'>
                           <MiniCard key={cafe.cafeId} cafe={cafe} slug={cafe.cafeId} newName={cafe.newName} />
                           </div>
                           <div className='w-full'>
-                            <div className="flex items-center mb-2 flex-col p-1 w-full">
-                              <span className="mr-2 font-bold text-c2 text-left w-full ml-4">{review.user}</span>
-                              <div className='flex gap-1 justify-between ml-2 w-full'>
-                                <span>{starRating(review.rating)}</span>
-                                <span className='text-c2 text-opacity-70 text-xl mr-5'>{review.date}</span>
+                            <div className="flex flex-col items-center w-full p-1 mb-2">
+                              <span className="w-full ml-4 mr-2 font-bold text-left text-c2">{review.user}</span>
+                              <div className='flex justify-between w-full gap-1 ml-2'>
+                                <span className='text-nowrap'>{starRating(review.rating)}</span>
+                                <span className='text-xl text-right text-c2 text-opacity-70'>{review.date}</span>
                               </div>
                             </div>
-                            <p className="mb-2 text-c2 px-2">{review.text}</p>
+                            <p className="px-2 mb-2 text-c2">{review.text}</p>
                           </div>
                         </div>
                       ))}
@@ -459,7 +459,7 @@ const Login = () => {
           )}
 
           {state === 0 && (
-            <div className='flex flex-col gap-3 items-center w-full sm:w-1/4'>
+            <div className='flex flex-col items-center w-full gap-3 sm:w-1/4'>
             
             <button className="flex items-center justify-center w-1/2 gap-2 px-4 py-2 font-medium sm:w-1/2 text-c bg-b1 rounded-2xl" onClick={() => setState(1)}>
               <img src={screen4} className='flex-[1] w-6'></img>
@@ -494,10 +494,10 @@ const Login = () => {
 
             {state === 2 && (
               <>
-              <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
-                <h1 className='text-c2 text-lg font-semibold'>Equipo de <span className='italic text-c font-bold'>¿A Dónde Vamos?</span></h1>
+              <div className='flex flex-col items-center w-full gap-3 p-4 sm:w-1/3'>
+                <h1 className='text-lg font-semibold text-c2'>Equipo de <span className='italic font-bold text-c'>¿A Dónde Vamos?</span></h1>
                   <div
-                  className='w-full h-full flex flex-col gap-4 items-center justify-center'
+                  className='flex flex-col items-center justify-center w-full h-full gap-4'
                   >
                       <TeamMember name="Manuel Gurbanov" role="Desarrollador" linkedIn={"https://www.linkedin.com/in/manuel-gurbanov-5b6307242/"}/>
                       <TeamMember name="Nahuel Fernandez" role="Administrador de Proyecto" linkedIn={"https://www.linkedin.com/in/nahuel-el%C3%ADas-fern%C3%A1ndez-4a9051255/"}/>
@@ -513,9 +513,9 @@ const Login = () => {
 
             {state === 3 && (
               <>
-              <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
+              <div className='flex flex-col items-center w-full gap-3 p-4 sm:w-1/3'>
 
-                <p className='text-c text-sm font-semibold italic sm:text-lg'>Si te gustaría colaborar con nosotros, no dudes en contactarnos. Estamos buscando gente que nos ayude a mejorar la app y a agregar nuevas funcionalidades.</p>
+                <p className='text-sm italic font-semibold text-c sm:text-lg'>Si te gustaría colaborar con nosotros, no dudes en contactarnos. Estamos buscando gente que nos ayude a mejorar la app y a agregar nuevas funcionalidades.</p>
                 <button className='w-1/2 p-2 text-c bg-b1 rounded-2xl' onClick={() => setState(0)}>
                         Volver
                 </button>
@@ -525,7 +525,7 @@ const Login = () => {
 
             {state === 4 && (
               <>
-              <div className='flex flex-col gap-3 items-center w-full p-4 sm:w-1/3'>
+              <div className='flex flex-col items-center w-full gap-3 p-4 sm:w-1/3'>
                 <EditProfile backFunction={setState}/>
               </div>
               </>
