@@ -597,7 +597,7 @@ const parseTime = (timeString) => {
         }
       }
   
-      await setDoc(discountRef, {
+      await updateDoc(discountRef, {
         discountCodes: arrayUnion({
           code: discountCode,
           isDiscountClaimed: false,
