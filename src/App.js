@@ -16,6 +16,8 @@ import ForgotPassword from './components/ForgotPassword';
 import EditCoffeeForm from './components/EditCoffeeForm';
 import DiscountPage from './components/DiscountPage';
 
+import DeleteAcount from './components/DeleteAcount';
+
 function App() {
   const [topText, setTopText] = useState("Nombre del Café");
 
@@ -42,6 +44,7 @@ function App() {
               <Route path="/coffee-all" element={<AllCoffeeList />} />
               <Route path="/notifications" element={<Notifications/>} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/delete-acount" element={<DeleteAcount />} />
             </Route>
           </Routes>
         </CafeProvider>

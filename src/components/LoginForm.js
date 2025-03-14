@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, provider } from '../firebase/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
 
-const LoginForm = ({ onClose, onSuccessfulLogin }) => {
+const LoginForm = ({ onClose, onSuccessfulLogin, dontGoHome = false }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginMessage, setLoginMessage] = useState('');
@@ -35,7 +35,6 @@ const LoginForm = ({ onClose, onSuccessfulLogin }) => {
         if (onSuccessfulLogin) {
           onSuccessfulLogin();
         }
-        navigate('/home');
       } else {
         setLoginMessage('Por favor, verifica tu correo antes de iniciar sesión.');
       }
