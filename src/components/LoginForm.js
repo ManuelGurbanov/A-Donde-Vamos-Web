@@ -105,9 +105,9 @@ const LoginForm = ({ onClose, onSuccessfulLogin }) => {
 
         <div className="flex flex-col gap-4 text-center font-semibold">
           <button 
-            onClick={handleGuestLogin}
-            className="bg-gray-300 border py-3 rounded-3xl hover:bg-gray-400 text-black">
-            Ingresar como invitado
+            onClick={handleGoogleLogin}
+            className="bg-white text-red-700 border py-3 rounded-3xl hover:bg-gray-400">
+            Ingresar con Google
           </button>
 
           <button 
