@@ -7,12 +7,14 @@ const DiscountPage = () => {
   const { slug } = useParams();
   const [discountCode, setDiscountCode] = useState("");
   const [message, setMessage] = useState("");
+  const [discountOwner, setDiscountOwner] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage("");
+    setDiscountOwner("");
 
     if (!discountCode || discountCode.length !== 6 || isNaN(discountCode)) {
       setMessage(
@@ -35,16 +37,16 @@ const DiscountPage = () => {
         );
 
         if (existingDiscount) {
+          setDiscountOwner(existingDiscount.email || "Email no disponible");
+
           if (existingDiscount.isDiscountClaimed) {
             setMessage(
-              <span className="text-red-500">Este código ya fue utilizado.</span>
+              <span className="font-bold text-red-500">Este código ya fue utilizado.</span>
             );
           } else {
-            // Primero, removemos el objeto original del array
             await updateDoc(discountRef, {
               discountCodes: arrayRemove(existingDiscount)
             });
-            // Luego, agregamos el objeto actualizado
             await updateDoc(discountRef, {
               discountCodes: arrayUnion({
                 ...existingDiscount,
@@ -52,9 +54,9 @@ const DiscountPage = () => {
               })
             });
             setMessage(
-              <>
-                <span className="text-green-200 font-bold">¡Código válido!</span>
-              </>
+              <span className="font-bold text-green-700">
+                ¡Código válido! Descuento aplicado.
+              </span>
             );
           }
         } else {
@@ -80,11 +82,11 @@ const DiscountPage = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center gap-5">
-      <h2 className="text-black text-xl font-bold">Ingresa el código de descuento</h2>
+    <div className="flex flex-col items-center justify-center w-screen h-screen gap-5">
+      <h2 className="text-xl font-bold text-black">Ingresa el código de descuento</h2>
       <form
         onSubmit={handleSubmit}
-        className="flex gap-5 flex-col sm:flex-row items-center justify-center"
+        className="flex flex-col items-center justify-center gap-5 sm:flex-row"
       >
         <input
           type="text"
@@ -97,12 +99,19 @@ const DiscountPage = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 bg-c text-b1 hover:scale-105 transition-all duration-75 rounded"
+          className="px-4 py-2 transition-all duration-75 rounded bg-c text-b1 hover:scale-105"
         >
           {isLoading ? "Verificando..." : "Verificar código"}
         </button>
       </form>
-      {message && <p className="p-3 w-full text-center bg-black">{message}</p>}
+      
+      {message && <p className="w-full px-3 text-center">{message}</p>}
+
+      {discountOwner && (
+        <p className="w-full px-3 text-center">
+          Código perteneciente a: <span className="font-bold">{discountOwner}</span>
+        </p>
+      )}
     </div>
   );
 };
