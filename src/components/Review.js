@@ -179,26 +179,29 @@ const Review = ({ selectedCafe: propSelectedCafe, onClose }) => {
         className="absolute top-0 bottom-0 left-0 right-0 w-screen h-screen bg-black bg-opacity-80"
       ></div>
       <div className="fixed bottom-0 left-0 right-0 z-50 px-6 py-0 bg-b1 text-c h-full max-h-[80vh] w-full sm:w-1/2 shadow-lg overflow-hidden rounded-lg m-auto">
-        {/* Contenido fijo (Título y Buscador) */}
-        <div className="sticky top-0 z-10 bg-b1">
-          <h2 className="mt-6 mb-4 text-lg font-bold text-center">
-            Reseñar una Cafetería
-          </h2>
-          <div className="relative flex-col items-center w-full m-auto mb-4 sm:w-1/2">
-            <input
-              type="text"
-              placeholder="Nombre de Cafetería..."
-              className="w-full h-full p-2 text-center text-black border rounded placeholder-c"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <img
-              src={screen2}
-              alt="Search Icon"
-              className="absolute w-5 h-5 transform -translate-y-1/2 top-1/2 left-3"
-            />
-          </div>
-        </div>
+        
+        {!cafe && (
+                  <div className="sticky top-0 z-10 bg-b1">
+                  <h2 className="mt-6 mb-4 text-lg font-bold text-center">
+                    Reseñar una Cafetería
+                  </h2>
+                  <div className="relative flex-col items-center w-full m-auto mb-4 sm:w-1/2">
+                    <input
+                      type="text"
+                      placeholder="Nombre de Cafetería..."
+                      className="w-full h-full p-2 text-center text-black border rounded placeholder-c"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <img
+                      src={screen2}
+                      alt="Search Icon"
+                      className="absolute w-5 h-5 transform -translate-y-1/2 top-1/2 left-3"
+                    />
+                  </div>
+                </div>
+          )}
+
   
         {/* Contenido desplazable */}
         <div className="flex flex-col w-full space-y-4 overflow-y-auto h-[calc(75vh-120px)] overflow-x-hidden">

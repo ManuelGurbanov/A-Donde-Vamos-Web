@@ -1,8 +1,8 @@
-import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
+import { collection, getDocs, query, updateDoc, where, doc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
-const RatingBar = ({ slug, category, options, dbField, imageSrc }) => {
+const RatingBar = ({ slug, category, options, dbField }) => {
   const [ratings, setRatings] = useState(
     options.reduce((acc, option) => ({ ...acc, [option]: 0 }), {})
   );
@@ -27,8 +27,7 @@ const RatingBar = ({ slug, category, options, dbField, imageSrc }) => {
           setDocId(id);
           if (data[dbField]) {
             setRatings(data[dbField]);
-            const votes = Object.values(data[dbField]).reduce((a, b) => a + b, 0);
-            setTotalVotes(votes);
+            setTotalVotes(Object.values(data[dbField]).reduce((a, b) => a + b, 0));
           }
         }
       } catch (err) {
@@ -44,11 +43,7 @@ const RatingBar = ({ slug, category, options, dbField, imageSrc }) => {
 
     try {
       const updatedRatings = { ...ratings, [option]: ratings[option] + 1 };
-
-      await updateDoc(doc(db, 'cafeterias', docId), {
-        [dbField]: updatedRatings,
-      });
-
+      await updateDoc(doc(db, 'cafeterias', docId), { [dbField]: updatedRatings });
       setRatings(updatedRatings);
       setTotalVotes(totalVotes + 1);
       setHasVoted(true);
@@ -57,50 +52,49 @@ const RatingBar = ({ slug, category, options, dbField, imageSrc }) => {
     }
   };
 
-  const calculatePercentage = (votes) => {
-    const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
-    return isNaN(percentage) ? "0" : percentage;
-  };
-
   const getMostVotedOption = () => {
-    return Object.entries(ratings).reduce(
-      (max, [key, value]) => (value > max.value ? { option: key, value } : max),
-      { option: options[0], value: 0 }
-    ).option;
+    const sortedOptions = Object.entries(ratings).sort((a, b) => b[1] - a[1]);
+    if (totalVotes === 0 || (sortedOptions.length > 1 && sortedOptions[0][1] === sortedOptions[1][1])) {
+      return options[Math.floor(options.length / 2)];
+    }
+    return sortedOptions[0][0];
   };
 
   const mostVotedOption = getMostVotedOption();
 
+  const calculatePercentage = (votes) => {
+    if (!votes || totalVotes === 0) return '0%';
+    return ((votes / totalVotes) * 100).toFixed(1) + '%';
+  };
   return (
-    <div className="flex flex-col items-center w-32">
-      {!isMenuOpen ? (
-        <button
-          className="flex items-center justify-center py-2 px-4 bg-b1 text-c font-bold rounded shadow hover:bg-c hover:text-b1 w-full h-full transition-all text-xs"
-          onClick={() => setIsMenuOpen(true)}
-        >
-          {/* <img src={imageSrc} alt="Most voted option" className="w-6 h-6 mr-2" /> */}
-          {mostVotedOption.charAt(0).toUpperCase() + mostVotedOption.slice(1)}
-        </button>
-      ) : (
+    <div className="flex flex-col items-center text-center">
+      <h1 className="text-sm font-medium">
+        {category.split(' ')[1].charAt(0).toUpperCase() + category.split(' ')[1].slice(1).toLowerCase()}:  
+        <span className='font-bold'> {mostVotedOption.charAt(0).toUpperCase() + mostVotedOption.slice(1)}</span>
+      </h1>
+      <button
+        className="mt-1 px-3 py-1 bg-white text-c text-xs font-bold rounded hover:bg-zinc-200 transition-all ring-[1px] ring-c"
+        onClick={() => setIsMenuOpen(true)}
+      >
+        Opinar
+      </button>
+
+      {isMenuOpen && (
         <div className="absolute top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-4 rounded shadow-lg w-72">
-            <h2 className="text-lg font-bold mb-4">{`¿Cómo calificarías ${category}?`}</h2>
+          <div className="bg-white p-4 shadow-lg w-72 rounded-[48px]">
+            <h2 className="text-lg font-bold mb-4">¿Cómo calificarías {category}?</h2>
             <div className="flex flex-col gap-2">
               {options.map((option) => (
                 <button
                   key={option}
-                  className={`flex items-center py-1 px-2 text-sm font-medium border rounded ${
-                    hasVoted ? 'cursor-not-allowed opacity-70' : 'bg-b1 hover:bg-c hover:text-b1'
+                  className={`py-1 px-2 text-sm font-medium border rounded ${
+                    hasVoted ? 'cursor-not-allowed opacity-70' : 'bg-b1 hover:bg-c hover:text-b1 text-c'
                   }`}
                   onClick={() => handleVote(option)}
                   disabled={hasVoted}
                 >
-                  <span>{option.charAt(0).toUpperCase() + option.slice(1)}</span>
-                  {hasVoted && (
-                    <span className="ml-auto text-blue-500 font-bold">
-                      {calculatePercentage(ratings[option])}%
-                    </span>
-                  )}
+                  {option.charAt(0).toUpperCase() + option.slice(1)}
+                  {hasVoted && <span className="ml-2 text-gray-700">{calculatePercentage(ratings[option])}</span>}
                 </button>
               ))}
             </div>

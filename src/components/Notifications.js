@@ -66,7 +66,7 @@ const Notifications = () => {
             />
           ))
         ) : (
-          <h1 className="text-xl text-center text-c mt-4">No tienes notificaciones</h1>
+          null
         )}
       </div>
     </>

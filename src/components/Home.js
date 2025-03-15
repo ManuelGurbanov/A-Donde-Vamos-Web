@@ -139,6 +139,11 @@ const Home = () => {
     );
   };
 
+  const recomendedList = ["senen", "boiro-cafe"];
+
+  const recomendedCafesList = cafes.filter(cafe => recomendedList.includes(cafe.slugName));
+
+
   
   return (
     <>
@@ -151,119 +156,119 @@ const Home = () => {
         <img src="loading.gif" className="w-full p-5 sm:w-96" alt="Loading..." />
       </div>
 
-{/* Mostrar el contenido solo si loading es false y fadeOut es false */}
-{!loading && (
-  <div>
-    <div className='m-auto sm:w-screen sm:p-24 sm:py-7'>
-    {/* <AdSenseComponent/> */}
-    {showWelcome && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="w-4/5 p-4 bg-white rounded-lg sm:w-1/2">
-          <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
-            Recomendarme cafeterías en:
-          </h1>
-          <div className="overflow-y-scroll h-64 max-h-[80vw] flex flex-col items-center justify-start rounded-lg">
-            {uniqueNeighs.map((neigh, index) => (
-              <button
-                key={index}
-                onClick={() => handleFilterChange(neigh)}
-                className={`p-2 m-2 rounded text-sm w-11/12 ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
-              >
-                {neigh}
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-col items-center justify-center w-full p-4">
-            <button
-              onClick={() => handleSavePreferences()}
-              className="w-full h-12 p-1 m-2 rounded-lg text-c bg-b1 hover:bg-c hover:text-b1"
-            >
-              Guardar
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
-
-<div>
-    </div>
-
-
-
-
-            <div className="px-4 mb-32">
-              <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
-                
-              <div>
-                <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
-                  {isLargeScreen ? (
-                    <>
-                    {renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)}
-                    </>
-                  ) : (
-                    <>
-                    <Slider {...sliderSettings}>
-                      {nearbyCafes.map((cafe, index) => (
-                        <CoffeeCard key={index} cafe={cafe} />
-                      ))}
-                    </Slider>
-
-                    <div className='flex items-center justify-center w-full'>
-                      <button
-                        type="button"
-                        onClick={() => setShowWelcome(true)}
-                        className="w-5/6 p-1 py-2 mb-2 text-xs font-bold text-center border cursor-pointer rounded-2xl bg-c text-b1 bg-opacity-90"
-                      >
-                        Cambiar Barrios para Recomendaciones
-                      </button>
-                    </div>
-                    </>
-                  )}
-                </div> 
-                <div className="mb-1">
-                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>
-                  {isLargeScreen ? (
-                    renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
-                  ) : (
-                   <Slider {...sliderSettingsMove}>
-                      {popularCafes.map((cafe, index) => (
-                        <CoffeeCard key={index} cafe={cafe} />
-                      ))}
-                    </Slider>
-                  )}
-                </div>
-
-                <div>
-                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Recomendaciones</h2>
-                  {isLargeScreen ? (
-                    renderCarousel(recomendedCafes, currentSlideFavorites, setCurrentSlideFavorites)
-                  ) : (
-                    <Slider {...sliderSettings}>
-                      {recomendedCafes.map((cafe, index) => (
-                        <CoffeeCard key={index} cafe={cafe} />
-                      ))}
-                    </Slider>
-                  )}
-                </div>
-
-
-                <div>
-                  <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Cafeterías</h2>
-                  {isLargeScreen ? (
-                    renderCarousel(newCafes, currentSlideNew, setCurrentSlideNew)
-                  ) : (
-                    <Slider {...sliderSettings}>
-                      {newCafes.map((cafe, index) => (
-                        <CoffeeCard key={index} cafe={cafe} />
-                      ))}
-                    </Slider>
-                  )}
-                </div>
+    {/* Mostrar el contenido solo si loading es false y fadeOut es false */}
+    {!loading && (
+      <div>
+        <div className='m-auto sm:w-screen sm:p-24 sm:py-7'>
+        {/* <AdSenseComponent/> */}
+        {showWelcome && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="w-4/5 p-4 bg-white rounded-lg sm:w-1/2">
+              <h1 className="w-full p-4 text-2xl font-bold text-left text-c1">
+                Recomendarme cafeterías en:
+              </h1>
+              <div className="overflow-y-scroll h-64 max-h-[80vw] flex flex-col items-center justify-start rounded-lg">
+                {uniqueNeighs.map((neigh, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleFilterChange(neigh)}
+                    className={`p-2 m-2 rounded text-sm w-11/12 ${selectedNeighs.includes(neigh) ? 'bg-b2 text-c' : 'bg-gray-200 text-b1'}`}
+                  >
+                    {neigh}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-col items-center justify-center w-full p-4">
+                <button
+                  onClick={() => handleSavePreferences()}
+                  className="w-full h-12 p-1 m-2 rounded-lg text-c bg-b1 hover:bg-c hover:text-b1"
+                >
+                  Guardar
+                </button>
               </div>
             </div>
           </div>
+        )}
+
+    <div>
         </div>
-      )}
+
+
+
+
+                <div className="px-4 mb-32">
+                  <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
+                    
+                  <div>
+                    <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Cerca Tuyo</h2>
+                      {isLargeScreen ? (
+                        <>
+                        {renderCarousel(nearbyCafes, currentSlideNearby, setCurrentSlideNearby)}
+                        </>
+                      ) : (
+                        <>
+                        <Slider {...sliderSettings}>
+                          {nearbyCafes.map((cafe, index) => (
+                            <CoffeeCard key={index} cafe={cafe} />
+                          ))}
+                        </Slider>
+
+                        <div className='flex items-center justify-center w-full'>
+                          <button
+                            type="button"
+                            onClick={() => setShowWelcome(true)}
+                            className="w-5/6 p-1 py-2 mb-2 text-xs font-medium text-center border cursor-pointer rounded-2xl bg-c text-white bg-opacity-90"
+                          >
+                            Cambiar Barrios para Recomendaciones
+                          </button>
+                        </div>
+                        </>
+                      )}
+                    </div> 
+                    <div className="mb-1">
+                      <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Las más populares</h2>
+                      {isLargeScreen ? (
+                        renderCarousel(popularCafes, currentSlidePopular, setCurrentSlidePopular)
+                      ) : (
+                      <Slider {...sliderSettingsMove}>
+                          {popularCafes.map((cafe, index) => (
+                            <CoffeeCard key={index} cafe={cafe} />
+                          ))}
+                        </Slider>
+                      )}
+                    </div>
+
+                    <div>
+                      <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Recomendaciones</h2>
+                      {isLargeScreen ? (
+                        renderCarousel(recomendedCafesList, currentSlideFavorites, setCurrentSlideFavorites)
+                      ) : (
+                        <Slider {...sliderSettings}>
+                          {recomendedCafesList.map((cafe, index) => (
+                            <CoffeeCard key={index} cafe={cafe} />
+                          ))}
+                        </Slider>
+                      )}
+                    </div>
+
+
+                    <div>
+                      <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Nuevas Cafeterías</h2>
+                      {isLargeScreen ? (
+                        renderCarousel(newCafes, currentSlideNew, setCurrentSlideNew)
+                      ) : (
+                        <Slider {...sliderSettings}>
+                          {newCafes.map((cafe, index) => (
+                            <CoffeeCard key={index} cafe={cafe} />
+                          ))}
+                        </Slider>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
     </>
   );
 };

@@ -11,16 +11,23 @@ const LoginForm = ({ onClose, onSuccessfulLogin, dontGoHome = false }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUser(currentUser);
-        if (onSuccessfulLogin) {
-          onSuccessfulLogin();
+        await currentUser.reload(); // Recarga los datos del usuario para obtener su estado actualizado
+  
+        if (currentUser.emailVerified) {
+          setUser(currentUser);
+          if (onSuccessfulLogin) {
+            onSuccessfulLogin();
+          }
+          navigate('/home');
+        } else {
+          setLoginMessage('Por favor, verifica tu correo antes de iniciar sesión.');
+          await auth.signOut(); // Cierra la sesión si no está verificado
         }
-        navigate('/home');
       }
     });
-
+  
     return () => unsubscribe();
   }, [navigate, onSuccessfulLogin]);
 
@@ -29,7 +36,9 @@ const LoginForm = ({ onClose, onSuccessfulLogin, dontGoHome = false }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
+      await user.reload();
+      
       if (user.emailVerified) {
         setLoginMessage('Logueado correctamente');
         if (onSuccessfulLogin) {
@@ -37,12 +46,14 @@ const LoginForm = ({ onClose, onSuccessfulLogin, dontGoHome = false }) => {
         }
       } else {
         setLoginMessage('Por favor, verifica tu correo antes de iniciar sesión.');
+        await auth.signOut();
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       setLoginMessage('Error al iniciar sesión. Verifica tus credenciales.');
     }
   };
+  
 
   const handleGoogleLogin = async () => {
     try {
@@ -103,12 +114,6 @@ const LoginForm = ({ onClose, onSuccessfulLogin, dontGoHome = false }) => {
         </div>
 
         <div className="flex flex-col gap-4 text-center font-semibold">
-          <button 
-            onClick={handleGoogleLogin}
-            className="bg-white text-red-700 border py-3 rounded-3xl hover:bg-gray-400">
-            Ingresar con Google
-          </button>
-
           <button 
             onClick={handleLogin}
             className="bg-b1 border py-3 rounded-3xl hover:bg-c hover:text-b1 text-c">

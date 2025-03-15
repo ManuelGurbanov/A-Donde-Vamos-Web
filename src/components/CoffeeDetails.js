@@ -703,7 +703,8 @@ const parseTime = (timeString) => {
               </Link>
           )}
 
-          <button
+          {(coffee.slugName === "senen" &&
+            <button
                   onClick={handleGetDiscountClick}
                   className={'px-4 py-2 mt-4 mb-4 transition rounded-lg shadow-md bg-b1 text-c hover:bg-c1-dark' + (!currentUser ? ' opacity-50 cursor-not-allowed bg-transparent' : '')}
                   disabled={!currentUser}
@@ -713,7 +714,9 @@ const parseTime = (timeString) => {
                     : discountRequested
                     ? "Ver mi Código de Descuento"
                     : "Obtener descuento"}
-                </button>
+          </button>
+          )}
+
 
           {showDiscountMenu && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 discount-menu">
@@ -915,10 +918,6 @@ const parseTime = (timeString) => {
     { category: 'la atención', dbField: 'workersRatings', options: ['muy mala', 'mala', 'regular', 'buena', 'muy buena'] },
   ].map(({ category, dbField, options }) => (
     <div key={dbField} className="flex flex-col items-center justify-center w-full text-center">
-      <h1 className="w-full h-full mb-1 text-sm font-medium">
-        {category.split(' ')[1].charAt(0).toUpperCase() + category.split(' ')[1].slice(1).toLowerCase()}
-      </h1>
-
       <PriceRatingBar
         slug={coffee.slugName}
         category={category}
@@ -960,7 +959,8 @@ const parseTime = (timeString) => {
   <h2 className="mb-4 text-2xl font-bold">Reseñas</h2>
   {reviews.length > 0 ? (
     reviews.map((review, index) => (
-      <div key={index} className="flex flex-col w-full h-56 p-2 mb-4 bg-white bg-opacity-100 shadow-md rounded-xl text-c ring-1 ring-c">
+      <div key={index} className="flex flex-col w-full overflow-y-scroll overflow-x-hidden
+       min-h-12 p-2 mb-4 bg-white bg-opacity-100 shadow-md rounded-xl text-c ring-1 ring-c">
         <div className="flex flex-col justify-between w-full h-full">
           <div className="flex flex-col items-center p-1 mb-2">
           <span 
@@ -976,7 +976,9 @@ const parseTime = (timeString) => {
           </div>
 
           {/* Texto de la reseña */}
-          <p className="h-full px-2 mb-2 overflow-y-scroll text-c2">{review.text}</p>
+          <p className="max-h-40 px-2 mb-2 overflow-y-scroll text-c2">
+            {review.text}
+          </p>
 
           {/* Botones de interacción: like, dislike, eliminar */}
           <div className="flex items-center px-2">

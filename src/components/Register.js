@@ -101,7 +101,7 @@ const Register = () => {
       <Top text={"Registro"} />
       <div className="flex flex-col items-center justify-start min-h-screen">
         <form onSubmit={handleRegister} className="flex flex-col items-center w-4/5 gap-1 p-4 mt-8 rounded sm:w-1/4">
-          <label className='w-full text-left text-c2 text-lg italic font-bold'>Nombre Privado</label>
+          {/* <label className='w-full text-left text-c2 text-lg italic font-bold'>Nombre Privado</label>
           <input
             type="text"
             value={fullName}
@@ -109,7 +109,8 @@ const Register = () => {
             placeholder="Nombre"
             className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
-          />
+          /> */}
+
           <label className='w-full text-left text-c2 text-lg italic font-bold'>Usuario (no se puede cambiar)</label>
           <input
             type="text"
@@ -119,6 +120,7 @@ const Register = () => {
             className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
           />
+          <label className='w-full text-left text-c2 text-lg italic font-bold'>Correo electrónico</label>
           <input
             type="email"
             value={email}
@@ -127,6 +129,7 @@ const Register = () => {
             className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
             required
           />
+          <label className='w-full text-left text-c2 text-lg italic font-bold'>Contraseña (mínimo 10 caracteres)</label>
           <input
             type="password"
             value={password}
@@ -160,48 +163,14 @@ const Register = () => {
             <img src={previewImage} alt="Previsualización" className="w-28 h-28 mb-4 border rounded-full ring-c2 ring-2 object-cover" />
           )}
 
-          <input
-            type="text"
-            value={mainNeighborhood}
-            onChange={(e) => setMainNeighborhood(e.target.value)}
-            placeholder="Barrio Principal"
-            className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
-          />
-
+          <label className='w-full text-left text-c2 text-lg italic font-bold'>Descripción (Opcional)</label>
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Descripción o Estado"
+            placeholder="Descripción"
             className="w-full p-2 mb-4 italic text-black border rounded-2xl bg-b1 placeholder:text-brown"
           />
-
-          <div className="mb-2">
-            <input
-              type="checkbox"
-              checked={showNeighborhood}
-              onChange={(e) => setShowNeighborhood(e.target.checked)}
-              id="showNeighborhood"
-            />
-            <label htmlFor="showNeighborhood" className="ml-2">
-              Mostrar barrio en perfil
-            </label>
-          </div>
-
-          <div className="flex flex-col mb-4">
-            <label className="flex items-center">
-              <input type="checkbox" checked={showPet} onChange={(e) => setShowPet(e.target.checked)} />
-              <span className="ml-2">Mostrar insignia Pet Friendly</span>
-            </label>
-            <label className="flex items-center">
-              <input type="checkbox" checked={showTac} onChange={(e) => setShowTac(e.target.checked)} />
-              <span className="ml-2">Mostrar insignia Tac</span>
-            </label>
-            <label className="flex items-center">
-              <input type="checkbox" checked={showVegan} onChange={(e) => setShowVegan(e.target.checked)} />
-              <span className="ml-2">Mostrar insignia Vegano</span>
-            </label>
-          </div>
 
           <button type="submit" className="flex items-center justify-center w-1/2 p-2 text-white transition-all duration-100 rounded-2xl bg-b1 hover:bg-b2">
             <img className="flex-[1] " src={crearImg}></img>
