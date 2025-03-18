@@ -55,7 +55,7 @@ const RatingBar = ({ slug, category, options, dbField }) => {
   const getMostVotedOption = () => {
     const sortedOptions = Object.entries(ratings).sort((a, b) => b[1] - a[1]);
     if (totalVotes === 0 || (sortedOptions.length > 1 && sortedOptions[0][1] === sortedOptions[1][1])) {
-      return options[Math.floor(options.length / 2)];
+      return options[Math.floor(options.length / 2) + 1];
     }
     return sortedOptions[0][0];
   };
