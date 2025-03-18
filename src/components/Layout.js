@@ -131,7 +131,7 @@ const Layout = () => {
                 alt="Pantalla 1"
                 className={`navbar-icon ${location.pathname === '/home' ? 'icon-selected' : ''}`}
               />
-              <span className={`navbar-text text-c ${location.pathname === '/home' ? '' : 'text-[#7a3916]'}`}>Inicio</span>
+              <span className={`navbar-text ${location.pathname === '/home' ? 'text-c' : 'text-[#7a3916]'}`}>Inicio</span>
             </div>
           </Link>
           <Link to="/coffee-all" className="navbar-link">
@@ -141,13 +141,13 @@ const Layout = () => {
                 alt="Pantalla 2"
                 className={`navbar-icon ${location.pathname === '/coffee-all' ? 'icon-selected' : 'text-transparent'}`}
               />
-              <span className={`navbar-text text-c ${location.pathname === '/coffee-all' ? '' : 'text-[#7a3916]'}`}>Cafés</span>
+              <span className={`navbar-text ${location.pathname === '/coffee-all' ? 'text-c' : 'text-[#7a3916]'}`}>Cafés</span>
             </div>
           </Link>
         </div>
 
         <div className="navbar-center bg-c">
-          <button onClick={handleReviewClick} className={`review-button ${location.pathname === '/review' ? '' : 'text-[#7a3916]'}`}>
+          <button onClick={handleReviewClick} className={`review-button ${location.pathname === '/review' ? 'text-c' : 'text-[#7a3916]'}`}>
             <img src={addsquare} alt="Review" className="review-icon" />
           </button>
         </div>
@@ -160,7 +160,7 @@ const Layout = () => {
                 alt="Pantalla 3"
                 className={`navbar-icon ${location.pathname === '/notifications' ? 'icon-selected' : ''}`}
               />
-              <span className={`navbar-text text-c ${location.pathname === '/notifications' ? '' : 'text-[#7a3916]'}`}>Notificaciones</span>
+              <span className={`navbar-text  ${location.pathname === '/notifications' ? 'text-c' : 'text-[#7a3916]'}`}>Notificaciones</span>
             </div>
           </Link>
           <button onClick={handleLoginClick} className="navbar-link">
@@ -170,7 +170,7 @@ const Layout = () => {
                 alt="Pantalla 4"
                 className={`navbar-icon ${location.pathname.startsWith('/profile') ? 'icon-selected' : ''}`}
               />
-              <span className={`navbar-text text-c ${location.pathname.startsWith('/profile') ? '' : 'text-[#7a3916]'}`}>
+              <span className={`navbar-text ${location.pathname.startsWith('/profile') ? 'text-c' : 'text-[#7a3916]'}`}>
                 Perfil
               </span>
             </div>

@@ -41,6 +41,8 @@ import {Link} from 'react-router-dom';
 import Review from './Review';
 import PriceRatingBar from './PriceRatingBar';
 
+import BackButton from './BackButton';
+
 const CoffeeDetails = () => {
   //#region Variables
   const { slug } = useParams();
@@ -626,6 +628,7 @@ const parseTime = (timeString) => {
   
   return (
     <div className='flex flex-col items-center justify-center w-screen'>
+      <BackButton />
             {showReview && (
         <div className="review-popup">
           <Review onClose={handleCloseReview} selectedCafe={coffee} />

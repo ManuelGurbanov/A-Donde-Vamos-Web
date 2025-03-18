@@ -192,10 +192,6 @@ const Home = () => {
 
     <div>
         </div>
-
-
-
-
                 <div className="px-4 mb-32">
                   <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
                     
@@ -220,7 +216,7 @@ const Home = () => {
                             className="w-5/6 p-1 py-2 mb-2 text-xs font-medium text-center border cursor-pointer rounded-2xl bg-c text-white bg-opacity-90"
                           >
                             Cambiar Barrios para Recomendaciones
-                          </button>
+                          </button> 
                         </div>
                         </>
                       )}
@@ -237,6 +233,14 @@ const Home = () => {
                         </Slider>
                       )}
                     </div>
+
+                    <a className='flex items-center justify-center w-full' href='https://play.google.com/store/apps/details?id=com.manuelgurbanov.adondevamos'>
+                          <img
+                            src="googlePlay.webp"
+                            className="w-5/6 p-1 py-2"
+                          >
+                          </img> 
+                    </a>
 
                     <div>
                       <h2 className="text-2xl font-semibold text-left text-c2 md:text-3xl">Recomendaciones</h2>
